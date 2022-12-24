@@ -18,3 +18,7 @@ TT03 and beyond will use a different access method that will be faster and provi
 ## Meetings
 
 * [Meeting agendas and minutes](https://docs.google.com/document/d/18BZYNJNd-xPtpMgtHuVNnMeyQSEiRaSDD06B5T8uEP4/edit)
+
+## License
+
+See the [LICENSE](LICENSE)
