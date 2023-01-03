@@ -13,7 +13,7 @@ TT03 and beyond will use a different access method that will be faster and provi
 ## Draft spec - request for comments
 
 * [grid layout image](tt_ios_grid.pdf)
-* [spec](tt_ios_spec.txt)
+* [spec](tt_ios_spec.md)
 
 ## Meetings
 
