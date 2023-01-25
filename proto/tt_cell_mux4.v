@@ -1,0 +1,29 @@
+/*
+ * tt_cell_mux4.v
+ *
+ * Mux4 basic cell
+ *
+ * Author: Sylvain Munaut <tnt@246tNt.com>
+ */
+
+`default_nettype none
+
+module tt_cell_mux4 (
+	input  wire a,
+	input  wire b,
+	input  wire c,
+	input  wire d,
+	output reg  x,
+	input  wire [1:0] s
+);
+
+	always @(*)
+		case (s)
+			2'b00:   x = a;
+			2'b01:   x = b;
+			2'b10:   x = c;
+			2'b11:   x = d;
+			default: x = 1'bx;
+		endcase
+
+endmodule // tt_cell_mux4
