@@ -1,14 +1,15 @@
 /*
- * tt_cell_mux4.v
+ * tt_prim_mux4.v
  *
- * Mux4 basic cell
+ * TT Primitive
+ * Mux4
  *
  * Author: Sylvain Munaut <tnt@246tNt.com>
  */
 
 `default_nettype none
 
-module tt_cell_mux4 (
+module tt_prim_mux4 (
 	input  wire a,
 	input  wire b,
 	input  wire c,
@@ -26,4 +27,4 @@ module tt_cell_mux4 (
 			default: x = 1'bx;
 		endcase
 
-endmodule // tt_cell_mux4
+endmodule // tt_prim_mux4

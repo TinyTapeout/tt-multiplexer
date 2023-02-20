@@ -68,6 +68,7 @@ module tt_row_mux #(
 
 	// Decoding
 	wire            row_sel;
+	wire            row_sel_tbe;
 
 
 	// Spine mapping
@@ -79,19 +80,58 @@ module tt_row_mux #(
 	assign so_gh = 1'b0;
 	assign so_gl = 1'b0;
 
+	// Diodes for inputs from spine
+	tt_prim_diode diode_spine_I[S_IW-1:0] (
+		.diode(spine_iw)
+	);
+
 
 	// Row decoding & Bus
 	// ------------------
 
+	// Decode row address
 	assign row_sel = (si_sel[9:6] == addr);
 
-	assign so_usr = row_sel ? bus_ow : { U_OW{1'bz} };
+	tt_prim_tbuf_pol tbuf_row_ena_I (
+		.t  (row_sel),
+		.tx (row_sel_tbe)
+	);
 
+	// Spine drive TBUF for Outward
+	tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
+		.a  (bus_ow),
+		.tx (row_sel_tbe),
+		.z  (so_usr)
+	);
+
+	// Zeroing buffer for Inward
+	tt_prim_zbuf #(
+		.HIGH_DRIVE(1)
+	) zbuf_bus_iw_I[U_IW-1:0] (
+		.a  (si_usr),
+		.e  (row_sel),
+		.z  (bus_iw)
+	);
+
+	tt_prim_zbuf #(
+		.HIGH_DRIVE(1)
+	) zbuf_bus_sel_I[5:0] (
+		.a  (si_sel[5:0]),
+		.e  (row_sel),
+		.z  (bus_sel)
+	);
+
+	tt_prim_zbuf #(
+		.HIGH_DRIVE(1)
+	) zbuf_bus_ena_I (
+		.a  (si_ena),
+		.e  (row_sel),
+		.z  (bus_ena)
+	);
+
+	// Guards
 	assign bus_gh  = 1'b0;
-	assign bus_iw  = row_sel ? si_usr : { U_IW{1'b0} };
 	assign bus_gm  = 1'b0;
-	assign bus_sel = si_sel[5:0];
-	assign bus_ena = row_sel ? si_ena : 1'b0;
 	assign bus_gl  = 1'b0;
 
 
@@ -120,12 +160,13 @@ module tt_row_mux #(
 			begin
 				// Signals
 				wire [U_OW-1:0] l_ow;
+				wire            l_tbe;
 
 				// Decoder
 				assign col_sel_h[i>>1] = bus_sel[4:1] == (i >> 1);
 
 				// Mux
-				tt_cell_mux4 mux4_I[U_OW-1:0] (
+				tt_prim_mux4 mux4_I[U_OW-1:0] (
 					.a(um_owa[i*2+0]),
 					.b(um_owa[i*2+1]),
 					.c(um_owa[i*2+2]),
@@ -135,19 +176,66 @@ module tt_row_mux #(
 				);
 
 				// T-Buf
-				assign bus_ow = col_sel_h[i>>1] ? l_ow : { U_OW{1'bz} };
+				tt_prim_tbuf_pol tbuf_row_ena_I (
+					.t  (col_sel_h[i>>1]),
+					.tx (l_tbe)
+				);
+
+				tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
+					.a  (l_ow),
+					.tx (l_tbe),
+					.z  (bus_ow)
+				);
 			end
 
 			// Bottom
 			assign l_ena[0] = bus_ena & col_sel_h[i>>1] & (bus_sel[0] == (i & 1)) & (bus_sel[5] == 1'b0);
-			assign um_iwa    [i*2+0]  = l_ena[0] ? bus_iw : { U_OW{1'b0} };
-			assign um_ena    [i*2+0]  = l_ena[0];
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(0)
+			) zbuf_bot_iw_I[U_IW-1:0] (
+				.a  (bus_iw),
+				.e  (l_ena[0]),
+				.z  (um_iwa[i*2+0])
+			);
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(0)
+			) zbuf_bot_ena_I (
+				.a  (1'b1),
+				.e  (l_ena[0]),
+				.z  (um_ena[i*2+0])
+			);
+
+			tt_prim_diode diode_bot_I[U_OW-1:0] (
+				.diode (um_owa[i*2+0])
+			);
+
 			assign um_k_zero [i*2+0]  = 1'b0;
 
 			// Top
 			assign l_ena[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[0] == (i & 1)) & (bus_sel[5] == 1'b1);
-			assign um_iwa    [i*2+1]  = l_ena[1] ? bus_iw : { U_OW{1'b0} };
-			assign um_ena    [i*2+1]  = l_ena[1];
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(0)
+			) zbuf_top_iw_I[U_IW-1:0] (
+				.a  (bus_iw),
+				.e  (l_ena[1]),
+				.z  (um_iwa[i*2+1])
+			);
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(0)
+			) zbuf_top_ena_I (
+				.a  (1'b1),
+				.e  (l_ena[1]),
+				.z  (um_ena[i*2+1])
+			);
+
+			tt_prim_diode diode_top_I[U_OW-1:0] (
+				.diode (um_owa[i*2+1])
+			);
+
 			assign um_k_zero [i*2+1]  = 1'b0;
 
 		end

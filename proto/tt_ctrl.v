@@ -58,7 +58,8 @@ module tt_ctrl #(
 	wire            si_gl;
 
 	// Selection
-	reg  [9:0] sel_cnt;
+	wire [9:0] sel_cnt;
+	wire [9:0] sel_cnt_n;
 	wire [9:0] sel_cnt_clk;
 
 
@@ -67,18 +68,71 @@ module tt_ctrl #(
 
 	assign { so_gh, so_uio_oe, so_uio_out, so_uo_out, so_gl } = spine_ow;
 
-	assign pad_uio_oe_n = ~so_uio_oe;
-	assign pad_uio_out  =  so_uio_out;
-	assign pad_uo_out   =  so_uo_out;
+	tt_prim_diode spine_diode_I[S_OW-1:0] (
+		.diode (spine_ow)
+	);
+
+	tt_prim_inv #(
+		.HIGH_DRIVE(1)
+	) pad_uio_oe_n_buf_I[N_IO-1:0] (
+		.a (so_uio_oe),
+		.z (pad_uio_oe_n)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) pad_uio_out_buf_I[N_IO-1:0] (
+		.a (so_uio_out),
+		.z (pad_uio_out)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) pad_uo_out_buf_I[N_O-1:0] (
+		.a (so_uo_out),
+		.z (pad_uo_out)
+	);
 
 	assign spine_iw = { si_gh, si_uio_in, si_ui_in, si_sel, si_ena, si_gl };
 
 	assign si_gh     = 1'b0;
-	assign si_uio_in = pad_uio_in;
-	assign si_ui_in  = pad_ui_in;
-	assign si_sel    = sel_cnt;
-	assign si_ena    = ctrl_ena;
 	assign si_gl     = 1'b0;
+
+	tt_prim_diode pad_uio_in_diode_I[N_IO-1:0] (
+		.diode (pad_uio_in)
+	);
+
+	tt_prim_diode pad_ui_in_diode_I[N_I-1:0] (
+		.diode (pad_ui_in)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) pad_uio_in_buf_I[N_IO-1:0] (
+		.a (pad_uio_in),
+		.z (si_uio_in)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) pad_ui_in_buf_I[N_I-1:0] (
+		.a (pad_ui_in),
+		.z (si_ui_in)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) sel_cnt_buf_I[9:0] (
+		.a (sel_cnt),
+		.z (si_sel)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) ctrl_ena_buf_I (
+		.a (ctrl_ena),
+		.z (si_ena)
+	);
 
 
 	// Selection
@@ -87,15 +141,21 @@ module tt_ctrl #(
 	genvar i;
 	generate
 		for (i=0; i<10; i=i+1) begin
-			always @(posedge sel_cnt_clk[i] or negedge ctrl_sel_rst_n)
-				if (~ctrl_sel_rst_n)
-					sel_cnt[i] <= 1'b0;
-				else
-					sel_cnt[i] <= ~sel_cnt[i];
+			tt_prim_dfrbp cnt_bit_I (
+				.d     (sel_cnt_n[i]),
+				.q     (sel_cnt[i]),
+				.q_n   (sel_cnt_n[i]),
+				.clk   (sel_cnt_clk[i]),
+				.rst_n (ctrl_sel_rst_n)
+			);
 		end
 	endgenerate
 
-	assign sel_cnt_clk = { ~sel_cnt[8:0], ctrl_sel_inc };
+	assign sel_cnt_clk = { sel_cnt_n[8:0], ctrl_sel_inc };
+
+	tt_prim_diode ctrl_diode_I[2:0] (
+		.diode ({ ctrl_sel_rst_n, ctrl_sel_inc, ctrl_ena })
+	);
 
 
 	// Tie points
