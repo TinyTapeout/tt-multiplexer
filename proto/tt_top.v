@@ -198,7 +198,7 @@ module tt_top #(
 					.ow     (l_um_ow[(j*2+0)*U_OW+:U_OW]),
 					.iw     (l_um_iw[(j*2+0)*U_IW+:U_IW]),
 					.ena    (l_um_ena[j*2+0]),
-					.k_zero (l_um_ena[j*2+0])
+					.k_zero (l_um_k_zero[j*2+0])
 				);
 
 				// Top user module
@@ -212,7 +212,7 @@ module tt_top #(
 					.ow     (l_um_ow[(j*2+1)*U_OW+:U_OW]),
 					.iw     (l_um_iw[(j*2+1)*U_IW+:U_IW]),
 					.ena    (l_um_ena[j*2+1]),
-					.k_zero (l_um_ena[j*2+1])
+					.k_zero (l_um_k_zero[j*2+1])
 				);
 			end
 		end
