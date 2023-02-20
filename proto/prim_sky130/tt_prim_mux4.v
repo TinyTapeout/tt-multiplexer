@@ -14,7 +14,7 @@ module tt_prim_mux4 (
 	input  wire b,
 	input  wire c,
 	input  wire d,
-	output reg  x,
+	output wire x,
 	input  wire [1:0] s
 );
 
