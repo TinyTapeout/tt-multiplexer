@@ -22,6 +22,8 @@ module tt_prim_buf #(
 `ifdef WITH_POWER
 				.VPWR (1'b1),
 				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
 `endif
 				.A (a),
 				.X (z)
@@ -31,6 +33,8 @@ module tt_prim_buf #(
 `ifdef WITH_POWER
 				.VPWR (1'b1),
 				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
 `endif
 				.A (a),
 				.X (z)

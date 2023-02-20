@@ -21,6 +21,8 @@ module tt_prim_dfrbp (
 `ifdef WITH_POWER
 		.VPWR (1'b1),
 		.VGND (1'b0),
+		.VPB  (1'b1),
+		.VNB  (1'b0),
 `endif
 		.D       (d),
 		.Q       (q),

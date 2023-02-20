@@ -25,6 +25,8 @@ module tt_prim_zbuf #(
 `ifdef WITH_POWER
 				.VPWR (1'b1),
 				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
 `endif
 				.A (a),
 				.B (e),
@@ -35,6 +37,8 @@ module tt_prim_zbuf #(
 `ifdef WITH_POWER
 				.VPWR (1'b1),
 				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
 `endif
 				.A (l),
 				.X (z)
@@ -45,6 +49,8 @@ module tt_prim_zbuf #(
 `ifdef WITH_POWER
 				.VPWR (1'b1),
 				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
 `endif
 				.A (a),
 				.B (e),
