@@ -90,7 +90,7 @@ module tt_top #(
 		pad_uo_out,
 		pad_ui_out,
 		pad_cl_out,
-		{ UNUSED_PADS{1'b1} }
+		{ UNUSED_PADS{k_one} }
 	};
 
 	assign io_oeb = {
@@ -99,21 +99,21 @@ module tt_top #(
 		pad_uo_oe_n,
 		pad_ui_oe_n,
 		pad_cl_oe_n,
-		{ UNUSED_PADS{1'b1} }
+		{ UNUSED_PADS{k_one} }
 	};
 
 	// Tie-offs
 		// Control High
-	assign pad_ch_out  = 6'b000000;
-	assign pad_ch_oe_n = 6'b010101;
+	assign pad_ch_out  = { k_zero, k_zero, k_zero, k_zero, k_zero, k_zero };
+	assign pad_ch_oe_n = { k_zero, k_one,  k_zero, k_one,  k_zero, k_one  };
 
 	assign ctrl_sel_rst_n = pad_ch_in[4];
 	assign ctrl_sel_inc   = pad_ch_in[2];
 	assign ctrl_ena       = pad_ch_in[0];
 
 		// Control Low
-	assign pad_cl_out  = { user_clock2, 1'b0 };
-	assign pad_cl_oe_n = 2'b00;
+	assign pad_cl_out  = { user_clock2, k_zero };
+	assign pad_cl_oe_n = { k_zero, k_zero };
 
 
 	// Controller
