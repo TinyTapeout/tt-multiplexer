@@ -24,7 +24,7 @@ module tt_prim_dfrbp (
 `endif
 		.D       (d),
 		.Q       (q),
-		.QB      (q_n),
+		.Q_N     (q_n),
 		.CLK     (clk),
 		.RESET_B (rst_n)
 	);
