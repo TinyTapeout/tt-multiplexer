@@ -115,6 +115,13 @@ module tt_top #(
 	assign pad_cl_out  = { user_clock2, k_zero };
 	assign pad_cl_oe_n = { k_zero, k_zero };
 
+		// Output enables
+	assign pad_uo_oe_n = { N_O{k_zero} };
+	assign pad_ui_oe_n = { N_I{k_one} };
+
+		// Output signal
+	assign pad_ui_out  = { N_I{k_one} };
+
 
 	// Controller
 	// ----------
