@@ -18,7 +18,7 @@ module tt_prim_diode (
 				.VPWR (1'b1),
 				.VGND (1'b0),
 `endif
-				.DIODE (diode),
-			)
+				.DIODE (diode)
+			);
 
 endmodule // tt_prim_diode
