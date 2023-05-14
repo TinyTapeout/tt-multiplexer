@@ -147,32 +147,32 @@ module tt_top #(
 	);
 
 
-	// Rows
-	// ----
+	// Branches
+	// --------
 
 	genvar i, j;
 
 	generate
-		for (i=0; i<G_Y/2; i=i+1)
-		begin : row
+		for (i=0; i<G_Y; i=i+1)
+		begin : branch
 			// Signals
-			wire [(U_OW*G_X*2)-1:0] l_um_ow;
-			wire [(U_IW*G_X*2)-1:0] l_um_iw;
-			wire [     (G_X*2)-1:0] l_um_ena;
-			wire [     (G_X*2)-1:0] l_um_k_zero;
+			wire [(U_OW*G_X)-1:0] l_um_ow;
+			wire [(U_IW*G_X)-1:0] l_um_iw;
+			wire [      G_X -1:0] l_um_ena;
+			wire [      G_X -1:0] l_um_k_zero;
 
-			wire [3:0] l_addr;
+			wire [4:0] l_addr;
 			wire       l_k_one;
 			wire       l_k_zero;
 
-			// Row muxer
+			// Branch Mux
 			(* blackbox *)
-			tt_row_mux #(
-				.G_X  (G_X),
+			tt_mux #(
+				.N_UM (G_X),
 				.N_I  (N_I),
 				.N_O  (N_O),
 				.N_IO (N_IO)
-			) row_I (
+			) mux_I (
 				.um_ow     (l_um_ow),
 				.um_iw     (l_um_iw),
 				.um_ena    (l_um_ena),
@@ -184,20 +184,20 @@ module tt_top #(
 				.k_zero    (l_k_zero)
 			);
 
-			// Row address tie-offs
-			for (j=0; j<4; j=j+1)
+			// Branch address tie-offs
+			for (j=0; j<5; j=j+1)
 				if (i & (1<<j))
 					assign l_addr[j] = l_k_one;
 				else
 					assign l_addr[j] = l_k_zero;
 
-			// Row User modules
-			for (j=0; j<G_X; j=j+1)
+			// Branch User modules
+			for (j=0; j<G_X/2; j=j+1)
 			begin : col_um
 				// Bottom user module
 				tt_user_module #(
-					.POS_X (j),
-					.POS_Y (i*2+0),
+					.POS_X (j+(i&1)*16),
+					.POS_Y (i^0),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
@@ -210,8 +210,8 @@ module tt_top #(
 
 				// Top user module
 				tt_user_module #(
-					.POS_X (j),
-					.POS_Y (i*2+1),
+					.POS_X (j+(i&1)*16),
+					.POS_Y (i^1),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)

@@ -1,5 +1,5 @@
 /*
- * tt_row_mux.v
+ * tt_mux.v
  *
  * Row mux for two rows of user modules (Top/Bottom)
  *
@@ -8,8 +8,8 @@
 
 `default_nettype none
 
-module tt_row_mux #(
-	parameter integer G_X  = 16,
+module tt_mux #(
+	parameter integer N_UM = 8,
 	parameter integer N_IO = 8,
 	parameter integer N_O  = 8,
 	parameter integer N_I  = 10,
@@ -22,17 +22,17 @@ module tt_row_mux #(
     parameter integer U_IW = N_I + N_IO
 )(
 	// Connections to user modules
-	input  wire [(U_OW*G_X*2)-1:0] um_ow,
-	output wire [(U_IW*G_X*2)-1:0] um_iw,
-	output wire [     (G_X*2)-1:0] um_ena,
-	output wire [     (G_X*2)-1:0] um_k_zero,
+	input  wire [(U_OW*N_UM)-1:0] um_ow,
+	output wire [(U_IW*N_UM)-1:0] um_iw,
+	output wire [      N_UM -1:0] um_ena,
+	output wire [      N_UM -1:0] um_k_zero,
 
 	// Vertical spine connection
 	output wire [S_OW-1:0] spine_ow,
 	input  wire [S_IW-1:0] spine_iw,
 
 	// Config straps
-	input  wire [3:0] addr,
+	input  wire [4:0] addr,
 
 	// Tie-offs
 	output wire k_zero,
@@ -58,17 +58,17 @@ module tt_row_mux #(
 	wire [U_OW-1:0] bus_ow;
 	wire [U_IW-1:0] bus_iw;
 	wire            bus_gm;
-	wire      [5:0] bus_sel;
+	wire      [4:0] bus_sel;
 	wire            bus_ena;
 	wire            bus_gl;
 
 	// User Module connections as arrays
-	wire [U_OW-1:0] um_owa[0:(G_X*2)-1];
-	wire [U_IW-1:0] um_iwa[0:(G_X*2)-1];
+	wire [U_OW-1:0] um_owa[0:N_UM-1];
+	wire [U_IW-1:0] um_iwa[0:N_UM-1];
 
 	// Decoding
-	wire            row_sel;
-	wire            row_sel_tbe;
+	wire            branch_sel;
+	wire            branch_sel_tbe;
 
 
 	// Spine mapping
@@ -89,18 +89,18 @@ module tt_row_mux #(
 	// Row decoding & Bus
 	// ------------------
 
-	// Decode row address
-	assign row_sel = (si_sel[9:6] == addr);
+	// Decode branch address
+	assign branch_sel = (si_sel[9:6] == addr[4:1]) & (si_sel[4] == addr[0]);
 
 	tt_prim_tbuf_pol tbuf_row_ena_I (
-		.t  (row_sel),
-		.tx (row_sel_tbe)
+		.t  (branch_sel),
+		.tx (branch_sel_tbe)
 	);
 
 	// Spine drive TBUF for Outward
 	tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
 		.a  (bus_ow),
-		.tx (row_sel_tbe),
+		.tx (branch_sel_tbe),
 		.z  (so_usr)
 	);
 
@@ -109,15 +109,15 @@ module tt_row_mux #(
 		.HIGH_DRIVE(1)
 	) zbuf_bus_iw_I[U_IW-1:0] (
 		.a  (si_usr),
-		.e  (row_sel),
+		.e  (branch_sel),
 		.z  (bus_iw)
 	);
 
 	tt_prim_zbuf #(
 		.HIGH_DRIVE(1)
-	) zbuf_bus_sel_I[5:0] (
-		.a  (si_sel[5:0]),
-		.e  (row_sel),
+	) zbuf_bus_sel_I[4:0] (
+		.a  ({si_sel[3:0], si_sel[5]}),
+		.e  (branch_sel),
 		.z  (bus_sel)
 	);
 
@@ -125,7 +125,7 @@ module tt_row_mux #(
 		.HIGH_DRIVE(1)
 	) zbuf_bus_ena_I (
 		.a  (si_ena),
-		.e  (row_sel),
+		.e  (branch_sel),
 		.z  (bus_ena)
 	);
 
@@ -140,17 +140,17 @@ module tt_row_mux #(
 
 	genvar i;
 	generate
-		for (i=0; i<2*G_X; i=i+1)
+		for (i=0; i<N_UM; i=i+1)
 		begin : map
 			assign um_owa[i] = um_ow[U_OW*i+:U_OW];
 			assign um_iw[U_IW*i+:U_IW] = um_iwa[i];
 		end
 	endgenerate
 
-	wire [(G_X/2)-1:0] col_sel_h;
+	wire [(N_UM/2)-1:0] col_sel_h;
 
 	generate
-		for (i=0; i<G_X; i=i+1)
+		for (i=0; i<N_UM/2; i=i+1)
 		begin : col
 			// Signals
 			wire [1:0] l_ena;
@@ -163,7 +163,7 @@ module tt_row_mux #(
 				wire            l_tbe;
 
 				// Decoder
-				assign col_sel_h[i>>1] = bus_sel[4:1] == (i >> 1);
+				assign col_sel_h[i>>1] = bus_sel[4:2] == (i >> 1);
 
 				// Mux
 				tt_prim_mux4 mux4_I[U_OW-1:0] (
@@ -189,7 +189,7 @@ module tt_row_mux #(
 			end
 
 			// Bottom
-			assign l_ena[0] = bus_ena & col_sel_h[i>>1] & (bus_sel[0] == (i & 1)) & (bus_sel[5] == 1'b0);
+			assign l_ena[0] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b0);
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
@@ -214,7 +214,7 @@ module tt_row_mux #(
 			assign um_k_zero [i*2+0]  = 1'b0;
 
 			// Top
-			assign l_ena[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[0] == (i & 1)) & (bus_sel[5] == 1'b1);
+			assign l_ena[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b1);
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
@@ -248,4 +248,4 @@ module tt_row_mux #(
 	assign k_one  = 1'b1;
 	assign k_zero = 1'b0;
 
-endmodule // tt_row_mux
+endmodule // tt_mux

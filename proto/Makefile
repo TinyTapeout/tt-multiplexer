@@ -3,7 +3,7 @@ IVERILOG ?= iverilog
 RTL_SRC=\
 	tt_top.v \
 	tt_ctrl.v \
-	tt_row_mux.v \
+	tt_mux.v \
 	tt_user_module.v \
 	tt_um_example.v \
 	tt_um_test.v \
