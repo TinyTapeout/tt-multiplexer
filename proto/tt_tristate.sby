@@ -1,5 +1,6 @@
 [options]
 mode prove
+multiclock on
 depth 5
 
 [engines]
@@ -10,6 +11,7 @@ read -sv -noblackbox tt_top.v tt_mux.v tt_user_module.v tt_um_test.v tt_um_examp
 
 prep -top tt_top
 
+# formal proof that not more than 1 tristate is driving
 flatten; tribuf -formal
 
 [files]

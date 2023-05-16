@@ -22,26 +22,13 @@ module tt_formal;
 	wire        k_zero;
 	wire        k_one;
 
-	// Control
-	wire        ctrl_sel_rst_n;
-	reg         ctrl_sel_inc;
-	reg         ctrl_ena;
-
-	reg [3:0]   um_rst_cnt;
-
-
-	// Clocks
-	reg  clk_a = 1'b0;
-	reg  clk_b = 1'b0;
-	reg  rst_n = 1'b0;
-
 
 	// DUT
 	// ---
 
 	tt_top #(
 		.N_PADS (38),
-		.G_X    (16),
+        .G_X    (16),
 		.G_Y    (24),
 		.N_IO   (8),
 		.N_O    (8),
@@ -55,32 +42,8 @@ module tt_formal;
 		.k_one       (k_one)
 	);
 
-	// DUT connections
-	// ---------------
-
-	assign user_clock2 = clk_b;
-
-	assign io_in[36] = ctrl_sel_rst_n;
-	assign io_in[34] = ctrl_sel_inc;
-	assign io_in[32] = ctrl_ena;
-
-	assign io_in[6] = io_out[5];	// Loop back clk_out to clk_in
-	assign io_in[7] = um_rst_cnt[3];
-	assign io_in[8] = 1'b1;
-
-
-	always @(negedge io_out[5])
-			if (~ctrl_ena)
-				um_rst_cnt <= 0;
-			else if (~um_rst_cnt[3])
-				um_rst_cnt <= um_rst_cnt + 1;
-
-
-	// Core Selection
-	// --------------
-    // do nothing, allow solver to pick
-
-	assign ctrl_sel_rst_n = rst_n;
+    // loop back outs to ins
+    assign io_in[15:8] = io_out[23:16];
 
 
 endmodule // tt_formal

@@ -19,8 +19,14 @@ module tt_um_formal (
 	input  wire       rst_n
 );
     
-    assign uo_out = $anyseq;
-    assign uio_out = $anyseq;
-    assign uio_oe = $anyseq;
+    rand reg [7:0] anyseq1; assign uo_out  = anyseq1;
+    
+    always @(*) begin
+        if(ena) begin
+            assert(ui_in == uo_out);
+        end else begin
+            assert(ui_in == 0);
+        end
+    end
 
 endmodule // tt_um_formal
