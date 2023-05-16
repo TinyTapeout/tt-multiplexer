@@ -1,0 +1,62 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Tue May 16 12:16:01 2023
+[*]
+[dumpfile] "/home/matt/work/asic-workshop/tinytapeout/tt03-multiplexer/proto/tt_top_tb.vcd"
+[dumpfile_mtime] "Tue May 16 11:44:17 2023"
+[dumpfile_size] 57864378
+[savefile] "/home/matt/work/asic-workshop/tinytapeout/tt03-multiplexer/proto/test.gtkw"
+[timestart] 0
+[size] 2035 1176
+[pos] 300 122
+*-24.299999 17310000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tt_top_tb.
+[treeopen] tt_top_tb.dut_I.
+[treeopen] tt_top_tb.dut_I.branch[0].col_um[0].
+[treeopen] tt_top_tb.dut_I.branch[0].col_um[0].um_bot_I.
+[treeopen] tt_top_tb.dut_I.branch[0].col_um[0].um_bot_I.genblk1.
+[treeopen] tt_top_tb.dut_I.branch[0].mux_I.
+[treeopen] tt_top_tb.dut_I.branch[4].
+[treeopen] tt_top_tb.dut_I.branch[4].col_um[7].
+[treeopen] tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.
+[treeopen] tt_top_tb.dut_I.branch[7].
+[treeopen] tt_top_tb.dut_I.branch[7].col_um[5].
+[treeopen] tt_top_tb.dut_I.branch[7].col_um[6].
+[treeopen] tt_top_tb.dut_I.branch[7].col_um[7].
+[treeopen] tt_top_tb.dut_I.branch[7].mux_I.
+[treeopen] tt_top_tb.dut_I.branch[7].mux_I.col[7].
+[treeopen] tt_top_tb.dut_I.ctrl_I.
+[sst_width] 439
+[signals_width] 498
+[sst_expanded] 1
+[sst_vpaned_height] 718
+@800200
+-tb
+@28
+tt_top_tb.ctrl_sel_inc
+@22
+tt_top_tb.cur_core[9:0]
+@28
+tt_top_tb.clk_a
+tt_top_tb.clk_b
+@420
+tt_top_tb.POS_X
+tt_top_tb.POS_Y
+@1000200
+-tb
+@800201
+-user module x = 7, y = 5
+@29
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.clk
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.ena
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.rst_n
+@23
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.ui_in[7:0]
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uio_in[7:0]
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uio_oe[7:0]
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uio_out[7:0]
+tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uo_out[7:0]
+@1000201
+-user module x = 7, y = 5
+[pattern_trace] 1
+[pattern_trace] 0
