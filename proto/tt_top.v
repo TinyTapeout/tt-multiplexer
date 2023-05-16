@@ -197,7 +197,7 @@ module tt_top #(
 				// Bottom user module
 				tt_user_module #(
 					.POS_X (j+(i&1)*16),
-					.POS_Y (i^0),
+					.POS_Y ((i>>1)*2+0),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
@@ -211,7 +211,7 @@ module tt_top #(
 				// Top user module
 				tt_user_module #(
 					.POS_X (j+(i&1)*16),
-					.POS_Y (i^1),
+					.POS_Y ((i>>1)*2+1),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
