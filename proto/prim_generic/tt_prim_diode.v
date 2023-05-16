@@ -9,7 +9,7 @@
 
 `default_nettype none
 
-module tt_prim_diode (
+(* noblackbox *) module tt_prim_diode (
 	inout  wire diode
 );
 

@@ -40,5 +40,13 @@ tt_top_tb.vcd:
 tt_user_module.v: tt_user_module.v.mak tt_user_module.yaml 
 	./gen_tt_user_module.py
 
+formal_tristate:
+	sby -f tt_tristate.sby
+
+formal_connectivity:
+	./gen_formal.py
+	./gen_tt_user_module.py
+	sby -f tt_connectivity.sby
+
 clean:
 	rm -f tt_top_tb *.vcd tt_user_module.v

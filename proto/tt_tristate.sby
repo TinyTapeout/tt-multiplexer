@@ -1,0 +1,31 @@
+[options]
+mode prove
+multiclock on
+depth 5
+
+[engines]
+smtbmc
+
+[script]
+read -sv -noblackbox tt_top.v tt_mux.v tt_user_module.v tt_um_test.v tt_um_example.v tt_ctrl.v tt_prim_buf.v tt_prim_dfrbp.v tt_prim_diode.v tt_prim_inv.v tt_prim_mux4.v tt_prim_tbuf_pol.v tt_prim_tbuf.v tt_prim_zbuf.v
+
+prep -top tt_top
+
+# formal proof that not more than 1 tristate is driving
+flatten; tribuf -formal
+
+[files]
+tt_top.v
+tt_mux.v
+tt_user_module.v
+tt_ctrl.v
+tt_um_test.v
+tt_um_example.v
+prim_generic/tt_prim_buf.v
+prim_generic/tt_prim_dfrbp.v
+prim_generic/tt_prim_diode.v
+prim_generic/tt_prim_inv.v
+prim_generic/tt_prim_mux4.v
+prim_generic/tt_prim_tbuf_pol.v
+prim_generic/tt_prim_tbuf.v
+prim_generic/tt_prim_zbuf.v
