@@ -17,11 +17,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
     - run: | 
         yosys --version
+    
+    - name: python requirements
+      run: pip3 install -r proto/requirements.txt
 
     # formal
     - name: formal tristate
       run: |
         cd proto
+        make tt_user_module.v
         make formal_tristate 
 
     - name: formal tristate

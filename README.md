@@ -1,3 +1,5 @@
+[![formal](https://github.com/TinyTapeout/tt-multiplexer/actions/workflows/formal.yaml/badge.svg)](https://github.com/TinyTapeout/tt-multiplexer/actions/workflows/formal.yaml)
+
 # Tiny Tapeout multiplexer plans
 
 TinyTapeout is an educational project that makes it easier and cheaper than ever to get 
