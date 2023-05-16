@@ -8,7 +8,7 @@ smtbmc
 
 [script]
 read -define FORMAL
-read -sv tt_top.v tt_mux.v tt_user_module.v tt_um_test.v tt_um_example.v tt_ctrl.v tt_prim_buf.v tt_prim_dfrbp.v tt_prim_diode.v tt_prim_inv.v tt_prim_mux4.v tt_prim_tbuf_pol.v tt_prim_tbuf.v tt_prim_zbuf.v
+read -sv -noblackbox tt_top.v tt_mux.v tt_user_module.v tt_um_test.v tt_um_example.v tt_ctrl.v tt_prim_buf.v tt_prim_dfrbp.v tt_prim_diode.v tt_prim_inv.v tt_prim_mux4.v tt_prim_tbuf_pol.v tt_prim_tbuf.v tt_prim_zbuf.v
 
 prep -top tt_top
 
