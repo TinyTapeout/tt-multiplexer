@@ -41,10 +41,12 @@ tt_user_module.v: tt_user_module.v.mak tt_user_module.yaml
 	./gen_tt_user_module.py
 
 formal_tristate:
+	./gen_formal.py --module test
+	./gen_tt_user_module.py
 	sby -f tt_tristate.sby
 
 formal_connectivity:
-	./gen_formal.py
+	./gen_formal.py --module formal
 	./gen_tt_user_module.py
 	sby -f tt_connectivity.sby
 

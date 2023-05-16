@@ -25,7 +25,6 @@ jobs:
     - name: formal tristate
       run: |
         cd proto
-        make tt_user_module.v
         make formal_tristate 
 
     - name: formal tristate

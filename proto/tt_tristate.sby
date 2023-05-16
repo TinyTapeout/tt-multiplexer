@@ -1,7 +1,7 @@
 [options]
-mode prove
 multiclock on
-depth 5
+mode prove
+depth 10
 
 [engines]
 smtbmc
