@@ -19,13 +19,26 @@ module tt_um_formal (
 	input  wire       rst_n
 );
     
-    rand reg [7:0] anyseq1; assign uo_out  = anyseq1;
+    // let solver drive the outputs
+    rand reg [7:0] anyseq1; assign uo_out   = anyseq1;
+    // bidirectional outputs
+    rand reg [7:0] anyseq2; assign uio_out  = anyseq2;
+    // bidirectional enables
+    rand reg [7:0] anyseq3; assign uio_oe   = anyseq3;
     
     always @(*) begin
         if(ena) begin
+            // if design is enabled, looped back inputs must = outputs
             assert(ui_in == uo_out);
+            // bidirectional outputs, only should match if oe is set
+            assert(uio_in == (uio_out & uio_oe));
         end else begin
+            // otherwise inputs must be 0
             assert(ui_in == 0);
+            // design is in reset 
+            assert(rst_n == 0);
+            // no clock
+            assert(clk == 0);
         end
     end
 

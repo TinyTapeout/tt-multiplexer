@@ -42,9 +42,23 @@ module tt_formal;
 		.k_one       (k_one)
 	);
 
-    // loop back outs to ins
+    /* 
+    IO in/out/oeb is split like this:
+    io_oeb is 'output enable bar': low means a pin is an output
+
+    37:32 control
+    31:24 user in/out
+    23:16 user out
+    15:06 user in
+    05:04 clock
+
+    */
+
+    // loop back dedicated outs to ins
     assign io_in[15:8] = io_out[23:16];
+
+    // loop back bidirectional outs to ins, depending on output enable
+    assign io_in[31:24] = io_out[31:24] & (~io_oeb[31:24]);
 
 
 endmodule // tt_formal
-
