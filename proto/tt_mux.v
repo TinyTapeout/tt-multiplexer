@@ -15,11 +15,11 @@ module tt_mux #(
 	parameter integer N_I  = 10,
 
 	// auto-set
-    parameter integer S_OW = N_O + N_IO * 2 + 2,
-    parameter integer S_IW = N_I + N_IO + 10 + 1 + 2,
+	parameter integer S_OW = N_O + N_IO * 2 + 2,
+	parameter integer S_IW = N_I + N_IO + 10 + 1 + 2,
 
-    parameter integer U_OW = N_O + N_IO * 2,
-    parameter integer U_IW = N_I + N_IO
+	parameter integer U_OW = N_O + N_IO * 2,
+	parameter integer U_IW = N_I + N_IO
 )(
 	// Connections to user modules
 	input  wire [(U_OW*N_UM)-1:0] um_ow,
