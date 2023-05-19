@@ -17,9 +17,9 @@ module tt_top #(
 	parameter integer N_I  = 10
 )(
 	// IOs
-    input  wire [N_PADS-1:0] io_in,
-    output wire [N_PADS-1:0] io_out,
-    output wire [N_PADS-1:0] io_oeb,
+	input  wire [N_PADS-1:0] io_in,
+	output wire [N_PADS-1:0] io_out,
+	output wire [N_PADS-1:0] io_oeb,
 
 	// From caravel
 	input  wire user_clock2,
