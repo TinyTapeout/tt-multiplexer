@@ -45,8 +45,8 @@ module tt_user_module #(
 	generate
 % for (py,px), uid in modules.items():
 		if ((POS_Y == ${py}) && (POS_X == ${px}))
-		begin
-			tt_um_${uid} tt_um_${py}_${px}_I (
+		begin : block_${py}_${px}
+			tt_um_${uid} tt_um_I (
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),
@@ -57,9 +57,14 @@ module tt_user_module #(
 				.rst_n   (rst_n)
 			);
 		end
-		else
 %endfor
 
+% for (py,px), uid in modules.items():
+		if ((POS_Y == ${py}) && (POS_X == ${px}))
+		begin
+		end
+		else
+%endfor
 		begin
 			// Tie-off
 			assign ow = { N_OW{k_zero} };
