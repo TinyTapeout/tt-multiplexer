@@ -54,13 +54,11 @@ module tt_mux #(
 	wire            si_gl;
 
 	// Horizontal distribution/collection bus
-	wire            bus_gh;
+	wire      [3:0] bus_gd;
 	wire [U_OW-1:0] bus_ow;
 	wire [U_IW-1:0] bus_iw;
-	wire            bus_gm;
 	wire      [4:0] bus_sel;
 	wire            bus_ena;
-	wire            bus_gl;
 
 	// User Module connections as arrays
 	wire [U_OW-1:0] um_owa[0:N_UM-1];
@@ -130,9 +128,7 @@ module tt_mux #(
 	);
 
 	// Guards
-	assign bus_gh  = 1'b0;
-	assign bus_gm  = 1'b0;
-	assign bus_gl  = 1'b0;
+	assign bus_gd  = 4'b0;
 
 
 	// Columns
