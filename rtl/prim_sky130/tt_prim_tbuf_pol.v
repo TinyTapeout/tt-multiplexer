@@ -8,7 +8,8 @@
  * This converts positive enable polarity to whatever the
  * tt_prim_tbuf expects.
  *
- * Author: Sylvain Munaut <tnt@246tNt.com>
+ * Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none

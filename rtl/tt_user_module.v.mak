@@ -6,7 +6,8 @@
  *
  * Also maps signals to more "human" names
  *
- * Author: Sylvain Munaut <tnt@246tNt.com>
+ * Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none

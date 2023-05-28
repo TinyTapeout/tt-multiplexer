@@ -3,7 +3,8 @@
  *
  * Formal connectivity check
  *
- * Author: Matt Venn <matt@mattvenn.net>
+ * Copyright (c) 2023 Matt Venn <matt@mattvenn.net>
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 `default_nettype none
