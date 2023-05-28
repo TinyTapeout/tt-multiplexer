@@ -1,0 +1,5 @@
+tt_user_module_*.yaml
+tt_user_module_*.v
+tt_connectivity
+tt_tristate
+*.vcd

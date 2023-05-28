@@ -19,15 +19,13 @@ jobs:
         yosys --version
     
     - name: python requirements
-      run: pip3 install -r proto/requirements.txt
+      run: pip3 install -r py/requirements.txt
 
     # formal
     - name: formal tristate
       run: |
-        cd proto
         make formal_tristate 
 
     - name: formal tristate
       run: |
-        cd proto
         make formal_connectivity

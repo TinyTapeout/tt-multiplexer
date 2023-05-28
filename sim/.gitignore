@@ -1,5 +1,3 @@
 tt_user_module.v
 *_tb
 *.vcd
-tt_connectivity
-tt_tristate
