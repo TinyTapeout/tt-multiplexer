@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+#
+# Generate a dummy config for the format tests filling
+# all slots with the same module
+#
+# Copyright (c) 2023 Matt Venn <matt@mattvenn.net>
+# SPDX-License-Identifier: Apache-2.0
+#
+
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--module")

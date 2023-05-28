@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+#
+# Generate the tt_user_module.v file from the template and
+# configuration file for which module is in which slot
+#
+# Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+
 import sys
 
 from mako.template import Template
