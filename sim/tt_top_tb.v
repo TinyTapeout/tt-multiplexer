@@ -1,7 +1,7 @@
 /*
  * tt_top_tb.v
  *
- * Template for user modules
+ * Top Level testbench
  *
  * Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
  * SPDX-License-Identifier: Apache-2.0
