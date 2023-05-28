@@ -44,10 +44,10 @@ module tt_user_module #(
 	assign ow = { uio_oe, uio_out, uo_out };
 
 	generate
-% for (py,px), uid in modules.items():
+% for (px,py), mod in grid.items():
 		if ((POS_Y == ${py}) && (POS_X == ${px}))
 		begin : block_${py}_${px}
-			tt_um_${uid} tt_um_I (
+			tt_um_${mod.name} tt_um_I (
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),
@@ -60,7 +60,7 @@ module tt_user_module #(
 		end
 %endfor
 
-% for (py,px), uid in modules.items():
+% for (px,py) in grid.keys():
 		if ((POS_Y == ${py}) && (POS_X == ${px}))
 		begin
 		end

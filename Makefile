@@ -51,17 +51,17 @@ sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(PRIM_SRC)
 sim/tt_top_tb.vcd: sim/tt_top_tb
 	cd sim && ./tt_top_tb
 
-sim/tt_user_module.v: rtl/tt_user_module.v.mak sim/tt_user_module.yaml
+sim/tt_user_module.v: rtl/tt_user_module.v.mak sim/modules_sim.yaml
 	./py/gen_tt_user_module.py $^ > $@
 
 # Formal targets
-formal/tt_user_module_tristate.yaml:
+formal/modules_tristate.yaml:
 	./py/gen_formal.py --module test > $@
 
-formal/tt_user_module_connectivity.yaml:
+formal/modules_connectivity.yaml:
 	./py/gen_formal.py --module formal > $@
 
-formal/tt_user_module_%.v: rtl/tt_user_module.v.mak formal/tt_user_module_%.yaml
+formal/tt_user_module_%.v: rtl/tt_user_module.v.mak formal/modules_%.yaml
 	./py/gen_tt_user_module.py $^ > $@
 
 formal_%: formal/tt_user_module_%.v
@@ -73,7 +73,7 @@ clean:
 		sim/tt_top_tb \
 		sim/*.vcd \
 		sim/tt_user_module.v \
-		formal/tt_user_module_*.{yaml,v} \
+		formal/modules_*.{yaml,v} \
 		formal/*.vcd \
 		$(NULL)
 	rm -Rf formal/tt_tristate

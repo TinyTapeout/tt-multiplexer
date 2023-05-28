@@ -11,18 +11,18 @@
 import sys
 
 from mako.template import Template
-import yaml
+
+import tt
+
 
 def main(argv0, tmpl_fn, data_fn):
 
-	with open(data_fn,'r') as fh:
-		data = yaml.load(fh, Loader=yaml.FullLoader)
-
-	to_pos = lambda s: tuple([int(v) for v in s.split('.')])
-	data = dict([(to_pos(k), v) for k,v in data.items()])
+	cfg_fn = tt.TinyTapeout.get_config_file()
+	cfg    = tt.ConfigNode.from_yaml(open(cfg_fn, 'r'))
+	placer = tt.ModulePlacer(cfg, data_fn)
 
 	template = Template(filename=tmpl_fn)
-	output = template.render(modules=data)
+	output = template.render(grid=placer.grid)
 
 	print(output)
 

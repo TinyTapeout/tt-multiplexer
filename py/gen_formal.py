@@ -5,6 +5,7 @@
 # all slots with the same module
 #
 # Copyright (c) 2023 Matt Venn <matt@mattvenn.net>
+# Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -13,6 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--module")
 args = parser.parse_args()
 
+print("modules:")
 for x in range(16):
     for y in range(24):
-        print(f'"{x}.{y}": "{args.module}"\n')
+        print(f'  - name: "{args.module}"')
