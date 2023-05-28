@@ -8,14 +8,15 @@
  */
 
 `default_nettype none
+`include "tt_defs.vh"
 
 module tt_top #(
 	parameter integer N_PADS = 38,
-	parameter integer G_X  = 16,
-	parameter integer G_Y  = 24,
-	parameter integer N_IO = 8,
-	parameter integer N_O  = 8,
-	parameter integer N_I  = 10
+	parameter integer G_X  = `TT_G_X,
+	parameter integer G_Y  = `TT_G_Y,
+	parameter integer N_IO = `TT_N_IO,
+	parameter integer N_O  = `TT_N_O,
+	parameter integer N_I  = `TT_N_I
 )(
 	// IOs
 	input  wire [N_PADS-1:0] io_in,

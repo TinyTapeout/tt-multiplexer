@@ -15,6 +15,7 @@ prep -top tt_formal; flatten; tribuf -logic
 
 [files]
 tt_formal.v
+../rtl/tt_defs.vh
 ../rtl/tt_top.v
 ../rtl/tt_mux.v
 ../rtl/tt_ctrl.v

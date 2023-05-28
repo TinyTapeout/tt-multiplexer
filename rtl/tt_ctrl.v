@@ -8,11 +8,12 @@
  */
 
 `default_nettype none
+`include "tt_defs.vh"
 
 module tt_ctrl #(
-	parameter integer N_IO =  8,
-	parameter integer N_O  =  8,
-	parameter integer N_I  = 10,
+	parameter integer N_IO = `TT_N_IO,
+	parameter integer N_O  = `TT_N_O,
+	parameter integer N_I  = `TT_N_I,
 
 	// auto-set
 	parameter integer S_OW = N_O + N_IO * 2 + 2,

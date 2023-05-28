@@ -46,7 +46,7 @@ endif
 sim: sim/tt_top_tb.vcd
 
 sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(PRIM_SRC)
-	$(IVERILOG) $(DEFS) -Wall -Wno-timescale -o $@ $^
+	$(IVERILOG) $(DEFS) -Wall -Wno-timescale -Irtl -o $@ $^
 
 sim/tt_top_tb.vcd: sim/tt_top_tb
 	cd sim && ./tt_top_tb
