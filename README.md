@@ -12,10 +12,10 @@ for more details.
 TT04 and beyond will use a different access method that will be faster and provide more IO.
 
 
-## Draft spec - request for comments
+## Specifications
 
-* [grid layout image](tt_ios_grid.pdf)
-* [spec](tt_ios_spec.md)
+* [grid layout image](doc/tt_ios_grid.pdf)
+* [spec](doc/tt_ios_spec.md)
 
 ## Meetings
 
