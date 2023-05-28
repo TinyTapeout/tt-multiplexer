@@ -76,3 +76,5 @@ clean:
 		formal/tt_user_module_*.{yaml,v} \
 		formal/*.vcd \
 		$(NULL)
+	rm -Rf formal/tt_tristate
+	rm -Rf formal/tt_connectivity
