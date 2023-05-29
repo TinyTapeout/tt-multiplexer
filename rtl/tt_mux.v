@@ -77,8 +77,13 @@ module tt_mux #(
 	assign spine_ow = { so_gh, so_usr, so_gl };
 	assign { si_gh, si_usr, si_sel, si_ena, si_gl } = spine_iw;
 
-	assign so_gh = 1'b0;
-	assign so_gl = 1'b0;
+	// Guards
+	tt_prim_tie #(
+		.TIE_LO(1),
+		.TIE_HI(0)
+	) tie_spine_guard_I[1:0] (
+		.lo({so_gh, so_gl})
+	);
 
 	// Diodes for inputs from spine
 	tt_prim_diode diode_spine_I[S_IW-1:0] (
@@ -130,7 +135,12 @@ module tt_mux #(
 	);
 
 	// Guards
-	assign bus_gd  = 4'b0;
+	tt_prim_tie #(
+		.TIE_LO(1),
+		.TIE_HI(0)
+	) tie_bus_guard_I[3:0] (
+		.lo(bus_gd)
+	);
 
 
 	// Columns

@@ -97,8 +97,12 @@ module tt_ctrl #(
 
 	assign spine_iw = { si_gh, si_uio_in, si_ui_in, si_sel, si_ena, si_gl };
 
-	assign si_gh     = 1'b0;
-	assign si_gl     = 1'b0;
+	tt_prim_tie #(
+		.TIE_LO(1),
+		.TIE_HI(0)
+	) tie_guard_I[1:0] (
+		.lo({si_gh, si_gl})
+	);
 
 	tt_prim_diode pad_uio_in_diode_I[N_IO-1:0] (
 		.diode (pad_uio_in)
