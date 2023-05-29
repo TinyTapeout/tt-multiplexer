@@ -331,6 +331,7 @@ class Layout:
 		# Main object
 		self.glb = glb = ConfigNode()
 
+		glb.margin = ConfigNode()
 		glb.top    = ConfigNode()
 		glb.branch = ConfigNode()
 		glb.block  = ConfigNode()
@@ -346,6 +347,10 @@ class Layout:
 			'ow': self.cfg.tt.uio.o + self.cfg.tt.uio.io * 2,
 			'iw': self.cfg.tt.uio.i + self.cfg.tt.uio.io,
 		})
+
+		# Margins
+		glb.margin.x = SDim.xdim(self.cfg, self.cfg.tt.margin.x)
+		glb.margin.y = SDim.ydim(self.cfg, self.cfg.tt.margin.y)
 
 		# Horizontal layout
 			# Total available space in 'sites'
@@ -367,12 +372,12 @@ class Layout:
 		tmp_sites = (h_sites - rsvd_sites) // self.cfg.tt.grid.x
 
 			# Final X dimensions
-		glb.block.width  = SDim.xdim(self.cfg, tmp_sites - self.cfg.tt.margin.x)
+		glb.block.width  = SDim.xdim(self.cfg, tmp_sites - glb.margin.x.sites)
 		glb.block.pitch  = SDim.xdim(self.cfg, tmp_sites)
-		glb.mux.width    = SDim.xdim(self.cfg, tmp_sites * (self.cfg.tt.grid.x // 2) - self.cfg.tt.margin.x)
+		glb.mux.width    = SDim.xdim(self.cfg, tmp_sites * (self.cfg.tt.grid.x // 2) - glb.margin.x.sites)
 		glb.branch.width = glb.mux.width
 		glb.ctrl.width   = SDim.xdim(self.cfg,  rsvd_sites)
-		glb.top.width    = SDim.xdim(self.cfg,  rsvd_sites + 2 * (glb.mux.width.sites + self.cfg.tt.margin.x))
+		glb.top.width    = SDim.xdim(self.cfg,  rsvd_sites + 2 * (glb.mux.width.sites + glb.margin.x.sites))
 
 		# Vertical layout
 			# Total available space in 'sites'
@@ -383,7 +388,7 @@ class Layout:
 		HM_MUX = 1
 		HM_BLK = 2
 
-		tmp_sites = (v_sites // (self.cfg.tt.grid.y // 2)) - (3 * self.cfg.tt.margin.y)
+		tmp_sites = (v_sites // (self.cfg.tt.grid.y // 2)) - (3 * glb.margin.y.sites)
 		tmp_sites = tmp_sites // (2 * HM_BLK + HM_MUX)
 
 			# Final dimensions
@@ -392,14 +397,14 @@ class Layout:
 		glb.branch.pitch  = SDim.ydim(self.cfg, (
 								(glb.block.height.sites * 2) +
 								(glb.mux.height.sites    ) +
-								(self.cfg.tt.margin.y  * 3)
+								(glb.margin.y.sites     * 3)
 							))
-		glb.branch.height = SDim.ydim(self.cfg, glb.branch.pitch.sites - self.cfg.tt.margin.y)
+		glb.branch.height = SDim.ydim(self.cfg, glb.branch.pitch.sites - glb.margin.y.sites)
 		glb.ctrl.height = SDim.ydim(self.cfg, (
 								(glb.block.height.sites * 2) +
-								(self.cfg.tt.margin.y)
+								(glb.margin.y.sites)
 							))
-		glb.top.height    = SDim.ydim(self.cfg, glb.branch.pitch.sites * (self.cfg.tt.grid.y // 2) - self.cfg.tt.margin.y)
+		glb.top.height    = SDim.ydim(self.cfg, glb.branch.pitch.sites * (self.cfg.tt.grid.y // 2) - glb.margin.y.sites)
 
 			# Check mux is high enough for horizontal spine
 		hspine_tracks = self.user.iw + self.user.ow + 6 + 1 + 3
@@ -857,12 +862,12 @@ class Block(LayoutElement):
 		# Compute module actual width / height
 		width = (
 			mw * layout.glb.block.width.units +
-			(mw - 1) * layout.cfg.pdk.site.width * layout.cfg.tt.margin.x
+			(mw - 1) * layout.glb.margin.x.units
 		)
 
 		height = (
 			mh * layout.glb.block.height.units +
-			(mh - 1) * layout.cfg.pdk.site.height * layout.cfg.tt.margin.y
+			(mh - 1) * layout.glb.margin.y.units
 		)
 
 		# Set module name
@@ -946,8 +951,7 @@ class Branch(LayoutElement):
 		self.mux = mux = Mux(layout)
 
 		mux_x = 0
-		mux_y = layout.glb.block.height.units + \
-		        (layout.cfg.pdk.site.height * layout.cfg.tt.margin.y)
+		mux_y = layout.glb.block.height.units + layout.glb.margin.y.units
 
 		self.add_child(mux, Point(0, mux_y), 'N', name='mux_I')
 
@@ -1067,13 +1071,9 @@ class Top(LayoutElement):
 		# Create Controller
 		self.ctrl = ctrl = Controller(layout)
 
-		ctrl_x = layout.glb.branch.width.units + \
-		        (layout.cfg.pdk.site.width * layout.cfg.tt.margin.x)
+		ctrl_x = layout.glb.branch.width.units + layout.glb.margin.x.units
 		ctrl_y = (layout.cfg.tt.grid.y // 4) * layout.glb.branch.pitch.units - \
-			(
-				layout.glb.block.height.units +
-				(layout.cfg.pdk.site.height * layout.cfg.tt.margin.y)
-			)
+			( layout.glb.block.height.units + layout.glb.margin.y.units )
 
 		self.add_child(ctrl, Point(ctrl_x, ctrl_y), 'N', name='ctrl_I')
 
