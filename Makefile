@@ -16,6 +16,10 @@ RTL_SRC=$(addprefix rtl/, \
 	tt_mux.v \
 )
 
+RTL_INC=$(addprefix rtl/, \
+	tt_defs.vh \
+)
+
 SIM_SRC=$(addprefix sim/, \
 	tt_top_tb.v \
 	tt_user_module.v \
@@ -43,11 +47,15 @@ endif
 
 all: sim
 
+# Generated sources
+rtl/tt_defs.vh: rtl/tt_defs.vh.mak
+	./py/gen_tt_defs.py $^ > $@
+
 # Simulation targets
 sim: sim/tt_top_tb.vcd
 
-sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(PRIM_SRC)
-	$(IVERILOG) $(SIM_DEFS) -Wall -Wno-timescale -Irtl -o $@ $^
+sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(RTL_INC) $(PRIM_SRC) 
+	$(IVERILOG) $(SIM_DEFS) -Wall -Wno-timescale -Irtl -o $@ $(SIM_SRC) $(RTL_SRC) $(PRIM_SRC)
 
 sim/tt_top_tb.vcd: sim/tt_top_tb
 	cd sim && ./tt_top_tb
@@ -65,12 +73,13 @@ formal/modules_connectivity.yaml:
 formal/tt_user_module_%.v: rtl/tt_user_module.v.mak formal/modules_%.yaml
 	./py/gen_tt_user_module.py $^ > $@
 
-formal_%: formal/tt_user_module_%.v
+formal_%: formal/tt_user_module_%.v $(RTL_SRC) $(RTL_INC)
 	cd formal && sby -f tt_$*.sby
 
 # Cleanup
 clean:
 	rm -f \
+		rtl/tt_defs.vh \
 		sim/tt_top_tb \
 		sim/*.vcd \
 		sim/tt_user_module.v \
