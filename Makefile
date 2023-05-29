@@ -34,7 +34,7 @@ PRIM_SRC=$(addprefix rtl/prim_$(TECH)/, \
 )
 
 ifeq ($(TECH),sky130)
-PRIM_SRC += $(addprefix prim_sky130/sim/, \
+SIM_SRC += $(addprefix sim/sky130, \
 	sky130_fd_sc_hd.v \
 	primitives.v \
 )
