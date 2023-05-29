@@ -38,15 +38,16 @@ SIM_SRC += $(addprefix sim/sky130, \
 	sky130_fd_sc_hd.v \
 	primitives.v \
 )
-DEFS += -DWITH_POWER=1 -DUSE_POWER_PINS=1 -DFUNCTIONAL=1 -DUNIT_DELAY=\#1
+SIM_DEFS += -DWITH_POWER=1 -DUSE_POWER_PINS=1 -DFUNCTIONAL=1 -DUNIT_DELAY=\#1
 endif
 
+all: sim
 
 # Simulation targets
 sim: sim/tt_top_tb.vcd
 
 sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(PRIM_SRC)
-	$(IVERILOG) $(DEFS) -Wall -Wno-timescale -Irtl -o $@ $^
+	$(IVERILOG) $(SIM_DEFS) -Wall -Wno-timescale -Irtl -o $@ $^
 
 sim/tt_top_tb.vcd: sim/tt_top_tb
 	cd sim && ./tt_top_tb
@@ -78,3 +79,6 @@ clean:
 		$(NULL)
 	rm -Rf formal/tt_tristate
 	rm -Rf formal/tt_connectivity
+
+# Makefile things
+.PHONY: sim clean
