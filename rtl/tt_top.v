@@ -129,11 +129,15 @@ module tt_top #(
 	// ----------
 
 	(* blackbox *)
-	tt_ctrl #(
+	tt_ctrl
+`ifdef SIM
+	#(
 		.N_I  (N_I),
 		.N_O  (N_O),
 		.N_IO (N_IO)
-	) ctrl_I (
+	)
+`endif
+	ctrl_I (
 		.pad_uio_in     (pad_uio_in),
 		.pad_uio_out    (pad_uio_out),
 		.pad_uio_oe_n   (pad_uio_oe_n),
@@ -169,12 +173,16 @@ module tt_top #(
 
 			// Branch Mux
 			(* blackbox *)
-			tt_mux #(
+			tt_mux
+`ifdef SIM
+			#(
 				.N_UM (G_X),
 				.N_I  (N_I),
 				.N_O  (N_O),
 				.N_IO (N_IO)
-			) mux_I (
+			)
+`endif
+			mux_I (
 				.um_ow     (l_um_ow),
 				.um_iw     (l_um_iw),
 				.um_ena    (l_um_ena),

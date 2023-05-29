@@ -4,6 +4,7 @@
 
 # Configs
 TECH ?= generic
+SIM_DEFS += -DSIM
 
 # Binaries
 IVERILOG ?= iverilog
