@@ -34,6 +34,7 @@ PRIM_SRC=$(addprefix rtl/prim_$(TECH)/, \
 	tt_prim_mux4.v \
 	tt_prim_tbuf_pol.v \
 	tt_prim_tbuf.v \
+	tt_prim_tie.v \
 	tt_prim_zbuf.v \
 )
 

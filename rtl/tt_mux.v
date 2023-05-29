@@ -209,7 +209,12 @@ module tt_mux #(
 				.diode (um_owa[i*2+0])
 			);
 
-			assign um_k_zero [i*2+0]  = 1'b0;
+			tt_prim_tie #(
+				.TIE_LO(1),
+				.TIE_HI(0)
+			) tie_bot_I (
+				.lo(um_k_zero[i*2+0])
+			);
 
 			// Top
 			assign l_ena[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b1);
@@ -234,7 +239,12 @@ module tt_mux #(
 				.diode (um_owa[i*2+1])
 			);
 
-			assign um_k_zero [i*2+1]  = 1'b0;
+			tt_prim_tie #(
+				.TIE_LO(1),
+				.TIE_HI(0)
+			) tie_top_I (
+				.lo(um_k_zero[i*2+1])
+			);
 
 		end
 	endgenerate
@@ -243,7 +253,9 @@ module tt_mux #(
 	// Tie points
 	// ----------
 
-	assign k_one  = 1'b1;
-	assign k_zero = 1'b0;
+	tt_prim_tie tie_I (
+		.lo(k_zero),
+		.hi(k_one)
+	);
 
 endmodule // tt_mux

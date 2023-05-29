@@ -163,7 +163,9 @@ module tt_ctrl #(
 	// Tie points
 	// ----------
 
-	assign k_one  = 1'b1;
-	assign k_zero = 1'b0;
+	tt_prim_tie tie_I (
+		.lo(k_zero),
+		.hi(k_one)
+	);
 
 endmodule // tt_ctrl
