@@ -1111,13 +1111,16 @@ class TinyTapeout:
 	def __init__(self, config=None, modules=None):
 		# Determine the config files
 		config  = self.get_config_file(config)
-		modules = self.get_modules_file(modules)
+		modules = self.get_modules_file(modules) if (modules is not False) else False
 
-		# Do all the things
+		# Generic config / layout
 		self.cfg    = ConfigNode.from_yaml(open(config, 'r'))
 		self.layout = Layout(self.cfg)
-		self.placer = ModulePlacer(self.cfg, modules)
-		self.die    = Die(self.layout, self.placer)
+
+		# Modules placement
+		if modules is not False:
+			self.placer = ModulePlacer(self.cfg, modules)
+			self.die    = Die(self.layout, self.placer)
 
 	@classmethod
 	def _get_data_file(kls, user_val, env_var, default_val):
