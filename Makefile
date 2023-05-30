@@ -50,8 +50,16 @@ endif
 all: sim
 
 # Generated sources
+gensrc: rtl/tt_defs.vh cfg/modules_placed.yaml rtl/tt_user_module.v
+
 rtl/tt_defs.vh: rtl/tt_defs.vh.mak
 	./py/gen_tt_defs.py $^ > $@
+
+cfg/modules_placed.yaml: cfg/modules.yaml
+	./py/place_modules.py $^ $@
+
+rtl/tt_user_module.v: rtl/tt_user_module.v.mak cfg/modules_placed.yaml
+	./py/gen_tt_user_module.py $^ > $@
 
 # Simulation targets
 sim: sim/tt_top_tb.vcd
@@ -81,7 +89,9 @@ formal_%: formal/tt_user_module_%.v $(RTL_SRC) $(RTL_INC)
 # Cleanup
 clean:
 	rm -f \
+		cfg/modules_placed.yaml \
 		rtl/tt_defs.vh \
+		rtl/tt_user_module.v \
 		sim/tt_top_tb \
 		sim/*.vcd \
 		sim/tt_user_module.v \
@@ -92,4 +102,4 @@ clean:
 	rm -Rf formal/tt_connectivity
 
 # Makefile things
-.PHONY: sim clean
+.PHONY: gensrc sim clean
