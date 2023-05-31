@@ -34,6 +34,14 @@ module tt_um_test (
 		else
 			cnt <= cnt + 1;
 	
+    /*
+
+    ui_io[0]    | uo_out    | uio_out
+    ---------------------------------
+    0           | uio_in    | 0
+    1           | cnt       | cnt
+
+    */
 	assign uo_out  = ui_in[0] ? cnt : uio_in;
 	assign uio_out = ui_in[0] ? cnt : 8'h00;
 	assign uio_oe  = ui_in[0] ? 8'hff : 8'h00;
