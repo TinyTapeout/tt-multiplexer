@@ -21,6 +21,9 @@ module tt_top #(
 	output wire [N_PADS-1:0] io_out,
 	output wire [N_PADS-1:0] io_oeb,
 
+	// Debug: selected design
+	output wire [9:0] si_sel,
+
 	// From caravel
 	input  wire user_clock2,
 
@@ -101,6 +104,8 @@ module tt_top #(
 		pad_cl_oe_n,
 		{ UNUSED_PADS{k_one} }
 	};
+
+	assign si_sel = spine_iw[11:2];
 
 	// Tie-offs
 		// Control High
