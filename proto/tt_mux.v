@@ -9,7 +9,7 @@
 `default_nettype none
 
 module tt_mux #(
-	parameter integer N_UM = 8,
+	parameter integer N_UM = 16,
 	parameter integer N_IO = 8,
 	parameter integer N_O  = 8,
 	parameter integer N_I  = 10,
