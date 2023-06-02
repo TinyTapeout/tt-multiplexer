@@ -173,6 +173,9 @@ if __name__ == '__main__':
 
 		# Routing
 		"RT_MAX_LAYER" : "met4",
+
+		# Workaround LEF/GDS pin naming issue
+		"MAGIC_LEF_WRITE_USE_GDS" : False,
 	}
 
 	flow = flow_kls(
