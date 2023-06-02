@@ -165,7 +165,7 @@ if __name__ == '__main__':
 	fh.close()
 
 	# Run flow
-	flow = TopFlow.init_with_config(
+	flow = TopFlow(
 		'config-tmp.json', # flow_cfg,
 #		design_dir = "tt_top",
 		pdk_root   = PDK_ROOT,
