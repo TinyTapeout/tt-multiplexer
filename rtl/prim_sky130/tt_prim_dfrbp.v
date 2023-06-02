@@ -18,7 +18,7 @@ module tt_prim_dfrbp (
 	input  wire rst_n
 );
 
-	sky130_fd_sc_hd__dfrbp_1 cell0_I (
+	sky130_fd_sc_hd__dfrbp_2 cell0_I (
 `ifdef WITH_POWER
 		.VPWR (1'b1),
 		.VGND (1'b0),
