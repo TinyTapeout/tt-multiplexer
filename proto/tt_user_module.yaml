@@ -1,2 +1,4 @@
-"0.0": "example"
-"5.7": "test"
+"0.0": 
+  name: "example"
+"5.7": 
+  name: "test"

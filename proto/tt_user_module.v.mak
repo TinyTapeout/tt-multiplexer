@@ -43,10 +43,20 @@ module tt_user_module #(
 	assign ow = { uio_oe, uio_out, uo_out };
 
 	generate
-% for (py,px), uid in modules.items():
+% for (py,px), project in modules.items():
 		if ((POS_Y == ${py}) && (POS_X == ${px}))
 		begin : block_${py}_${px}
-			tt_um_${uid} tt_um_I (
+% if project.get('sram', False):
+			wire ram_clk0;
+			wire ram_csb0;
+			wire ram_web0;
+			wire [3:0] ram_wmask0;
+			wire [8:0] ram_addr0;
+			wire [31:0] ram_din0;
+			wire [31:0] ram_dout0;
+
+% endif
+			tt_um_${project['name']} tt_um_I (
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),
@@ -55,7 +65,32 @@ module tt_user_module #(
 				.ena     (ena),
 				.clk     (clk),
 				.rst_n   (rst_n)
+% if project.get('sram', False):
+				,
+				.ram_clk0 (ram_clk0),
+				.ram_csb0 (ram_csb0),
+				.ram_web0 (ram_web0),
+				.ram_wmask0 (ram_wmask0),
+				.ram_addr0 (ram_addr0),
+				.ram_din0 (ram_din0),
+				.ram_dout0 (ram_dout0)
+%endif
 			);
+
+% if project.get('sram', False):
+			sky130_sram_2kbyte_1rw1r_32x512_8 sram (
+				.clk0(ram_clk0),
+				.csb0(ram_csb0),
+				.web0(ram_web0),
+				.wmask0(ram_wmask0),
+				.addr0(ram_addr0),
+				.din0(ram_din0),
+				.dout0(ram_dout0),
+				.clk1(k_zero),
+				.csb1(k_zero),
+				.addr1({32{k_zero}})
+			);
+% endif
 		end
 %endfor
 
