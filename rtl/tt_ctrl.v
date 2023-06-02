@@ -144,6 +144,21 @@ module tt_ctrl #(
 	// Selection
 	// ---------
 
+	wire ctrl_sel_rst_n_ibuf;
+	wire ctrl_sel_inc_ibuf;
+
+	tt_prim_diode ctrl_diode_I[2:0] (
+		.diode ({ ctrl_sel_rst_n, ctrl_sel_inc, ctrl_ena })
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(0)
+	) ctrl_ibuf_I[1:0] (
+		.a ({ ctrl_sel_inc,      ctrl_sel_rst_n      }),
+		.z ({ ctrl_sel_inc_ibuf, ctrl_sel_rst_n_ibuf })
+	);
+
+
 	genvar i;
 	generate
 		for (i=0; i<10; i=i+1) begin
@@ -152,16 +167,12 @@ module tt_ctrl #(
 				.q     (sel_cnt[i]),
 				.q_n   (sel_cnt_n[i]),
 				.clk   (sel_cnt_clk[i]),
-				.rst_n (ctrl_sel_rst_n)
+				.rst_n (ctrl_sel_rst_n_ibuf)
 			);
 		end
 	endgenerate
 
-	assign sel_cnt_clk = { sel_cnt_n[8:0], ctrl_sel_inc };
-
-	tt_prim_diode ctrl_diode_I[2:0] (
-		.diode ({ ctrl_sel_rst_n, ctrl_sel_inc, ctrl_ena })
-	);
+	assign sel_cnt_clk = { sel_cnt_n[8:0], ctrl_sel_inc_ibuf };
 
 
 	// Tie points
