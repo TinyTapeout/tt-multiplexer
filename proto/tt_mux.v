@@ -92,17 +92,8 @@ module tt_mux #(
 	// Decode branch address
 	assign branch_sel = (si_sel[9:6] == addr[4:1]) & (si_sel[4] == addr[0]);
 
-	tt_prim_tbuf_pol tbuf_row_ena_I (
-		.t  (branch_sel),
-		.tx (branch_sel_tbe)
-	);
-
 	// Spine drive TBUF for Outward
-	tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
-		.a  (bus_ow),
-		.tx (branch_sel_tbe),
-		.z  (so_usr)
-	);
+	assign so_usr = branch_sel ? bus_ow : {U_OW{1'bz}};
 
 	// Zeroing buffer for Inward
 	tt_prim_zbuf #(
@@ -176,16 +167,7 @@ module tt_mux #(
 				);
 
 				// T-Buf
-				tt_prim_tbuf_pol tbuf_row_ena_I (
-					.t  (col_sel_h[i>>1]),
-					.tx (l_tbe)
-				);
-
-				tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
-					.a  (l_ow),
-					.tx (l_tbe),
-					.z  (bus_ow)
-				);
+				assign bus_ow = col_sel_h[i>>1] ? l_ow : {U_OW{1'bz}};
 			end
 
 			// Bottom
