@@ -408,7 +408,7 @@ class Layout:
 							)
 		glb.branch.height = glb.branch.pitch - glb.margin.y
 		glb.ctrl.height = (
-								(glb.block.height * 2) +
+								(glb.mux.height * 2) +
 								(glb.margin.y)
 							)
 		glb.top.height    = glb.branch.pitch * (self.cfg.tt.grid.y // 2) - glb.margin.y
@@ -1080,7 +1080,7 @@ class Top(LayoutElement):
 
 		ctrl_x = layout.glb.branch.width + layout.glb.margin.x
 		ctrl_y = (layout.cfg.tt.grid.y // 4) * layout.glb.branch.pitch - \
-			( layout.glb.block.height + layout.glb.margin.y )
+			( layout.glb.mux.height + layout.glb.margin.y )
 
 		self.add_child(ctrl, Point(ctrl_x, ctrl_y), 'N', name='ctrl_I')
 
