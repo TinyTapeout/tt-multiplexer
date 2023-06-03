@@ -1103,8 +1103,8 @@ class Die(LayoutElement):
 		# Add 'Top'
 		self.top = top = Top(layout, placer)
 
-		top_x = (self.width  - top.width)  // 2
-		top_y = (self.height - top.height) // 2
+		top_x = layout._align_x((self.width  - top.width)  // 2, ceil=True)
+		top_y = layout._align_y((self.height - top.height) // 2, ceil=False)
 
 		self.add_child(top, Point(top_x, top_y), 'N', name='top_I')
 
