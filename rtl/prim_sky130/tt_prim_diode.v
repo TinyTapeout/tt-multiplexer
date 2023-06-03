@@ -14,6 +14,7 @@ module tt_prim_diode (
 	inout  wire diode
 );
 
+			(* keep *)
 			sky130_fd_sc_hd__diode_2 cell0_I (
 `ifdef WITH_POWER
 				.VPWR (1'b1),
