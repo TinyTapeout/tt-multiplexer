@@ -137,7 +137,7 @@ if __name__ == '__main__':
 		"SYNTH_BUFFERING"           : False,
 
 		# Floorplanning
-		"DIE_AREA"           : f"0 0 {tti.layout.glb.mux.width.units/1000:.3f} {tti.layout.glb.mux.height.units/1000:.3f}",
+		"DIE_AREA"           : f"0 0 {tti.layout.glb.mux.width/1000:.3f} {tti.layout.glb.mux.height/1000:.3f}",
 		"FP_SIZING"          : "absolute",
 		"BOTTOM_MARGIN_MULT" : 1,
 		"TOP_MARGIN_MULT"    : 1,

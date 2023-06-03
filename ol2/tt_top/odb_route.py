@@ -165,10 +165,10 @@ class Router:
 			for l in layers:
 				odb.dbObstruction_create(self.reader.block,
 					l,
-					bb.xMin() + self.tti.layout.glb.margin.x.units,
-					bb.yMin() + self.tti.layout.glb.margin.y.units,
-					bb.xMax() - self.tti.layout.glb.margin.x.units,
-					bb.yMax() - self.tti.layout.glb.margin.y.units,
+					bb.xMin() + self.tti.layout.glb.margin.x,
+					bb.yMin() + self.tti.layout.glb.margin.y,
+					bb.xMax() - self.tti.layout.glb.margin.x,
+					bb.yMax() - self.tti.layout.glb.margin.y,
 				)
 
 

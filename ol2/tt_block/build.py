@@ -63,13 +63,13 @@ def gen_block_template(tti, h_mult, v_mult):
 
 	# Final block width and height
 	block_width  = (
-		 h_mult      * tti.layout.glb.block.width.units +
-		(h_mult - 1) * tti.layout.glb.margin.x.units
+		 h_mult      * tti.layout.glb.block.width +
+		(h_mult - 1) * tti.layout.glb.margin.x
 	)
 
 	block_height = (
-		 v_mult      * tti.layout.glb.block.height.units +
-		(v_mult - 1) * tti.layout.glb.margin.y.units
+		 v_mult      * tti.layout.glb.block.height +
+		(v_mult - 1) * tti.layout.glb.margin.y
 	)
 
 	# Create and run custom flow

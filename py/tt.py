@@ -7,6 +7,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+import math
 import os
 import yaml
 
@@ -95,23 +96,6 @@ class Rect(namedtuple('Rect', 'x0 y0 x1 y1')):
 
 	def move(self, xofs, yofs):
 		return Rect(self.x0 + xofs, self.y0 + yofs, self.x1 + xofs, self.y1 + yofs)
-
-
-class SDim(namedtuple('SDim', 'sites units')):
-
-	@classmethod
-	def xdim(kls, cfg, sites):
-		return kls(
-			sites,
-			sites * cfg.pdk.site.width,
-		)
-
-	@classmethod
-	def ydim(kls, cfg, sites):
-		return kls(
-			sites,
-			sites * cfg.pdk.site.height,
-		)
 
 
 # ----------------------------------------------------------------------------
@@ -320,6 +304,29 @@ class Layout:
 		self.vspine_layout()
 		self.ctrl_layout()
 
+	def _align(self, v, layer, dir_, ceil=False):
+		# Grab config data for tracks / sites
+		tp = self.cfg.pdk.tracks[layer][dir_].pitch
+		s  = {
+			'x': self.cfg.pdk.site.width,
+			'y': self.cfg.pdk.site.height,
+		}[dir_]
+
+		# Align to LCM
+		a = math.lcm(tp, s)
+
+		# Do alignement
+		if ceil:
+			v += a - 1
+
+		return int(v // a) * a
+
+	def _align_x(self, x, ceil=False):
+		return self._align(x, self.cfg.tt.spine.vlayer, 'x')
+
+	def _align_y(self, y, ceil=False):
+		return self._align(y, self.cfg.tt.spine.hlayer, 'y')
+
 	def global_layout(self):
 		# Checks
 		if self.cfg.tt.grid.x % 4:
@@ -349,12 +356,12 @@ class Layout:
 		})
 
 		# Margins
-		glb.margin.x = SDim.xdim(self.cfg, self.cfg.tt.margin.x)
-		glb.margin.y = SDim.ydim(self.cfg, self.cfg.tt.margin.y)
+		glb.margin.x = self.cfg.tt.margin.x * self.cfg.pdk.site.width
+		glb.margin.y = self.cfg.tt.margin.y * self.cfg.pdk.site.height
 
 		# Horizontal layout
-			# Total available space in 'sites'
-		h_sites = self.cfg.pdk.die.width // self.cfg.pdk.site.width
+			# Total available space
+		avail_width = self.cfg.pdk.die.width
 
 			# Reserve space for Spine tracks and IO pad tracks
 			# (we keep those tracks twice as far as they strictly need
@@ -365,52 +372,52 @@ class Layout:
 		iopads_tracks = self.cfg.tt.uio.o + self.cfg.tt.uio.i + 3 * self.cfg.tt.uio.io + 2
 
 		rsvd_width = 2 * vti.x.pitch * (vspine_tracks + iopads_tracks)
-		rsvd_sites = (rsvd_width + self.cfg.pdk.site.width - 1) // self.cfg.pdk.site.width
-		rsvd_sites = (rsvd_sites + 1) & ~1
+		rsvd_width = self._align_x(rsvd_width, ceil=True)
 
 			# Remaining size is for the blocks and margin
-		tmp_sites = (h_sites - rsvd_sites) // self.cfg.tt.grid.x
+		tmp_width = self._align_x((avail_width - rsvd_width) // self.cfg.tt.grid.x)
 
 			# Final X dimensions
-		glb.block.width  = SDim.xdim(self.cfg, tmp_sites - glb.margin.x.sites)
-		glb.block.pitch  = SDim.xdim(self.cfg, tmp_sites)
-		glb.mux.width    = SDim.xdim(self.cfg, tmp_sites * (self.cfg.tt.grid.x // 2) - glb.margin.x.sites)
+		glb.block.width  = tmp_width - glb.margin.x
+		glb.block.pitch  = tmp_width
+		glb.mux.width    = tmp_width * (self.cfg.tt.grid.x // 2) - glb.margin.x
 		glb.branch.width = glb.mux.width
-		glb.ctrl.width   = SDim.xdim(self.cfg,  rsvd_sites)
-		glb.top.width    = SDim.xdim(self.cfg,  rsvd_sites + 2 * (glb.mux.width.sites + glb.margin.x.sites))
+		glb.ctrl.width   = rsvd_width
+		glb.top.width    = rsvd_width + 2 * (glb.mux.width + glb.margin.x)
 
 		# Vertical layout
-			# Total available space in 'sites'
-		v_sites = self.cfg.pdk.die.height // self.cfg.pdk.site.height
+			# Total available space
+		avail_height = self.cfg.pdk.die.height
 
 			# Divide up assuming blocks are twice as high
 			# as the row-mux
 		HM_MUX = 1
 		HM_BLK = 2
 
-		tmp_sites = (v_sites // (self.cfg.tt.grid.y // 2)) - (3 * glb.margin.y.sites)
-		tmp_sites = tmp_sites // (2 * HM_BLK + HM_MUX)
+		tmp_height = (avail_height // (self.cfg.tt.grid.y // 2)) - (3 * glb.margin.y)
+		tmp_height = tmp_height // (2 * HM_BLK + HM_MUX)
+		tmp_height = self._align_y(tmp_height)
 
 			# Final dimensions
-		glb.block.height  = SDim.ydim(self.cfg, tmp_sites * HM_BLK)
-		glb.mux.height    = SDim.ydim(self.cfg, tmp_sites * HM_MUX)
-		glb.branch.pitch  = SDim.ydim(self.cfg, (
-								(glb.block.height.sites * 2) +
-								(glb.mux.height.sites    ) +
-								(glb.margin.y.sites     * 3)
-							))
-		glb.branch.height = SDim.ydim(self.cfg, glb.branch.pitch.sites - glb.margin.y.sites)
-		glb.ctrl.height = SDim.ydim(self.cfg, (
-								(glb.block.height.sites * 2) +
-								(glb.margin.y.sites)
-							))
-		glb.top.height    = SDim.ydim(self.cfg, glb.branch.pitch.sites * (self.cfg.tt.grid.y // 2) - glb.margin.y.sites)
+		glb.block.height  = tmp_height * HM_BLK
+		glb.mux.height    = tmp_height * HM_MUX
+		glb.branch.pitch  = (
+								(glb.block.height * 2) +
+								(glb.mux.height      ) +
+								(glb.margin.y     * 3)
+							)
+		glb.branch.height = glb.branch.pitch - glb.margin.y
+		glb.ctrl.height = (
+								(glb.block.height * 2) +
+								(glb.margin.y)
+							)
+		glb.top.height    = glb.branch.pitch * (self.cfg.tt.grid.y // 2) - glb.margin.y
 
 			# Check mux is high enough for horizontal spine
 		hspine_tracks = self.user.iw + self.user.ow + 6 + 1 + 3
 
 		hti = self.cfg.pdk.tracks[self.cfg.tt.spine.hlayer]
-		if glb.mux.height.units < (hspine_tracks * hti.y.pitch):
+		if glb.mux.height < (hspine_tracks * hti.y.pitch):
 			raise RuntimeError("Mux too small for Horizontal Spine")
 
 	def _ply_len(self, ply):
@@ -524,7 +531,7 @@ class Layout:
 		tracks = self._ply_distribute(
 			n_pins = len(block_ply_e),
 			start  = 0,
-			end    = self.glb.block.width.units,
+			end    = self.glb.block.width,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
 			axis   = 'x',
@@ -539,7 +546,7 @@ class Layout:
 		mux_ply_top = []
 
 		for i in range(self.cfg.tt.grid.x // 2):
-			ofs = self.glb.block.pitch.units * i
+			ofs = self.glb.block.pitch * i
 			mux_tracks.extend([x+ofs for x in tracks])
 			mux_ply_bot.extend(self._ply_expand(mux_ply(i*2+0)))
 			mux_ply_top.extend(self._ply_expand(mux_ply(i*2+1)))
@@ -587,7 +594,7 @@ class Layout:
 		tracks = self._ply_distribute(
 			n_pins = len(hspine_ply_e),
 			start  = 0,
-			end    = self.glb.mux.height.units,
+			end    = self.glb.mux.height,
 			step   = 0,
 			layer  = self.cfg.tt.spine.hlayer,
 			axis   = 'y',
@@ -613,7 +620,7 @@ class Layout:
 		tracks = self._ply_distribute(
 			n_pins = len(ply_e),
 			start  = 0,
-			end    = self.glb.ctrl.width.units,
+			end    = self.glb.ctrl.width,
 			step   = 2,
 			layer  = self.cfg.tt.spine.vlayer,
 			axis   = 'x',
@@ -711,8 +718,8 @@ class Layout:
 		self.ply_ctrl_io_bot = {}
 		self.ply_ctrl_io_top.update( spread(tl_pads, 0,           limit_left) )
 		self.ply_ctrl_io_bot.update( spread(bl_pads, 0,           limit_left) )
-		self.ply_ctrl_io_top.update( spread(tr_pads, limit_right, self.glb.ctrl.width.units) )
-		self.ply_ctrl_io_bot.update( spread(br_pads, limit_right, self.glb.ctrl.width.units) )
+		self.ply_ctrl_io_top.update( spread(tr_pads, limit_right, self.glb.ctrl.width) )
+		self.ply_ctrl_io_bot.update( spread(br_pads, limit_right, self.glb.ctrl.width) )
 
 
 # ----------------------------------------------------------------------------
@@ -861,13 +868,13 @@ class Block(LayoutElement):
 	def __init__(self, layout, mod_name=None, mw=1, mh=1):
 		# Compute module actual width / height
 		width = (
-			mw * layout.glb.block.width.units +
-			(mw - 1) * layout.glb.margin.x.units
+			mw * layout.glb.block.width +
+			(mw - 1) * layout.glb.margin.x
 		)
 
 		height = (
-			mh * layout.glb.block.height.units +
-			(mh - 1) * layout.glb.margin.y.units
+			mh * layout.glb.block.height +
+			(mh - 1) * layout.glb.margin.y
 		)
 
 		# Set module name
@@ -903,8 +910,8 @@ class Mux(LayoutElement):
 		# Super
 		super().__init__(
 			layout,
-			layout.glb.mux.width.units,
-			layout.glb.mux.height.units,
+			layout.glb.mux.width,
+			layout.glb.mux.height,
 		)
 
 	def _render(self, dwg):
@@ -943,15 +950,15 @@ class Branch(LayoutElement):
 		# Super
 		super().__init__(
 			layout,
-			layout.glb.branch.width.units,
-			layout.glb.branch.height.units,
+			layout.glb.branch.width,
+			layout.glb.branch.height,
 		)
 
 		# Create Mux
 		self.mux = mux = Mux(layout)
 
 		mux_x = 0
-		mux_y = layout.glb.block.height.units + layout.glb.margin.y.units
+		mux_y = layout.glb.block.height + layout.glb.margin.y
 
 		self.add_child(mux, Point(0, mux_y), 'N', name='mux_I')
 
@@ -975,12 +982,12 @@ class Branch(LayoutElement):
 			# Even is bottom / Odd it top
 			if bx & 1:
 				self.blocks_top.append(block)
-				blk_y = self.height - layout.glb.block.height.units
+				blk_y = self.height - layout.glb.block.height
 			else:
 				self.blocks_bot.append(block)
 				blk_y = 0
 
-			blk_x = (bx >> 1) * layout.glb.block.pitch.units
+			blk_x = (bx >> 1) * layout.glb.block.pitch
 
 			# Name
 			name = f'col_um\\[{bx>>1:d}\\].um_{"top" if (bx & 1) else "bot":s}_I.block_{grid_y:d}_{grid_x:d}.tt_um_I'
@@ -997,8 +1004,8 @@ class Controller(LayoutElement):
 
 	def __init__(self, layout):
 		# Super
-		width  = layout.glb.ctrl.width.units
-		height = layout.glb.ctrl.height.units
+		width  = layout.glb.ctrl.width
+		height = layout.glb.ctrl.height
 
 		super().__init__(
 			layout,
@@ -1047,8 +1054,8 @@ class Top(LayoutElement):
 		# Super
 		super().__init__(
 			layout,
-			layout.glb.top.width.units,
-			layout.glb.top.height.units,
+			layout.glb.top.width,
+			layout.glb.top.height,
 		)
 
 		# Create Branches
@@ -1057,11 +1064,11 @@ class Top(LayoutElement):
 		for by in range(0, layout.cfg.tt.grid.y):
 			# Even is left / Odd is right
 			if by & 1:
-				b_x = self.width - layout.glb.branch.width.units
+				b_x = self.width - layout.glb.branch.width
 			else:
 				b_x = 0
 
-			b_y = (by >> 1) * layout.glb.branch.pitch.units
+			b_y = (by >> 1) * layout.glb.branch.pitch
 
 			branch = Branch(layout, placer, by)
 			self.branches.append(branch)
@@ -1071,9 +1078,9 @@ class Top(LayoutElement):
 		# Create Controller
 		self.ctrl = ctrl = Controller(layout)
 
-		ctrl_x = layout.glb.branch.width.units + layout.glb.margin.x.units
-		ctrl_y = (layout.cfg.tt.grid.y // 4) * layout.glb.branch.pitch.units - \
-			( layout.glb.block.height.units + layout.glb.margin.y.units )
+		ctrl_x = layout.glb.branch.width + layout.glb.margin.x
+		ctrl_y = (layout.cfg.tt.grid.y // 4) * layout.glb.branch.pitch - \
+			( layout.glb.block.height + layout.glb.margin.y )
 
 		self.add_child(ctrl, Point(ctrl_x, ctrl_y), 'N', name='ctrl_I')
 
