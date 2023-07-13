@@ -86,7 +86,7 @@ class TopFlow(SequentialFlow):
 		Magic.SpiceExtraction,
 		Checker.IllegalOverlap,
 		Netgen.LVS,
-#		Checker.LVS,			# FIXME
+		Checker.LVS,
 	]
 
 
