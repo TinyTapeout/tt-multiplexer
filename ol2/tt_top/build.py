@@ -91,15 +91,17 @@ class TopFlow(SequentialFlow):
 
 
 if __name__ == '__main__':
+	# Argument processing
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("--skip-xor-checks", action="store_true", help="Skips XOR checks")
+
 	args = parser.parse_args()
 	config = vars(args)
 
 	if config['skip_xor_checks']:
 		TopFlow.Steps.remove(KLayout.XOR)
 		TopFlow.Steps.remove(Checker.XOR)
-	
+
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
 
