@@ -365,7 +365,9 @@ class Layout:
 
 		# Horizontal layout
 			# Total available space
-		avail_width = self.cfg.pdk.die.width
+		avail_width  = self.cfg.pdk.die.width
+		avail_width -= self._align_x(self.cfg.pdk.die.margin.left, ceil=True)
+		avail_width -= self.cfg.pdk.die.margin.right
 
 			# Reserve space for Spine tracks and IO pad tracks
 			# (we keep those tracks twice as far as they strictly need
@@ -389,9 +391,14 @@ class Layout:
 		glb.ctrl.width   = rsvd_width
 		glb.top.width    = rsvd_width + 2 * (glb.mux.width + glb.margin.x)
 
+			# Final position
+		glb.top.pos_x = self._align_x((self.cfg.pdk.die.width - glb.top.width) // 2)
+
 		# Vertical layout
 			# Total available space
-		avail_height = self.cfg.pdk.die.height
+		avail_height  = self.cfg.pdk.die.height
+		avail_height -= self._align_y(self.cfg.pdk.die.margin.bottom, ceil=True)
+		avail_height -= self.cfg.pdk.die.margin.top
 
 			# Divide up assuming blocks are twice as high
 			# as the row-mux
@@ -409,6 +416,9 @@ class Layout:
 		glb.branch.height = glb.branch.pitch - glb.margin.y
 		glb.ctrl.height   = glb.mux.height * 2 + glb.margin.y
 		glb.top.height    = glb.branch.pitch * (self.cfg.tt.grid.y // 2) - glb.margin.y
+
+			# Final position
+		glb.top.pos_y = self._align_y((self.cfg.pdk.die.height - glb.top.height) // 2)
 
 			# Check mux is high enough for horizontal spine
 		hspine_tracks = self.user.iw + self.user.ow + 6 + 1 + 3
@@ -1100,8 +1110,8 @@ class Die(LayoutElement):
 		# Add 'Top'
 		self.top = top = Top(layout, placer)
 
-		top_x = layout._align_x((self.width  - top.width)  // 2, ceil=True)
-		top_y = layout._align_y((self.height - top.height) // 2, ceil=False)
+		top_x = layout.glb.top.pos_x
+		top_y = layout.glb.top.pos_y
 
 		self.add_child(top, Point(top_x, top_y), 'N', name='top_I')
 

@@ -2,6 +2,11 @@ pdk:
   die:
     width: 2920000
     height: 3520000
+    margin:
+      left:   3680
+      right:  3680
+      top:    5440
+      bottom: 5440
   site:
     width:  460
     height: 2720
@@ -68,7 +73,7 @@ tt:
     w: -1
     h: -1
   margin:   # In 'sites'
-    x: 6
+    x: 4
     y: 1
   uio:
     i:  10
