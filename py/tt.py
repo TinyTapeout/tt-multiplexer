@@ -359,6 +359,10 @@ class Layout:
 		glb.margin.x = self.cfg.tt.margin.x * self.cfg.pdk.site.width
 		glb.margin.y = self.cfg.tt.margin.y * self.cfg.pdk.site.height
 
+			# We actually need the Y margin to be aligned to keep everything
+			# on the grid
+		glb.margin.y = self._align_y(glb.margin.y, ceil=True)
+
 		# Horizontal layout
 			# Total available space
 		avail_width = self.cfg.pdk.die.width
@@ -394,23 +398,16 @@ class Layout:
 		HM_MUX = 1
 		HM_BLK = 2
 
-		tmp_height = (avail_height // (self.cfg.tt.grid.y // 2)) - (3 * glb.margin.y)
+		tmp_height = avail_height // (self.cfg.tt.grid.y // 2)
 		tmp_height = tmp_height // (2 * HM_BLK + HM_MUX)
 		tmp_height = self._align_y(tmp_height)
 
 			# Final dimensions
-		glb.block.height  = tmp_height * HM_BLK
-		glb.mux.height    = tmp_height * HM_MUX
-		glb.branch.pitch  = (
-								(glb.block.height * 2) +
-								(glb.mux.height      ) +
-								(glb.margin.y     * 3)
-							)
+		glb.block.height  = tmp_height * HM_BLK - glb.margin.y
+		glb.mux.height    = tmp_height * HM_MUX - glb.margin.y
+		glb.branch.pitch  = tmp_height * (2 * HM_BLK + HM_MUX)
 		glb.branch.height = glb.branch.pitch - glb.margin.y
-		glb.ctrl.height = (
-								(glb.mux.height * 2) +
-								(glb.margin.y)
-							)
+		glb.ctrl.height   = glb.mux.height * 2 + glb.margin.y
 		glb.top.height    = glb.branch.pitch * (self.cfg.tt.grid.y // 2) - glb.margin.y
 
 			# Check mux is high enough for horizontal spine
