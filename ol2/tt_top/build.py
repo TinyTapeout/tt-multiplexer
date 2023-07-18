@@ -166,11 +166,28 @@ if __name__ == '__main__':
 	flow_cfg.update(json.loads(open('config.json', 'r').read()))
 
 	# Update PDN config
+	pdn_width   = 3.1
+	pdn_spacing = 5 * pdn_width		# Spacing border to border
+	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
+	pdn_offset  = (
+		tti.layout.glb.top.pos_y +
+		(pdn_pitch - tti.layout.glb.margin.y) // 2 -
+		(pdn_spacing + pdn_width) // 2 +
+		2720 * 3	# ???
+	) / 1000
+
+	while pdn_offset > (pdn_pitch * 1.1):
+		pdn_offset -= pdn_pitch
+
+	def pdn_align(x):
+		grid = 0.005
+		return int(x / grid) * grid
+
 	flow_cfg.update({
-#		"FP_PDN_HWIDTH" :
-		"FP_PDN_HPITCH" : 56.030,	# FIXME
-		"FP_PDN_HOFFSET" : 32		# FIXME
-#		"FP_PDN_HSPACING" :
+		"FP_PDN_HWIDTH"  : pdn_align(pdn_width),
+		"FP_PDN_HSPACING": pdn_align(pdn_spacing),
+		"FP_PDN_HPITCH"  : pdn_align(pdn_pitch),
+		"FP_PDN_HOFFSET" : pdn_align(pdn_offset),
 	})
 
 	# Run flow
