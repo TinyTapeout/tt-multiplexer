@@ -149,9 +149,10 @@ if __name__ == '__main__':
 		"VERILOG_FILES"        : verilog_files,
 
 		# Synthesis
-		"SYNTH_READ_BLACKBOX_LIB"   : "1",
-		"SYNTH_EXCLUSION_CELL_LIST" : "no_synth_cells.txt",
-		"SYNTH_BUFFERING"           : False,
+		"SYNTH_READ_BLACKBOX_LIB"     : True,
+		"SYNTH_EXCLUSION_CELL_LIST"   : "no_synth_cells.txt",
+		"SYNTH_DIRECT_WIRE_BUFFERING" : False,
+		"SYNTH_ABC_BUFFERING"         : False,
 
 		# Floorplanning
 		"DIE_AREA"           : f"0 0 {tti.layout.glb.ctrl.width/1000:.3f} {tti.layout.glb.ctrl.height/1000:.3f}",
