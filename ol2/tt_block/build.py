@@ -76,7 +76,6 @@ def gen_block_template(tti, h_mult, v_mult):
 	flow_cfg = {
 		# Main design properties
 		"DESIGN_NAME"    : "tt_um_template",
-		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES"  : [
