@@ -157,9 +157,6 @@ if __name__ == '__main__':
 
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
-
-		# Workaround the LEF generation hanging issue
-		"MAGIC_LEF_WRITE_USE_GDS" : False,
 	}
 
 	# Load fixed required config for UPW
