@@ -72,7 +72,6 @@ class TopFlow(SequentialFlow):
 		Checker.DisconnectedPins,
 		Odb.ReportWireLength,
 		Checker.WireLength,
-		OpenROAD.FillInsertion,
 		OpenROAD.RCX,
 #		OpenROAD.STAPostPNR,	# FIXME
 		OpenROAD.IRDropReport,
@@ -174,15 +173,10 @@ if __name__ == '__main__':
 #		"FP_PDN_HSPACING" :
 	})
 
-	# Work around https://github.com/efabless/openlane2/issues/61
-	fh = open('config-tmp.json', 'w')
-	fh.write(json.dumps(flow_cfg))
-	fh.close()
-
 	# Run flow
 	flow = TopFlow(
-		'config-tmp.json', # flow_cfg,
-#		design_dir = "tt_top",
+		flow_cfg,
+		design_dir = ".",
 		pdk_root   = PDK_ROOT,
 		pdk        = "sky130A",
 	)
