@@ -66,7 +66,6 @@ class TopFlow(SequentialFlow):
 		CustomRoute,
 		OpenROAD.GlobalRouting,
 		OpenROAD.DetailedRouting,
-		CustomRoute,
 		Checker.TrDRC,
 		Odb.ReportDisconnectedPins,
 		Checker.DisconnectedPins,

@@ -80,13 +80,7 @@ class Router:
 		self.x_max = x_max
 
 		# Create wire and matching encoder
-		new = False
-
-		wire = net.getWire()
-
-		if wire is None:
-			wire = odb.dbWire.create(net)
-			new = True
+		wire = odb.dbWire.create(net)
 
 		encoder = odb.dbWireEncoder()
 		encoder.begin(wire)
@@ -107,9 +101,6 @@ class Router:
 			encoder.addPoint(x_min, y)
 			encoder.addPoint(x_spine, y)
 			encoder.addPoint(x_max, y)
-
-			if new:
-				continue
 
 			encoder.newPath(self.layer_v, 'FIXED')
 			encoder.addPoint(x_spine, y)
