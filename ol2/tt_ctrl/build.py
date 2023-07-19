@@ -173,7 +173,8 @@ if __name__ == '__main__':
 		"PL_TARGET_DENSITY_PCT" : 40,
 
 		# Routing
-		"RT_MAX_LAYER" : "met4",
+		"DIODE_PADDING" : 0,
+		"RT_MAX_LAYER"  : "met4",
 
 		# Workaround LEF/GDS pin naming issue
 		"MAGIC_LEF_WRITE_USE_GDS" : False,

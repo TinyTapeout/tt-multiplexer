@@ -146,6 +146,7 @@ if __name__ == '__main__':
 		"RIGHT_MARGIN_MULT"  : 6,
 
 		# Routing
+		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
 		"RT_MAX_LAYER"         : "met4",
 
