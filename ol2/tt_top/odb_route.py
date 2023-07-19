@@ -162,6 +162,160 @@ class Router:
 					bb.yMax() - self.tti.layout.glb.margin.y,
 				)
 
+	def route_k01(self):
+		#import IPython
+		#IPython.embed()
+
+		# Vias
+		tech = self.reader.db.getTech()
+
+		via = {
+			('met2', 'met3'): tech.findVia('M2M3_PR'),
+			('met3', 'met4'): tech.findVia('M3M4_PR'),
+		}
+
+		# Get full die area
+		die = self.reader.block.getDieArea()
+
+		# Find controller instance
+		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
+
+		# Deal with each constant
+		for idx, port_name in enumerate(['k_zero', 'k_one']):
+			# ITerm on controller
+			ctrl_iterm = ctrl_inst.findITerm(port_name)
+			r, x, y = ctrl_iterm.getAvgXY()
+			if r is not True:
+				continue
+
+			# Limits
+			cfg_tv = self.tti.cfg.pdk.tracks.met4.x
+			cfg_th = self.tti.cfg.pdk.tracks.met3.y
+
+			def a(cfg, v):
+				return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
+
+			lx = [
+				cfg_tv.offset + cfg_tv.pitch * idx,
+				a(cfg_tv, die.xMax() - cfg_tv.pitch * idx)
+			]
+
+			ly = [
+				cfg_th.offset + cfg_th.pitch * idx,
+				a(cfg_th, die.yMax() - cfg_th.pitch * idx)
+			]
+
+			# Net / Wire
+			net = ctrl_iterm.getNet()
+			wire = odb.dbWire.create(net)
+
+			# Encoder start
+			encoder = odb.dbWireEncoder()
+			encoder.begin(wire)
+
+			# Line toward bottom
+			encoder.newPath(self.layer_v, 'FIXED')
+			encoder.addPoint(x, y)
+			encoder.addPoint(x, ly[0])
+			encoder.addTechVia(self.via)
+			encoder.addPoint(lx[1], ly[0])
+			encoder.addTechVia(self.via)
+			encoder.addPoint(lx[1], ly[1])
+			encoder.addTechVia(self.via)
+			encoder.addPoint(lx[0], ly[1])
+			encoder.addTechVia(self.via)
+			encoder.addPoint(lx[0], ly[0])
+			encoder.addTechVia(self.via)
+			encoder.addPoint(x, ly[0])
+
+			# Iterate over all BTerms
+			for pad_bterm in net.getBTerms():
+				# Get pin location / Bounding Box
+				pr, px, py = pad_bterm.getFirstPinLocation()
+				if pr is not True:
+					continue
+
+				pad_bb  = pad_bterm.getBBox()
+				pad_box = pad_bterm.getBPins()[0].getBoxes()[0]
+				pad_ly  = pad_box.getTechLayer()
+
+				# Start path
+				encoder.newPath(pad_ly, 'FIXED')
+				encoder.addPoint(px, py)
+
+				# Check side
+				if pad_bb.yMin() < 0:				# Bottom
+					encoder.addPoint(px, ly[0])
+					encoder.addTechVia(via[(pad_ly.getName(), self.layer_h.getName())])
+
+				elif pad_bb.yMax() > die.yMax():	# Top
+					encoder.addPoint(px, ly[1])
+					encoder.addTechVia(via[(pad_ly.getName(), self.layer_h.getName())])
+
+				elif pad_bb.xMin() < 0:				# Left
+					encoder.addPoint(lx[0], py)
+					encoder.addTechVia(via[(pad_ly.getName(), self.layer_v.getName())])
+
+				elif pad_bb.xMax() > die.xMax():	# Right
+					encoder.addPoint(lx[1], py)
+					encoder.addTechVia(via[(pad_ly.getName(), self.layer_v.getName())])
+
+				else:
+					# ?!?!?
+					continue
+
+			#net.getBTerms()
+			#bt.getFirstPinLocation()
+
+			# Encoder end
+			encoder.end()
+
+		k0_net = ctrl_inst.findITerm('k_zero').getNet()
+		k1_net = ctrl_inst.findITerm('k_one').getNet()
+
+	def create_k01_obs(self):
+
+		# Get all layers and config
+		tech = self.reader.db.getTech()
+
+		layer_v = tech.findLayer('met4')
+		layer_h = tech.findLayer('met3')
+
+		cfg_v = self.tti.cfg.pdk.tracks.met4.x
+		cfg_h = self.tti.cfg.pdk.tracks.met3.y
+
+		die = self.reader.block.getDieArea()
+
+		# Limits
+		def a(cfg, v):
+			return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
+
+		lx = [
+			cfg_v.offset + cfg_v.pitch,
+			a(cfg_v, die.xMax() - cfg_v.pitch)
+		]
+
+		ly = [
+			cfg_h.offset + cfg_h.pitch,
+			a(cfg_h, die.yMax() - cfg_h.pitch)
+		]
+
+		# Left
+		odb.dbObstruction_create(self.reader.block,
+			layer_v, 0, 0, lx[0], die.yMax())
+
+		# Right
+		odb.dbObstruction_create(self.reader.block,
+			layer_v, lx[1], 0, die.xMax(), die.yMax())
+
+		# Bottom
+		odb.dbObstruction_create(self.reader.block,
+			layer_h, 0, 0, die.xMax(), ly[0])
+
+		# Top
+		odb.dbObstruction_create(self.reader.block,
+			layer_h, 0, ly[1], die.xMax(), die.yMax())
+
 
 @click.command()
 @click_odb
@@ -177,6 +331,8 @@ def route(
 	r.route_vspine()
 	r.create_spine_obs()
 	r.create_macro_obs()
+	r.route_k01()
+	r.create_k01_obs()
 
 
 if __name__ == "__main__":
