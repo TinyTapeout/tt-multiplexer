@@ -69,6 +69,8 @@ module tt_mux #(
 	wire [U_IW-1:0] um_iwa[0:N_UM-1];
 
 	// Decoding
+	wire      [4:0] addr_match;
+	wire            branch_sel_weak;
 	wire            branch_sel;
 	wire            branch_sel_tbe;
 
@@ -97,7 +99,21 @@ module tt_mux #(
 	// ------------------
 
 	// Decode branch address
-	assign branch_sel = (si_sel[9:6] == addr[4:1]) & (si_sel[4] == addr[0]);
+	tt_prim_buf #(
+		.HIGH_DRIVE(0)
+	) branch_addr_match_buf_I[4:0] (
+		.a  ({si_sel[9:6], si_sel[4]}),
+		.z  (addr_match)
+	);
+
+	assign branch_sel_weak = (addr == addr_match);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) branch_sel_buf_I (
+		.a  (branch_sel_weak),
+		.z  (branch_sel)
+	);
 
 	tt_prim_tbuf_pol tbuf_row_ena_I (
 		.t  (branch_sel),
