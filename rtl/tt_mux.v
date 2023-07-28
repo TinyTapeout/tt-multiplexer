@@ -184,7 +184,7 @@ module tt_mux #(
 				);
 
 				// T-Buf
-				tt_prim_tbuf_pol tbuf_row_ena_I (
+				tt_prim_tbuf_pol tbuf_blk_ena_I (
 					.t  (col_sel_h[i>>1]),
 					.tx (l_tbe)
 				);
