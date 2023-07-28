@@ -55,6 +55,8 @@ module tt_mux #(
 	wire            si_ena;
 	wire            si_gl;
 
+	wire [U_OW-1:0] so_usr_pre;
+
 	// Horizontal distribution/collection bus
 	wire      [3:0] bus_gd;
 	wire [U_OW-1:0] bus_ow;
@@ -103,8 +105,15 @@ module tt_mux #(
 	);
 
 	// Spine drive TBUF for Outward
-	tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
+	tt_prim_buf #(
+		.HIGH_DRIVE(0)
+	) buf_spine_ow_I[U_OW-1:0] (
 		.a  (bus_ow),
+		.z  (so_usr_pre)
+	);
+
+	tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
+		.a  (so_usr_pre),
 		.tx (branch_sel_tbe),
 		.z  (so_usr)
 	);
