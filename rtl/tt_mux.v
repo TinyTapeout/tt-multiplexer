@@ -155,6 +155,7 @@ module tt_mux #(
 		end
 	endgenerate
 
+	wire [(N_UM/2)-1:0] col_sel_h_weak;
 	wire [(N_UM/2)-1:0] col_sel_h;
 
 	generate
@@ -173,7 +174,14 @@ module tt_mux #(
 				wire      [1:0] l_sel;
 
 				// Decoder
-				assign col_sel_h[i>>1] = bus_sel[4:2] == (i >> 1);
+				assign col_sel_h_weak[i>>1] = bus_sel[4:2] == (i >> 1);
+
+				tt_prim_buf #(
+					.HIGH_DRIVE(0)
+				) col_sel_buf_I (
+					.a  (col_sel_h_weak[i>>1]),
+					.z  (col_sel_h[i>>1])
+				);
 
 				// Mux
 				tt_prim_buf #(
