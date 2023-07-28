@@ -170,18 +170,26 @@ module tt_mux #(
 				// Signals
 				wire [U_OW-1:0] l_ow;
 				wire            l_tbe;
+				wire      [1:0] l_sel;
 
 				// Decoder
 				assign col_sel_h[i>>1] = bus_sel[4:2] == (i >> 1);
 
 				// Mux
+				tt_prim_buf #(
+					.HIGH_DRIVE(0)
+				) mux4_sel_buf_I[1:0] (
+					.a  (bus_sel[1:0]),
+					.z  (l_sel)
+				);
+
 				tt_prim_mux4 mux4_I[U_OW-1:0] (
 					.a(um_owa[i*2+0]),
 					.b(um_owa[i*2+1]),
 					.c(um_owa[i*2+2]),
 					.d(um_owa[i*2+3]),
 					.x(l_ow),
-					.s(bus_sel[1:0])
+					.s(l_sel)
 				);
 
 				// T-Buf
