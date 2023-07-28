@@ -19,7 +19,7 @@ module tt_prim_tbuf_pol (
 	output wire tx
 );
 
-	sky130_fd_sc_hd__inv_4 cell0_I (
+	sky130_fd_sc_hd__bufinv_8 cell0_I (
 `ifdef WITH_POWER
 		.VPWR (1'b1),
 		.VGND (1'b0),
