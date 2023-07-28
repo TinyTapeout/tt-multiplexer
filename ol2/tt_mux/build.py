@@ -77,7 +77,7 @@ class MuxFlow(SequentialFlow):
 		Checker.WireLength,
 		OpenROAD.FillInsertion,
 		OpenROAD.RCX,
-#		OpenROAD.STAPostPNR,	# FIXME
+		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
 		Magic.StreamOut,
 		Magic.WriteLEF,
@@ -130,6 +130,9 @@ if __name__ == '__main__':
 		# Sources
 		"VERILOG_INCLUDE_DIRS" : [ "../../rtl/" ],
 		"VERILOG_FILES"        : verilog_files,
+
+		# Constraints
+		"BASE_SDC_FILE" : "base.sdc",
 
 		# Synthesis
 		"SYNTH_READ_BLACKBOX_LIB"     : True,
