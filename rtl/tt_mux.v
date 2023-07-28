@@ -161,6 +161,7 @@ module tt_mux #(
 		for (i=0; i<N_UM/2; i=i+1)
 		begin : col
 			// Signals
+			wire [1:0] l_ena_weak;
 			wire [1:0] l_ena;
 
 			// Mux-4
@@ -197,7 +198,14 @@ module tt_mux #(
 			end
 
 			// Bottom
-			assign l_ena[0] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b0);
+			assign l_ena_weak[0] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b0);
+
+			tt_prim_buf #(
+				.HIGH_DRIVE(1)
+			) l_ena_0_I (
+				.a  (l_ena_weak[0]),
+				.z  (l_ena[0])
+			);
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
@@ -227,7 +235,14 @@ module tt_mux #(
 			);
 
 			// Top
-			assign l_ena[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b1);
+			assign l_ena_weak[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b1);
+
+			tt_prim_buf #(
+				.HIGH_DRIVE(1)
+			) l_ena_1_I (
+				.a  (l_ena_weak[1]),
+				.z  (l_ena[1])
+			);
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
