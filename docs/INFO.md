@@ -38,7 +38,7 @@ It outputs the address of the currently selected design on the `si_sel` port of 
 
 For instance, to select the design at address 12, you'll pulse `sel_rst_n` once, and then pulse `sel_inc` 12 times:
 
-![Mux Controller Diagram](diagrams/mux_select_addr_12.png)
+![Mux signals for activating the design at address 12](diagrams/mux_select_addr_12.png)
 
 Internally, the controller is just a chain of 10 D flip-flops. The `sel_inc` signal is connected to the clock of the first flip-flop, and the output of each flip-flop is connected to the clock of the next flip-flop. The `sel_rst_n` signal is connected to the reset of all flip-flops.
 
