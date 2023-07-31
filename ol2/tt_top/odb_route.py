@@ -163,9 +163,6 @@ class Router:
 				)
 
 	def route_k01(self):
-		#import IPython
-		#IPython.embed()
-
 		# Vias
 		tech = self.reader.db.getTech()
 
@@ -264,14 +261,8 @@ class Router:
 					# ?!?!?
 					continue
 
-			#net.getBTerms()
-			#bt.getFirstPinLocation()
-
 			# Encoder end
 			encoder.end()
-
-		k0_net = ctrl_inst.findITerm('k_zero').getNet()
-		k1_net = ctrl_inst.findITerm('k_one').getNet()
 
 	def create_k01_obs(self):
 
