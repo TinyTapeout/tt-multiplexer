@@ -2,4 +2,5 @@ runs
 lef/*.lef
 gds/*.gds
 verilog/*.v
+spef/*.spef
 config-tmp.json

@@ -119,6 +119,15 @@ if __name__ == '__main__':
 			}
 			if m.mod_name.startswith('tt_um_'):
 				macros_models.append(f'dir::verilog/{m.mod_name:s}.v')
+			else:
+				macros[m.mod_name].update({
+					'nl':   f'dir::verilog/{m.mod_name:s}.v',
+					'spef': {
+						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
+						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom.spef' ],
+						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
+					},
+				})
 
 		macros[m.mod_name]['instances'][m.inst_name] = {
 			"location": [ m.pos.x / 1000, m.pos.y / 1000 ],
@@ -139,10 +148,7 @@ if __name__ == '__main__':
 		],
 
 		# Macros
-		"EXTRA_VERILOG_MODELS": [
-			"../../rtl/tt_ctrl.v",
-			"../../rtl/tt_mux.v",
-		] + macros_models,
+		"EXTRA_VERILOG_MODELS": macros_models,
 		"MACROS": macros,
 
 		# PDN
