@@ -7,6 +7,7 @@
 
 import os
 import sys
+import yaml
 
 import odb
 
@@ -161,6 +162,74 @@ class Router:
 					bb.xMax() - self.tti.layout.glb.margin.x,
 					bb.yMax() - self.tti.layout.glb.margin.y,
 				)
+
+	def route_pad(self):
+		# Vias
+		tech = self.reader.db.getTech()
+
+		via_m23 = tech.findVia('M2M3_PR')
+		via_m34 = tech.findVia('M3M4_PR')
+
+		# Find controller instance
+		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
+
+		# Load data file
+		data = yaml.load(open('route_data.yaml'), yaml.FullLoader)['ports']
+
+		# Iterate through data file
+		for port_name, rpts in data.items():
+			# Starting point
+			it = ctrl_inst.findITerm(port_name)
+			sx, sy = it.getAvgXY()[1:]
+
+			# Net / Wire
+			net = it.getNet()
+			wire = odb.dbWire.create(net)
+
+			# Ending point
+			bt = net.get1stBTerm()
+			ex, ey = bt.getFirstPinLocation()[1:]
+			el = bt.getBPins()[0].getBoxes()[0].getTechLayer()
+
+			# Set via type for intermediate routing points
+			rpts = [(v, via_m34) for v in rpts]
+
+			# Append ending point to intermediate routing points
+			if len(rpts) & 1:
+				rpts.extend([(ex, via_m23), (ey, None)])
+			else:
+				rpts.extend([(ey, via_m34), (ex, None)])
+
+			# Encoder start
+			encoder = odb.dbWireEncoder()
+			encoder.begin(wire)
+
+			encoder.newPath(self.layer_v, 'FIXED')
+			encoder.addPoint(sx, sy)
+
+			# Scan through routing points
+			px = sx
+			py = sy
+			xy = True
+
+			for pt, vt in rpts:
+				# Next point
+				if xy:
+					py = pt
+				else:
+					px = pt
+
+				encoder.addPoint(px, py)
+
+				# Toggle routing direction
+				xy ^= True
+
+				# Add via
+				if vt is not None:
+					encoder.addTechVia(vt)
+
+			# Encoder end
+			encoder.end()
 
 	def route_k01(self):
 		# Vias
@@ -324,6 +393,7 @@ def route(
 	r.create_macro_obs()
 	r.route_k01()
 	r.create_k01_obs()
+	r.route_pad()
 
 
 if __name__ == "__main__":
