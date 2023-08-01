@@ -231,6 +231,71 @@ class Router:
 			# Encoder end
 			encoder.end()
 
+	def route_um_tieoffs(self):
+		# Get track info
+		# We route horizontally on met4, non-preferred direction ...
+		track_cfg = self.tti.cfg.pdk.tracks.met4.y
+
+		def track_align(v):
+			return track_cfg.offset + ((v - track_cfg.offset) // track_cfg.pitch) * track_cfg.pitch
+
+		# Scan all the muxes
+		for inst in self.reader.instances:
+			# Not a mux -> skip
+			if inst.getMaster().getName() != 'tt_mux':
+				continue
+
+			# Instance bounding box
+			inst_bbox = inst.getBBox()
+			inst_y_mid = ( inst_bbox.yMin() + inst_bbox.yMax() ) // 2
+
+			# Scan all um_k_zero[]
+			for k0_it in inst.getITerms():
+				# Not right port ?
+				if not k0_it.getMTerm().getName().startswith('um_k_zero'):
+					continue
+
+				# Get net and check if there are anything to tie
+				k0_net = k0_it.getNet()
+				if k0_net.getITermCount() <= 1:
+					continue
+
+				# Get layer
+				layer = k0_it.getMTerm().getMPins()[0].getGeometry()[0].getTechLayer()
+
+				# Get strap Y position
+				sy = k0_it.getAvgXY()[2]
+
+				if sy > inst_y_mid:
+					sy = track_align(inst_bbox.yMax() + track_cfg.pitch - 1)
+				else:
+					sy = track_align(inst_bbox.yMin())
+
+				# Start custom routing
+				wire = odb.dbWire.create(k0_net)
+
+				encoder = odb.dbWireEncoder()
+				encoder.begin(wire)
+
+				# Collect all ITerms positions
+				it_pos = [ it.getAvgXY()[1:] for it in k0_net.getITerms() ]
+				it_pos.sort()
+
+				encoder.newPath(layer, 'FIXED')
+
+				for n, (px, py) in enumerate(it_pos):
+					if n == 0:
+						encoder.addPoint(px, py)
+						encoder.addPoint(px, sy)
+						continue
+					elif n > 1:
+						encoder.newPath(j)
+					j = encoder.addPoint(px, sy)
+					encoder.addPoint(px, py)
+
+				# End routing
+				encoder.end()
+
 	def route_k01(self):
 		# Vias
 		tech = self.reader.db.getTech()
@@ -394,6 +459,7 @@ def route(
 	r.route_k01()
 	r.create_k01_obs()
 	r.route_pad()
+	r.route_um_tieoffs()
 
 
 if __name__ == "__main__":
