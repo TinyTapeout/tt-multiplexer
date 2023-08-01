@@ -38,7 +38,6 @@
     "FP_PDN_HOFFSET": "expr::$FP_PDN_VOFFSET",
     "RT_MAX_LAYER": "met4",
     "FP_PDN_CHECK_NODES": false,
-    "SYNTH_ELABORATE_ONLY": true,
     "FP_PDN_ENABLE_RAILS": false,
     "DIODE_INSERTION_STRATEGY": false,
     "MAGIC_DEF_LABELS": false,

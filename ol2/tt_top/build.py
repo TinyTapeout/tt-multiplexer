@@ -151,6 +151,12 @@ if __name__ == '__main__':
 		"EXTRA_VERILOG_MODELS": macros_models,
 		"MACROS": macros,
 
+		# Synthesis
+		"SYNTH_ELABORATE_ONLY"      : True,
+		"SYNTH_EXCLUSION_CELL_LIST" : "no_synth_cells.txt",
+		"PNR_EXCLUSION_CELL_LIST"   : "no_drc_cells.txt",
+		"DRC_EXCLUDE_CELL_LIST"     : "no_drc_cells.txt",
+
 		# PDN
 		"PDN_CFG": "pdn.tcl",
 
