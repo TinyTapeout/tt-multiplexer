@@ -83,7 +83,7 @@ class TopFlow(SequentialFlow):
 		Odb.ReportWireLength,
 		Checker.WireLength,
 		OpenROAD.RCX,
-#		OpenROAD.STAPostPNR,	# FIXME
+		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
 		Magic.StreamOut,
 		Magic.WriteLEF,
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
 	# Generate macros
 	macros = { }
-	macros_models = [ ]
+	user_modules = []
 
 	for m in tti.die.get_sub_macros():
 		if m.mod_name not in macros:
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 				'instances': { }
 			}
 			if m.mod_name.startswith('tt_um_'):
-				macros_models.append(f'dir::verilog/{m.mod_name:s}.v')
+				user_modules.append(m.mod_name)
 			elif m.mod_name.startswith('tt_pg_'):
 				macros[m.mod_name].update({
 					'nl': f'dir::verilog/{m.mod_name:s}.v',
@@ -150,6 +150,13 @@ if __name__ == '__main__':
 			"orientation": m.orient,
 		}
 
+	# Generate dummy for all user modules
+	mod_tpl = open('tt_um_tpl.v', 'r').read()
+	open('verilog/tt_um_all.v', 'w').write('\n'.join([
+		mod_tpl.format(mod_name=m)
+			for m in user_modules
+	]))
+
 	# Custom config
 	flow_cfg = {
 		# Main design properties
@@ -158,14 +165,19 @@ if __name__ == '__main__':
 
 		# Sources
 		"VERILOG_FILES": [
-			"user_project_wrapper.v",
-			"../../rtl/tt_top.v",
-			"../../rtl/tt_user_module.v",
+			"dir::user_project_wrapper.v",
+			"dir::../../rtl/tt_top.v",
+			"dir::../../rtl/tt_user_module.v",
 		],
 
 		# Macros
-		"EXTRA_VERILOG_MODELS": macros_models,
 		"MACROS": macros,
+		"EXTRA_VERILOG_MODELS": [
+			"dir::verilog/tt_um_all.v",
+		],
+
+		# Constraints
+		"SIGNOFF_SDC_FILE" : "signoff.sdc",
 
 		# Synthesis
 		"SYNTH_ELABORATE_ONLY"      : True,
