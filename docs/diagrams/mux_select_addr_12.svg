@@ -32,12 +32,12 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="3.6651702"
-     inkscape:cx="109.54471"
-     inkscape:cy="32.467796"
+     inkscape:cx="163.97601"
+     inkscape:cy="32.604216"
      inkscape:window-width="1920"
-     inkscape:window-height="1010"
-     inkscape:window-x="-6"
-     inkscape:window-y="-6"
+     inkscape:window-height="974"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      inkscape:window-maximized="1"
      inkscape:current-layer="g1262"
      inkscape:export-bgcolor="#ffffffff" />
@@ -104,7 +104,7 @@
        stroke-width="1"
        stroke-linejoin="round"
        stroke-linecap="butt"
-       d="m 115.24934,406.29922 h 3.74804"
+       d="m 115.24934,393.07072 h 3.74804"
        fill-rule="evenodd"
        id="path1129" />
     <path
@@ -160,7 +160,7 @@
        stroke-width="1"
        stroke-linejoin="round"
        stroke-linecap="butt"
-       d="m 117.97113,393.07086 h 14.14172"
+       d="m 117.97113,406.29972 h 14.14172"
        fill-rule="evenodd"
        id="path1137" />
     <path
@@ -894,7 +894,7 @@
        stroke-width="1"
        stroke-linejoin="round"
        stroke-linecap="butt"
-       d="m 131.11942,406.24933 h 2.51822 243.49753"
+       d="m 131.11942,393.07072 h 2.51822 243.49753"
        fill-rule="evenodd"
        id="path1258"
        sodipodi:nodetypes="ccc" />

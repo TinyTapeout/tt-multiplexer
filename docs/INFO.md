@@ -28,15 +28,15 @@ The multiplexer consists of three main units:
 
 The mux controller has 3 inputs lines:
 
-| Input       | Description                                       |
-| ----------- | ------------------------------------------------- |
-| `ena`       | Sent as-as (buffered) to the downstream mux units |
-| `sel_rst_n` | Resets the internal address counter to 0          |
-| `sel_inc`   | Increments the internal address counter by 1      |
+| Input       | Description                                           |
+| ----------- | ----------------------------------------------------- |
+| `ena`       | Sent as-as (buffered) to the downstream mux units     |
+| `sel_rst_n` | Resets the internal address counter to 0 (active low) |
+| `sel_inc`   | Increments the internal address counter by 1          |
 
 It outputs the address of the currently selected design on the `si_sel` port of the spine (see below).
 
-For instance, to select the design at address 12, you'll pulse `sel_rst_n` once, and then pulse `sel_inc` 12 times:
+For instance, to select the design at address 12, you need to pulse `sel_rst_n` low, and then pulse `sel_inc` 12 times:
 
 ![Mux signals for activating the design at address 12](diagrams/mux_select_addr_12.png)
 
