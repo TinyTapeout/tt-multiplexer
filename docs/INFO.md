@@ -84,46 +84,46 @@ For all others, inactive designs (including all designs in inactive muxes):
 
 ## Pinout
 
-| mprj_io pin | Function            | Signal         |
-| ----------- | ------------------- | -------------- |
-| 0           |                     | (none)         |
-| 1           | Housekeeping SPI \* | SDO            |
-| 2           | Housekeeping SPI    | SDI            |
-| 3           | Housekeeping SPI    | CSB            |
-| 4           | Housekeeping SPI    | SCK            |
-| 5           | Clock output        | user_clock2 †  |
-| 6           | Input               | clk            |
-| 7           | Input               | n_rst          |
-| 8           | Input               | ui_in[0] ‡     |
-| 9           | Input               | ui_in[1]       |
-| 10          | Input               | ui_in[2]       |
-| 11          | Input               | ui_in[3]       |
-| 12          | Input               | ui_in[4]       |
-| 13          | Input               | ui_in[5]       |
-| 14          | Input               | ui_in[6]       |
-| 15          | Input               | ui_in[7]       |
-| 16          | Output              | uo_out[0]      |
-| 17          | Output              | uo_out[1]      |
-| 18          | Output              | uo_out[2]      |
-| 19          | Output              | uo_out[3]      |
-| 20          | Output              | uo_out[4]      |
-| 21          | Output              | uo_out[5]      |
-| 22          | Output              | uo_out[6]      |
-| 23          | Output              | uo_out[7]      |
-| 24          | Bidirectional       | uio[0]         |
-| 25          | Bidirectional       | uio[1]         |
-| 26          | Bidirectional       | uio[2]         |
-| 27          | Bidirectional       | uio[3]         |
-| 28          | Bidirectional       | uio[4]         |
-| 29          | Bidirectional       | uio[5]         |
-| 30          | Bidirectional       | uio[6]         |
-| 31          | Bidirectional       | uio[7]         |
-| 32          | Mux Control         | ctrl_ena       |
-| 33          |                     | (none)         |
-| 34          | Mux Control         | ctrl_sel_inc   |
-| 35          |                     | (none)         |
-| 36          | Mux Control         | ctrl_sel_rst_n |
-| 37          |                     | (none)         |
+| mprj_io pin | Function            | Signal         | QFN64 pin |
+| ----------- | ------------------- | -------------- | --------- |
+| 0           |                     | (none)         | 31        |
+| 1           | Housekeeping SPI \* | SDO            | 32        |
+| 2           | Housekeeping SPI    | SDI            | 33        |
+| 3           | Housekeeping SPI    | CSB            | 34        |
+| 4           | Housekeeping SPI    | SCK            | 35        |
+| 5           | Clock output        | user_clock2 †  | 36        |
+| 6           | Input               | clk            | 37        |
+| 7           | Input               | n_rst          | 41        |
+| 8           | Input               | ui_in[0] ‡     | 42        |
+| 9           | Input               | ui_in[1]       | 43        |
+| 10          | Input               | ui_in[2]       | 44        |
+| 11          | Input               | ui_in[3]       | 45        |
+| 12          | Input               | ui_in[4]       | 46        |
+| 13          | Input               | ui_in[5]       | 48        |
+| 14          | Input               | ui_in[6]       | 50        |
+| 15          | Input               | ui_in[7]       | 51        |
+| 16          | Output              | uo_out[0]      | 53        |
+| 17          | Output              | uo_out[1]      | 54        |
+| 18          | Output              | uo_out[2]      | 55        |
+| 19          | Output              | uo_out[3]      | 57        |
+| 20          | Output              | uo_out[4]      | 58        |
+| 21          | Output              | uo_out[5]      | 59        |
+| 22          | Output              | uo_out[6]      | 60        |
+| 23          | Output              | uo_out[7]      | 61        |
+| 24          | Bidirectional       | uio[0]         | 62        |
+| 25          | Bidirectional       | uio[1]         | 2         |
+| 26          | Bidirectional       | uio[2]         | 3         |
+| 27          | Bidirectional       | uio[3]         | 4         |
+| 28          | Bidirectional       | uio[4]         | 5         |
+| 29          | Bidirectional       | uio[5]         | 6         |
+| 30          | Bidirectional       | uio[6]         | 7         |
+| 31          | Bidirectional       | uio[7]         | 8         |
+| 32          | Mux Control         | ctrl_ena       | 11        |
+| 33          |                     | (none)         | 12        |
+| 34          | Mux Control         | ctrl_sel_inc   | 13        |
+| 35          |                     | (none)         | 14        |
+| 36          | Mux Control         | ctrl_sel_rst_n | 15        |
+| 37          |                     | (none)         | 16        |
 
 \* The [Housekeeping SPI](https://caravel-harness.readthedocs.io/en/latest/housekeeping-spi.html) is an SPI interfaces provided by the Caravel harness. You can use it to change the configuration of the GPIO pins and control the clock for the internal Caravel RISC-V core. We do not plan to use it in the Tiny Tapeout Demo board.  
 † The `user_clock2` signal outputs the internal clock signal of caravel. You could use it to provide a clock to your design by connecting it to the `clk` input (mprj_io pin 6). We do not plan to use it in the Tiny Tapeout Demo board.  
