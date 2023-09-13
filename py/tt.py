@@ -157,7 +157,7 @@ class ModulePlacer:
 			if mod.height not in [1,2]:
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid heigth {mod.height:d}")
 
-			if mod.width not in [1,2,4,8]:
+			if mod.width not in [1,2,3,4,8]:
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid width {mod.width:d}")
 
 			if (mod.pos_x is not None) and (
