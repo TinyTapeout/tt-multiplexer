@@ -116,5 +116,5 @@ if __name__ == '__main__':
 
 	# Generate block templates for all supported sizes
 	for v_mult in [ 1, 2 ]:
-		for h_mult in [ 1, 2, 4, 8 ]:
+		for h_mult in [ 1, 2, 3, 4, 8 ]:
 			gen_block_template(tti, h_mult, v_mult)
