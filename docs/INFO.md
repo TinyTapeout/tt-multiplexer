@@ -93,7 +93,7 @@ For all others, inactive designs (including all designs in inactive muxes):
 | 4           | Housekeeping SPI    | SCK            | 35        |
 | 5           | Clock output        | user_clock2 †  | 36        |
 | 6           | Input               | clk            | 37        |
-| 7           | Input               | n_rst          | 41        |
+| 7           | Input               | rst_n          | 41        |
 | 8           | Input               | ui_in[0] ‡     | 42        |
 | 9           | Input               | ui_in[1]       | 43        |
 | 10          | Input               | ui_in[2]       | 44        |
@@ -127,4 +127,4 @@ For all others, inactive designs (including all designs in inactive muxes):
 
 \* The [Housekeeping SPI](https://caravel-harness.readthedocs.io/en/latest/housekeeping-spi.html) is an SPI interfaces provided by the Caravel harness. You can use it to change the configuration of the GPIO pins and control the clock for the internal Caravel RISC-V core. We do not plan to use it in the Tiny Tapeout Demo board.  
 † The `user_clock2` signal outputs the internal clock signal of caravel. You could use it to provide a clock to your design by connecting it to the `clk` input (mprj_io pin 6). We do not plan to use it in the Tiny Tapeout Demo board.  
-‡ Internally, there's no difference between `clk`, `n_rst`, and `ui_in` pins. They are all just bits in the `pad_ui_in` bus. However, we use different names to make it easier to understand the purpose of each bit.
+‡ Internally, there's no difference between `clk`, `rst_n`, and `ui_in` pins. They are all just bits in the `pad_ui_in` bus. However, we use different names to make it easier to understand the purpose of each bit.
