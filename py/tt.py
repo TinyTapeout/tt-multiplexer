@@ -220,10 +220,10 @@ class ModulePlacer:
 	def _find_x_for_module(self, mod):
 		for x in range(self.cfg.tt.grid.x // 2):
 			if self._site_suitable(mod, x, mod.pos_y):
-				return x, y
+				return x, mod.pos_y
 		for x in range(self.cfg.tt.grid.x // 2):
 			if self._site_suitable(mod, x + 16, mod.pos_y):
-				return x + 16, y
+				return x + 16, mod.pos_y
 		return None, None
 
 	def _place_module(self, mod):
