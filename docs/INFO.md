@@ -30,7 +30,7 @@ The mux controller has 3 inputs lines:
 
 | Input       | Description                                           |
 | ----------- | ----------------------------------------------------- |
-| `ena`       | Sent as-as (buffered) to the downstream mux units     |
+| `ena`       | Sent as-is (buffered) to the downstream mux units     |
 | `sel_rst_n` | Resets the internal address counter to 0 (active low) |
 | `sel_inc`   | Increments the internal address counter by 1          |
 
