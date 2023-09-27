@@ -10,7 +10,7 @@ It has the following features:
 - 8 dedicated outputs
 - 8 bidirectional IOs
 - Supports up to 384 user designs (24 mux units, each with up to 16 designs)
-- Designs can have different sizes. The basic unit is a called a tile, and designs can occupy 1, 2, 4, 8, or 16 tiles.
+- Designs can have different sizes. The basic unit is a called a tile, and designs can occupy 1, 2, 4, 6, 8, or 16 tiles.
 
 ## Operation
 
