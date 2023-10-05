@@ -15,6 +15,7 @@ import sys
 
 from typing import List, Type
 
+from openlane.flows.misc import OpenInKLayout
 from openlane.flows.sequential import SequentialFlow
 from openlane.steps.odb import OdbpyStep
 from openlane.steps import (
@@ -91,6 +92,7 @@ class TopFlow(SequentialFlow):
 if __name__ == '__main__':
 	# Argument processing
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument("--open-in-klayout", action="store_true", help="Open last run in KLayout")
 	parser.add_argument("--skip-xor-checks", action="store_true", help="Skips XOR checks")
 
 	args = parser.parse_args()
@@ -202,11 +204,12 @@ if __name__ == '__main__':
 	})
 
 	# Run flow
-	flow = TopFlow(
+	flow_kls = OpenInKLayout if args.open_in_klayout else TopFlow
+	flow = flow_kls(
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
 		pdk        = "sky130A",
 	)
 
-	flow.start()
+	flow.start(last_run = args.open_in_klayout)
