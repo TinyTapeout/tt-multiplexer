@@ -86,6 +86,9 @@ def gen_block_template(tti, h_mult, v_mult):
 		"TOP_MARGIN_MULT"    : 1,
 		"LEFT_MARGIN_MULT"   : 6,
 		"RIGHT_MARGIN_MULT"  : 6,
+
+		# Synthesis
+		"SYNTH_ELABORATE_ONLY" : True,
 	}
 
 	flow = BlockTemplateFlow(
