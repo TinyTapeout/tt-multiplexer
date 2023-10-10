@@ -542,7 +542,7 @@ class Layout:
 		# Get tracks
 		tracks = self._ply_distribute(
 			n_pins = len(block_ply_e),
-			start  = 0,
+			start  = self.glb.pg_vdd.offset,
 			end    = self.glb.block.width,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
