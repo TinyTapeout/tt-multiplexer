@@ -51,7 +51,7 @@ class MuxFlow(SequentialFlow):
 		Yosys.Synthesis,
 		Checker.YosysUnmappedCells,
 #		Checker.YosysSynthChecks,	# FIXME: Doesn't support tristate
-		Misc.LoadBaseSDC,
+		OpenROAD.CheckSDCFiles,
 		OpenROAD.Floorplan,
 		OpenROAD.TapEndcapInsertion,
 		IOPlacement,
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 		"VERILOG_FILES"        : verilog_files,
 
 		# Constraints
-		"BASE_SDC_FILE" : "base.sdc",
+		"SIGNOFF_SDC_FILE" : "signoff.sdc",
 
 		# Synthesis
 		"SYNTH_READ_BLACKBOX_LIB"     : True,
