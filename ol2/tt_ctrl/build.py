@@ -149,10 +149,10 @@ if __name__ == '__main__':
 
 		# PDN
 		"PDN_CFG"         : "pdn.tcl",
- 		"FP_PDN_VPITCH"   : pdn_vpitch   / 1000,
- 		"FP_PDN_VOFFSET"  : pdn_voffset  / 1000,
- 		"FP_PDN_VSPACING" : pdn_vspacing / 1000,
- 		"FP_PDN_VWIDTH"   : pdn_vwidth   / 1000,
+		"FP_PDN_VPITCH"   : pdn_vpitch   / 1000,
+		"FP_PDN_VOFFSET"  : pdn_voffset  / 1000,
+		"FP_PDN_VSPACING" : pdn_vspacing / 1000,
+		"FP_PDN_VWIDTH"   : pdn_vwidth   / 1000,
 
 		# Placement
 		"PL_TARGET_DENSITY_PCT" : 40,
