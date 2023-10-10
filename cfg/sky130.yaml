@@ -10,6 +10,9 @@ pdk:
   site:
     width:  460
     height: 2720
+  pwrgate:
+    vdd:
+      width: 9200
   tracks:
     li1:
       x:

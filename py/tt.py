@@ -344,6 +344,7 @@ class Layout:
 		glb.block  = ConfigNode()
 		glb.mux    = ConfigNode()
 		glb.ctrl   = ConfigNode()
+		glb.pg_vdd = ConfigNode()
 
 		# Size of the various busses
 		self.vspine = ConfigNode({
@@ -426,6 +427,10 @@ class Layout:
 		hti = self.cfg.pdk.tracks[self.cfg.tt.spine.hlayer]
 		if glb.mux.height < (hspine_tracks * hti.y.pitch):
 			raise RuntimeError("Mux too small for Horizontal Spine")
+
+		# Power gates
+		glb.pg_vdd.width  = self.cfg.pdk.pwrgate.vdd.width
+		glb.pg_vdd.offset = self._align_x(glb.pg_vdd.width, ceil=True) + glb.margin.x
 
 	def _ply_len(self, ply):
 		return sum([x[1] or 1 for x in block_ply])
