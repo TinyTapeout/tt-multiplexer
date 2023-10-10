@@ -45,16 +45,6 @@ class IOPlacement(OdbpyStep):
 		return super().get_command()
 
 
-class MuxTemplateFlow(SequentialFlow):
-
-	Steps: List[Type[Step]] = [
-		Yosys.Synthesis,
-		Misc.LoadBaseSDC,
-		OpenROAD.Floorplan,
-		IOPlacement,
-	]
-
-
 class MuxFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -101,16 +91,8 @@ if __name__ == '__main__':
 	tti = tt.TinyTapeout(modules=False)
 
 	# Create and run custom flow
-	verilog_files = []
-
-	if int(os.getenv('TT_TEMPLATE', 0)):
-		verilog_files.append("../../rtl/tt_mux_template.v")
-		flow_kls = MuxTemplateFlow
-	else:
-		verilog_files.append("../../rtl/tt_mux.v")
-		flow_kls = MuxFlow
-
-	verilog_files += [
+	verilog_files = [
+		"../../rtl/tt_mux.v",
 		"../../rtl/prim_sky130/tt_prim_buf.v",
 		"../../rtl/prim_sky130/tt_prim_dfrbp.v",
 		"../../rtl/prim_sky130/tt_prim_diode.v",
@@ -157,7 +139,7 @@ if __name__ == '__main__':
 		"MAGIC_LEF_WRITE_USE_GDS" : False,
 	}
 
-	flow = flow_kls(
+	flow = MuxFlow(
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,

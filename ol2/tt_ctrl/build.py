@@ -45,16 +45,6 @@ class IOPlacement(OdbpyStep):
 		return super().get_command()
 
 
-class CtrlTemplateFlow(SequentialFlow):
-
-	Steps: List[Type[Step]] = [
-		Yosys.Synthesis,
-		Misc.LoadBaseSDC,
-		OpenROAD.Floorplan,
-		IOPlacement,
-	]
-
-
 class CtrlFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -118,16 +108,8 @@ if __name__ == '__main__':
 	pdn_voffset -= 6 * tti.layout.cfg.pdk.site.width	# Margin
 
 	# Create and run custom flow
-	verilog_files = []
-
-	if int(os.getenv('TT_TEMPLATE', 0)):
-		verilog_files.append("../../rtl/tt_ctrl_template.v")
-		flow_kls = CtrlTemplateFlow
-	else:
-		verilog_files.append("../../rtl/tt_ctrl.v")
-		flow_kls = CtrlFlow
-
-	verilog_files += [
+	verilog_files = [
+		"../../rtl/tt_ctrl.v",
 		"../../rtl/prim_sky130/tt_prim_buf.v",
 		"../../rtl/prim_sky130/tt_prim_dfrbp.v",
 		"../../rtl/prim_sky130/tt_prim_diode.v",
@@ -183,7 +165,7 @@ if __name__ == '__main__':
 		"MAGIC_LEF_WRITE_USE_GDS" : False,
 	}
 
-	flow = flow_kls(
+	flow = CtrlFlow(
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
