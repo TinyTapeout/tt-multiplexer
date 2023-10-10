@@ -49,12 +49,12 @@ class BlockTemplateFlow(SequentialFlow):
 	]
 
 
-def gen_block_template(tti, h_mult, v_mult):
+def gen_block_template(tti, h_mult, v_mult, pg_vdd=False):
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
 
 	# Create directory
-	design_dir = f"{h_mult:d}x{v_mult:d}"
+	design_dir = f"{h_mult:d}x{v_mult:d}{'_pg' if pg_vdd else ''}"
 	if not os.path.exists(design_dir):
 		os.mkdir(design_dir)
 
@@ -68,6 +68,10 @@ def gen_block_template(tti, h_mult, v_mult):
 		 v_mult      * tti.layout.glb.block.height +
 		(v_mult - 1) * tti.layout.glb.margin.y
 	)
+
+	# If we're power gated the block width is reduced
+	if pg_vdd:
+		block_width -= tti.layout.glb.pg_vdd.offset
 
 	# Create and run custom flow
 	flow_cfg = {
@@ -103,7 +107,7 @@ def gen_block_template(tti, h_mult, v_mult):
 	# Collect and rename the build product
 	m = list(sorted(glob.glob(os.path.join(design_dir, 'runs', '*', 'final', 'def', 'tt_um_template.def'))))[-1]
 
-	shutil.copyfile(m, f"def/tt_block_{h_mult:d}x{v_mult:d}.def")
+	shutil.copyfile(m, f"def/tt_block_{design_dir:s}.def")
 
 
 if __name__ == '__main__':
@@ -117,4 +121,5 @@ if __name__ == '__main__':
 	# Generate block templates for all supported sizes
 	for v_mult in [ 1, 2 ]:
 		for h_mult in [ 1, 2, 3, 4, 8 ]:
-			gen_block_template(tti, h_mult, v_mult)
+			for pg_vdd in [ False, True ]:
+				gen_block_template(tti, h_mult, v_mult, pg_vdd)

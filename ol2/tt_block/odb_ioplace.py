@@ -35,9 +35,15 @@ def io_place(
 	die_area = reader.block.getDieArea()
 	layer_ns = reader.tech.findLayer(tti.cfg.tt.spine.vlayer)
 
+	# Adjust pin position (in case there is a power gate)
+	pin_ofs = die_area.xMax() - die_area.xMin()
+	pin_ofs -= tti.layout.glb.block.width
+	while pin_ofs > 0:
+		pin_ofs -= tti.layout.glb.block.pitch
+
 	# User block bottom
 	for pn, pp in tti.layout.ply_block.items():
-		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn), pp, 'N')
+		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn), pp + pin_ofs, 'N')
 
 
 if __name__ == "__main__":
