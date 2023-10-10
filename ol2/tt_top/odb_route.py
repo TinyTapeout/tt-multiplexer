@@ -14,9 +14,10 @@ import odb
 sys.path.append('../../py')
 import tt
 import tt_odb
-from openlane.common.misc import get_openlane_root
 
 import click
+
+from openlane.common.misc import get_openlane_root
 sys.path.insert(0, os.path.join(get_openlane_root(), "scripts", "odbpy"))
 from reader import click_odb
 
