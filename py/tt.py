@@ -110,6 +110,7 @@ class ModuleSlot:
 		self.pos_y  = cfg_data.get('y')
 		self.width  = cfg_data.get('width', 1)
 		self.height = cfg_data.get('height', 1)
+		self.pg_vdd = cfg_data.get('pg_vdd', False)
 
 	def as_dict(self):
 		return {
@@ -118,6 +119,7 @@ class ModuleSlot:
 			'y':      self.pos_y,
 			'width':  self.width,
 			'height': self.height,
+			'pg_vdd': self.pg_vdd,
 		}
 
 
@@ -877,7 +879,11 @@ class Block(LayoutElement):
 
 	color = 'crimson'
 
-	def __init__(self, layout, mod_name=None, mw=1, mh=1):
+	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False):
+
+		# Save options
+		self.pg_vdd = pg_vdd
+
 		# Compute module actual width / height
 		width = (
 			mw * layout.glb.block.width +
@@ -888,6 +894,10 @@ class Block(LayoutElement):
 			mh * layout.glb.block.height +
 			(mh - 1) * layout.glb.margin.y
 		)
+
+		# Power gating offset
+		if pg_vdd:
+			width -= layout.glb.pg_vdd.offset
 
 		# Set module name
 		self.mod_name = mod_name
@@ -903,8 +913,15 @@ class Block(LayoutElement):
 		# Super call
 		super()._render(dwg)
 
+		# Power gating offset
+		pin_ofs = self.layout.glb.pg_vdd.offset if self.pg_vdd else 0
+
 		# Render pins
 		for pn, pp in self.layout.ply_block.items():
+			# Apply offset
+			pp -= pin_ofs
+
+			# Draw pin
 			dwg.add(svg.shapes.Rect(
 				( pp-150, self.height-1000 ),
 				( 300,    1000),
@@ -989,7 +1006,12 @@ class Branch(LayoutElement):
 				continue
 
 			# Block instance
-			block = Block(layout, mod_name=f'tt_um_{mp.name:s}', mw=mp.width, mh=mp.height)
+			block = Block(layout,
+				mod_name = f'tt_um_{mp.name:s}',
+				mw = mp.width,
+				mh = mp.height,
+				pg_vdd = mp.pg_vdd,
+			)
 
 			# Even is bottom / Odd it top
 			if bx & 1:
@@ -1001,11 +1023,16 @@ class Branch(LayoutElement):
 
 			blk_x = (bx >> 1) * layout.glb.block.pitch
 
-			# Name
-			name = f'col_um\\[{bx>>1:d}\\].um_{"top" if (bx & 1) else "bot":s}_I.block_{grid_y:d}_{grid_x:d}.tt_um_I'
+			# Name prefix
+			name_pfx = f'col_um\\[{bx>>1:d}\\].um_{"top" if (bx & 1) else "bot":s}_I.block_{grid_y:d}_{grid_x:d}.'
 
-			# Create Block
-			self.add_child(block, Point(blk_x, blk_y), 'FS' if (bx & 1) else 'N', name=name)
+			# Power gating
+			if mp.pg_vdd:
+				# Shift the block
+				blk_x += layout.glb.pg_vdd.offset
+
+			# Add Block as child
+			self.add_child(block, Point(blk_x, blk_y), 'FS' if (bx & 1) else 'N', name=name_pfx+'tt_um_I')
 
 
 class Controller(LayoutElement):
