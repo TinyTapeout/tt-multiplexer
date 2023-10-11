@@ -493,6 +493,9 @@ class Layout:
 			p += t_pitch
 
 		# Pick step if need be
+		if n_pins == 1:
+			step = 1
+
 		if step <= 0:
 			step = (len(tracks) - 1) // (n_pins - 1)
 
@@ -516,7 +519,7 @@ class Layout:
 
 		# Pin Layouts
 		block_ply = [
-			(None,      None),	# k_zero not mapped
+			(None,      2),	# pg_vdd, k_zero not mapped
 			('uio_oe',  self.cfg.tt.uio.io),
 			('uio_out', self.cfg.tt.uio.io),
 			('uo_out',  self.cfg.tt.uio.o),
@@ -528,6 +531,7 @@ class Layout:
 		]
 
 		mux_ply = lambda n: [
+			('um_pg_vdd', (n, 1)),
 			('um_k_zero', (n, 1)),
 			('um_ow',     (n * self.user.ow, self.user.ow)),
 			('um_iw',     (n * self.user.iw, self.user.iw)),
@@ -542,14 +546,25 @@ class Layout:
 			raise RuntimeError('Mux and Block pin layout mismatch !')
 
 		# Get tracks
-		tracks = self._ply_distribute(
-			n_pins = len(block_ply_e),
+		tracks_pg = self._ply_distribute(
+			n_pins = 1,
+			start  = 0,
+			end    = self.glb.pg_vdd.width,
+			step   = 0,
+			layer  = self.cfg.tt.spine.vlayer,
+			axis   = 'x',
+		)
+
+		tracks_um = self._ply_distribute(
+			n_pins = len(block_ply_e) - 1,
 			start  = self.glb.pg_vdd.offset,
 			end    = self.glb.block.width,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
 			axis   = 'x',
 		)
+
+		tracks = tracks_pg + tracks_um
 
 		# Create pins for user blocks
 		self.ply_block = self._ply_finalize(block_ply_e, tracks)
