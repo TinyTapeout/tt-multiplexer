@@ -58,14 +58,14 @@ module tt_user_module #(
 				.rst_n   (rst_n)
 			);
 		end
-%endfor
+% endfor
 
 % for (px,py) in grid.keys():
 		if ((POS_Y == ${py}) && (POS_X == ${px}))
 		begin
 		end
 		else
-%endfor
+% endfor
 		begin
 			// Tie-off
 			assign ow = { N_OW{k_zero} };
