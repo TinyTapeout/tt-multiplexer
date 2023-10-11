@@ -176,8 +176,8 @@ if __name__ == '__main__':
 	flow_cfg.update(json.loads(open('config.json', 'r').read()))
 
 	# Update PDN config
-	pdn_width   = 3.1
-	pdn_spacing = 5 * pdn_width		# Spacing border to border
+	pdn_width   = 6.2
+	pdn_spacing = 2 * pdn_width		# Spacing border to border
 	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +
