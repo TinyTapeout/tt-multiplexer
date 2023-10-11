@@ -890,6 +890,30 @@ class LayoutElement:
 		dwg.write(open(fn, 'w'))
 
 
+class PowerSwitch(LayoutElement):
+
+	color = 'mediumvioletred'
+
+	def __init__(self, layout, mh):
+		# Width / Height
+		width = layout.glb.pg_vdd.width
+
+		height = (
+			mh * layout.glb.block.height +
+			(mh - 1) * layout.glb.margin.y
+		)
+
+		# Set mod_name
+		self.mod_name = f'tt_pg_vdd_{mh:d}'
+
+		# Super
+		super().__init__(
+			layout,
+			width,
+			height,
+		)
+
+
 class Block(LayoutElement):
 
 	color = 'crimson'
@@ -1043,6 +1067,12 @@ class Branch(LayoutElement):
 
 			# Power gating
 			if mp.pg_vdd:
+				# Power Switch instance
+				vdd_sw = PowerSwitch(layout, mh=mp.height)
+
+				# Add Power Switch as child
+				self.add_child(vdd_sw, Point(blk_x, blk_y), 'FS' if (bx & 1) else 'N', name=name_pfx+'tt_pg_vdd_I')
+
 				# Shift the block
 				blk_x += layout.glb.pg_vdd.offset
 
