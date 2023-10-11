@@ -45,9 +45,6 @@ class CustomRoute(OdbpyStep):
 			"odb_route.py"
 		)
 
-	def get_command(sef) -> List[str]:
-		return super().get_command()
-
 
 class TopFlow(SequentialFlow):
 

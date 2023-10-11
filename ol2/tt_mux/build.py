@@ -41,9 +41,6 @@ class IOPlacement(OdbpyStep):
 			"odb_ioplace.py"
 		)
 
-	def get_command(sef) -> List[str]:
-		return super().get_command()
-
 
 class MuxFlow(SequentialFlow):
 
