@@ -58,6 +58,11 @@ module tt_user_module #(
 				.clk     (clk),
 				.rst_n   (rst_n)
 			);
+% if mod.pg_vdd:
+			tt_pg_vdd_${mod.height} tt_pg_vdd_I (
+				.ctrl    (pg_vdd)
+			);
+% endif
 		end
 % endfor
 
