@@ -29,7 +29,8 @@ module tt_user_module #(
 	output wire  [N_OW-1:0] ow,
 	input  wire  [N_IW-1:0] iw,
 	input  wire             ena,
-	input  wire             k_zero
+	input  wire             k_zero,
+	input  wire             pg_vdd
 );
 
 	wire [7:0] uio_in;

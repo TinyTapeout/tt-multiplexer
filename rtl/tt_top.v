@@ -166,6 +166,7 @@ module tt_top #(
 			wire [(U_IW*G_X)-1:0] l_um_iw;
 			wire [      G_X -1:0] l_um_ena;
 			wire [      G_X -1:0] l_um_k_zero;
+			wire [      G_X -1:0] l_um_pg_vdd;
 
 			wire [4:0] l_addr;
 			wire       l_k_one;
@@ -187,6 +188,7 @@ module tt_top #(
 				.um_iw     (l_um_iw),
 				.um_ena    (l_um_ena),
 				.um_k_zero (l_um_k_zero),
+				.um_pg_vdd (l_um_pg_vdd),
 				.spine_ow  (spine_ow),
 				.spine_iw  (spine_iw),
 				.addr      (l_addr),
@@ -215,7 +217,8 @@ module tt_top #(
 					.ow     (l_um_ow[(j*2+0)*U_OW+:U_OW]),
 					.iw     (l_um_iw[(j*2+0)*U_IW+:U_IW]),
 					.ena    (l_um_ena[j*2+0]),
-					.k_zero (l_um_k_zero[j*2+0])
+					.k_zero (l_um_k_zero[j*2+0]),
+					.pg_vdd (l_um_pg_vdd[j*2+0])
 				);
 
 				// Top user module
@@ -229,7 +232,8 @@ module tt_top #(
 					.ow     (l_um_ow[(j*2+1)*U_OW+:U_OW]),
 					.iw     (l_um_iw[(j*2+1)*U_IW+:U_IW]),
 					.ena    (l_um_ena[j*2+1]),
-					.k_zero (l_um_k_zero[j*2+1])
+					.k_zero (l_um_k_zero[j*2+1]),
+					.pg_vdd (l_um_pg_vdd[j*2+1])
 				);
 			end
 		end
