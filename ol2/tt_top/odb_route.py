@@ -455,6 +455,118 @@ class Router:
 			layer_h, 0, ly[1], die.xMax(), die.yMax())
 
 
+
+class PowerStrapper:
+
+	def __init__(self, reader, tti):
+		# Save vars
+		self.reader = reader
+		self.tti    = tti
+
+		# Find useful data
+		tech = reader.db.getTech()
+
+		self.layer = tech.findLayer('met5')
+		self.via   = tech.findVia('M3M4_PR')
+
+	def _find_via(self, blk_inst):
+		# Helper to check if point is within a bounding box
+		def in_bbox(bbox, pt):
+			return (
+				(bbox.xMin() <= pt[0] <= bbox.xMax()) and
+				(bbox.yMin() <= pt[1] <= bbox.yMax())
+			)
+
+		# Block bounding box
+		bbox = blk_inst.getBBox()
+
+		# Scan all geometry from special VGND wire
+		for x in blk_inst.findITerm('VGND').getNet().getSWires()[0].getWires():
+			if  x.isVia() and in_bbox(bbox, x.getViaXY()):
+				return x.getBlockVia()
+
+		return None
+
+	def _get_y_pos(self, pg_inst):
+		# Is it single or double height ?
+		h = int(pg_inst.getMaster().getName()[-1])
+
+		# Get switch physical dimensions
+		bbox = pg_inst.getBBox()
+
+		y_min = bbox.yMin()
+		y_max = bbox.yMax()
+
+		# Split depending if we want 1 or 3 straps
+		if h == 1:
+			return [ (y_min + y_max) // 2 ]
+
+		elif h == 2:
+			step = (y_max - y_min) // 4
+			return [
+				y_min + step,
+				(y_min + y_max) // 2,
+				y_max - step,
+			]
+
+		else:
+			raise RuntimeError('Unsupported heigh Power Switch')
+
+	def _get_x_data(self, pg_inst, blk_inst):
+		# Get terminals
+		it_blk = blk_inst.findITerm('VPWR')
+		it_pg  = pg_inst.findITerm('GPWR')
+
+		# Find geometry for thos terminals
+		geom = it_pg.getGeometries() + it_blk.getGeometries()
+
+		# Extent
+		xl = min([x.xMin() for x in geom])
+		xr = max([x.xMax() for x in geom])
+
+		# Center positions
+		xp = [(x.xMin() + x.xMax()) // 2 for x in geom]
+
+		# Return result
+		return xl, xr, xp
+
+	def _draw_stripe(self, sw, via, y, xl, xr, xp):
+		# Stripe
+		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, y-7000, xr, y+7000)], "STRIPE")
+
+		# Dual vias
+		for x in xp:
+			odb.createSBoxes(sw, via, [odb.Point(x, y-3500), odb.Point(x, y+3500)], "STRIPE")
+
+	def run(self):
+		# Find all power switch instances
+		for pg_inst in self.reader.block.getInsts():
+			# Is it a power switch ?
+			if not pg_inst.getName().endswith('tt_pg_vdd_I'):
+				continue
+
+			# Get the matching block
+			blk_name = '.'.join(pg_inst.getName().split('.')[:-1] + ['tt_um_I'])
+			blk_inst = self.reader.block.findInst(blk_name)
+
+			# Find the via type
+			via = self._find_via(blk_inst)
+
+			# Select the y positions
+			yp = self._get_y_pos(pg_inst)
+
+			# Get the X data (extent + via pos)
+			xl, xr, xp = self._get_x_data(pg_inst, blk_inst)
+
+			# Find net and create the matching special wire
+			net = blk_inst.findITerm('VPWR').getNet()
+			sw = odb.dbSWire.create(net, "ROUTED")
+
+			# Draw for each y position
+			for y in yp:
+				self._draw_stripe(sw, via, y, xl, xr, xp)
+
+
 @click.command()
 @click_odb
 def route(
@@ -473,6 +585,10 @@ def route(
 	r.create_k01_obs()
 	r.route_pad()
 	r.route_um_tieoffs()
+
+	# Create the power strapper
+	p = PowerStrapper(reader, tti)
+	p.run()
 
 
 if __name__ == "__main__":
