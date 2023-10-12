@@ -34,6 +34,18 @@ sys.path.append('../../py')
 import tt
 
 
+class CustomPower(OdbpyStep):
+
+	id = "TT.Top.CustomPower"
+	name = "Custom Power connections for TT Top Level"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_power.py"
+		)
+
+
 class CustomRoute(OdbpyStep):
 
 	id = "TT.Top.CustomRoute"
@@ -58,6 +70,7 @@ class TopFlow(SequentialFlow):
 		Odb.ApplyDEFTemplate,
 		Odb.SetPowerConnections,
 		Odb.ManualMacroPlacement,
+		CustomPower,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
 		OpenROAD.DetailedPlacement,
@@ -161,6 +174,8 @@ if __name__ == '__main__':
 		"DRC_EXCLUDE_CELL_LIST"     : "no_drc_cells.txt",
 
 		# PDN
+		"PDN_CONNECT_MACROS_TO_GRID": False,
+		"PDN_ENABLE_GLOBAL_CONNECTIONS": False,
 		"PDN_CFG": "pdn.tcl",
 
 		# Routing
