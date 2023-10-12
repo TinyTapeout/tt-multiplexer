@@ -1,0 +1,62 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_pg_vdd_2
+  CLASS BLOCK ;
+  FOREIGN tt_pg_vdd_2 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 9.200 BY 225.760 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 0.000 1.200 224.240 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 8.000 0.000 9.200 224.240 ;
+    END
+  END VGND
+  PIN VPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 1.700 0.000 4.350 224.240 ;
+    END
+  END VPWR
+  PIN GPWR
+    DIRECTION OUTPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 4.850 0.000 7.500 224.240 ;
+    END
+  END GPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 462.000000 ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 225.260 9.200 225.760 ;
+    END
+  END ctrl
+  OBS
+      LAYER nwell ;
+        RECT 0.000 114.490 9.190 221.760 ;
+        RECT 0.000 2.000 9.190 109.270 ;
+      LAYER li1 ;
+        RECT 0.180 2.180 9.010 221.580 ;
+      LAYER met1 ;
+        RECT 0.610 2.670 8.580 225.630 ;
+      LAYER met2 ;
+        RECT 0.660 2.620 8.530 225.730 ;
+      LAYER met3 ;
+        RECT 0.610 2.620 8.580 225.705 ;
+  END
+END tt_pg_vdd_2
+END LIBRARY
+
