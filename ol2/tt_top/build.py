@@ -118,6 +118,10 @@ if __name__ == '__main__':
 			}
 			if m.mod_name.startswith('tt_um_'):
 				macros_models.append(f'dir::verilog/{m.mod_name:s}.v')
+			elif m.mod_name.startswith('tt_pg_'):
+				macros[m.mod_name].update({
+					'nl': f'dir::verilog/{m.mod_name:s}.v',
+				})
 			else:
 				macros[m.mod_name].update({
 					'nl':   f'dir::verilog/{m.mod_name:s}.v',
