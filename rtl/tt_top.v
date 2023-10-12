@@ -19,6 +19,12 @@ module tt_top #(
 	parameter integer N_O  = `TT_N_O,
 	parameter integer N_I  = `TT_N_I
 )(
+	// Power
+`ifdef USE_POWER_PINS
+	input wire VPWR,
+	input wire VGND,
+`endif
+
 	// IOs
 	inout  wire [N_PADS-1:0] io_ana,
 	input  wire [N_PADS-1:0] io_in,
@@ -143,6 +149,10 @@ module tt_top #(
 	)
 `endif
 	ctrl_I (
+`ifdef USE_POWER_PINS
+		.VPWR           (VPWR),
+		.VGND           (VGND),
+`endif
 		.pad_uio_in     (pad_uio_in),
 		.pad_uio_out    (pad_uio_out),
 		.pad_uio_oe_n   (pad_uio_oe_n),
@@ -204,6 +214,10 @@ module tt_top #(
 			)
 `endif
 			mux_I (
+`ifdef USE_POWER_PINS
+				.VPWR      (VPWR),
+				.VGND      (VGND),
+`endif
 				.um_ow     (l_um_ow),
 				.um_iw     (l_um_iw),
 				.um_ena    (l_um_ena),
@@ -234,6 +248,10 @@ module tt_top #(
 					.N_O   (N_O),
 					.N_IO  (N_IO)
 				) um_I (
+`ifdef USE_POWER_PINS
+					.VPWR   (VPWR),
+					.VGND   (VGND),
+`endif
 					.ana    (l_um_ana[j*N_A+:N_A]),
 					.ow     (l_um_ow[j*U_OW+:U_OW]),
 					.iw     (l_um_iw[j*U_IW+:U_IW]),

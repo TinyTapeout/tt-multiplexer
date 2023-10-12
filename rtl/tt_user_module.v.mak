@@ -27,6 +27,10 @@ module tt_user_module #(
 	parameter integer N_OW = N_O + N_IO * 2 ,
 	parameter integer N_IW = N_I + N_IO
 )(
+`ifdef USE_POWER_PINS
+	input  wire VPWR,
+	input  wire VGND,
+`endif
 	inout  wire   [N_A-1:0] ana,
 	output wire  [N_OW-1:0] ow,
 	input  wire  [N_IW-1:0] iw,
@@ -50,7 +54,14 @@ module tt_user_module #(
 % for (mux_id, blk_id), mod in grid.items():
 		if ((MUX_ID == ${mux_id}) && (BLK_ID == ${blk_id}))
 		begin : block_${mux_id}_${blk_id}
+`ifdef USE_POWER_PINS
+			wire l_vpwr;
+`endif
 			tt_um_${mod.name} tt_um_I (
+`ifdef USE_POWER_PINS
+				.VPWR    (l_vpwr),
+				.VGND    (VGND),
+`endif
 % if mod.analog:
 				.ua      (ana),
 % endif
@@ -65,8 +76,17 @@ module tt_user_module #(
 			);
 % if mod.pg_vdd:
 			tt_pg_vdd_${mod.height} tt_pg_vdd_I (
+`ifdef USE_POWER_PINS
+				.GPWR    (l_vpwr),
+				.VPWR    (VPWR),
+				.VGND    (VGND),
+`endif
 				.ctrl    (pg_vdd)
 			);
+% else:
+`ifdef USE_POWER_PINS
+			assign l_vpwr = VPWR;
+`endif
 % endif
 		end
 % endfor

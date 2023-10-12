@@ -89,6 +89,10 @@ module user_project_wrapper (
 
 	// Main core
 	tt_top top_I (
+`ifdef USE_POWER_PINS
+		.VPWR        (vccd1),
+		.VGND        (vssd1),
+`endif
 		.io_ana      (io_ana),
 		.io_in       (io_in),
 		.io_out      (io_out),

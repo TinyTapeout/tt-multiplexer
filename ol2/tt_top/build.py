@@ -170,6 +170,8 @@ if __name__ == '__main__':
 			"dir::../../rtl/tt_user_module.v",
 		],
 
+		"VERILOG_POWER_DEFINE": "USE_POWER_PINS",
+
 		# Macros
 		"MACROS": macros,
 		"EXTRA_VERILOG_MODELS": [
