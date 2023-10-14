@@ -111,6 +111,7 @@ class ModuleSlot:
 		self.width  = cfg_data.get('width', 1)
 		self.height = cfg_data.get('height', 1)
 		self.pg_vdd = cfg_data.get('pg_vdd', False)
+		self.analog = cfg_data.get('analog', False)
 
 	def as_dict(self):
 		return {
@@ -120,6 +121,7 @@ class ModuleSlot:
 			'width':  self.width,
 			'height': self.height,
 			'pg_vdd': self.pg_vdd,
+			'analog': self.analog,
 		}
 
 
@@ -301,6 +303,7 @@ class Layout:
 
 		# Sub-layouts
 		self.global_layout()
+		self.user_analog_layout()
 		self.userif_layout()
 		self.hspine_layout()
 		self.vspine_layout()
@@ -514,6 +517,28 @@ class Layout:
 			raise RuntimeError('Mismatch pin/track list')
 
 		return dict([(p,t) for p,t in zip(pins, tracks) if p is not None])
+
+	def user_analog_layout(self):
+		# Pin Layouts
+		ply = [
+			('ua', self.cfg.tt.uio.a),
+		]
+
+		# Expand and check consistency
+		ply_e = self._ply_expand(ply)
+
+		# Get tracks
+		tracks = self._ply_distribute(
+			n_pins = len(ply_e),
+			start  = self.glb.pg_vdd.offset + self.glb.margin.x,
+			end    = self.glb.block.width   - self.glb.margin.x,
+			step   = 0,
+			layer  = self.cfg.tt.spine.vlayer,
+			axis   = 'x',
+		)
+
+		# Create pins for control block
+		self.ply_block_analog = self._ply_finalize(ply_e, tracks)
 
 	def userif_layout(self):
 
@@ -918,10 +943,11 @@ class Block(LayoutElement):
 
 	color = 'crimson'
 
-	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False):
+	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False, analog=False):
 
 		# Save options
 		self.pg_vdd = pg_vdd
+		self.analog = analog
 
 		# Compute module actual width / height
 		width = (
@@ -964,6 +990,20 @@ class Block(LayoutElement):
 			dwg.add(svg.shapes.Rect(
 				( pp-150, self.height-1000 ),
 				( 300,    1000),
+				fill = 'black',
+			))
+
+		if not self.analog:
+			return
+
+		for pn, pp in self.layout.ply_block_analog.items():
+			# Apply offset
+			pp -= pin_ofs
+
+			# Draw pin
+			dwg.add(svg.shapes.Rect(
+				( pp-300, 0),
+				( 600,    1000),
 				fill = 'black',
 			))
 
@@ -1050,6 +1090,7 @@ class Branch(LayoutElement):
 				mw = mp.width,
 				mh = mp.height,
 				pg_vdd = mp.pg_vdd,
+				analog = mp.analog,
 			)
 
 			# Even is bottom / Odd it top
