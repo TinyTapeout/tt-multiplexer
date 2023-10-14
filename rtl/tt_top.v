@@ -241,6 +241,10 @@ module tt_top #(
 					.k_zero (l_um_k_zero[j]),
 					.pg_vdd (l_um_pg_vdd[j])
 				);
+
+				// Analog hack: Connect wires manually
+				assign io_ana[33] = l_um_ana[j*N_A+0];
+				assign io_ana[35] = l_um_ana[j*N_A+1];
 			end
 		end
 	endgenerate
