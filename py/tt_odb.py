@@ -10,7 +10,7 @@
 import odb
 
 
-def place_pin(die_area, layer, bterm, pos, side='N'):
+def place_pin(die_area, layer, bterm, pos, side='N', wide=False):
 	# Get limits
 	BLOCK_LL_X = die_area.xMin()
 	BLOCK_LL_Y = die_area.yMin()
@@ -24,6 +24,9 @@ def place_pin(die_area, layer, bterm, pos, side='N'):
 	# Rectangle graphic
 	WIDTH  = 300
 	LENGTH = 1000
+
+	if wide:
+		WIDTH *= 2
 
 	if side == 'N':
 		rect = odb.Rect(0, 0, WIDTH, LENGTH)

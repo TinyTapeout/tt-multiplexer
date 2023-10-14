@@ -49,12 +49,12 @@ class BlockTemplateFlow(SequentialFlow):
 	]
 
 
-def gen_block_template(tti, h_mult, v_mult, pg_vdd=False):
+def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, analog=False):
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
 
 	# Create directory
-	design_dir = f"{h_mult:d}x{v_mult:d}{'_pg' if pg_vdd else ''}"
+	design_dir = f"{h_mult:d}x{v_mult:d}{'_pg' if pg_vdd else ''}{'_ana' if analog else ''}"
 	if not os.path.exists(design_dir):
 		os.mkdir(design_dir)
 
@@ -73,6 +73,11 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False):
 	if pg_vdd:
 		block_width -= tti.layout.glb.pg_vdd.offset
 
+	# Options
+	defines = []
+	if analog:
+		defines.append('TT_WITH_ANALOG')
+
 	# Create and run custom flow
 	flow_cfg = {
 		# Main design properties
@@ -82,6 +87,7 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False):
 		"VERILOG_FILES"  : [
 			"../../rtl/tt_um_template.v",
 		],
+		"VERILOG_DEFINES" : defines,
 
 		# Floorplanning
 		"DIE_AREA"           :  f"0 0 {block_width/1000:.3f} {block_height/1000:.3f}",
@@ -122,4 +128,7 @@ if __name__ == '__main__':
 	for v_mult in [ 1, 2 ]:
 		for h_mult in [ 1, 2, 3, 4, 8 ]:
 			for pg_vdd in [ False, True ]:
-				gen_block_template(tti, h_mult, v_mult, pg_vdd)
+				for analog in [ False, True ]:
+					if analog and not pg_vdd:
+						continue
+					gen_block_template(tti, h_mult, v_mult, pg_vdd, analog)

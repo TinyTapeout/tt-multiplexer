@@ -41,9 +41,15 @@ def io_place(
 	while pin_ofs > 0:
 		pin_ofs -= tti.layout.glb.block.pitch
 
-	# User block bottom
+	# User block to mux
 	for pn, pp in tti.layout.ply_block.items():
 		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn), pp + pin_ofs, 'N')
+
+	# User block analog (optional pins !)
+	for pn, pp in tti.layout.ply_block_analog.items():
+		if pn not in bterm_map:
+			continue
+		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn), pp + pin_ofs, 'S', wide=True)
 
 
 if __name__ == "__main__":
