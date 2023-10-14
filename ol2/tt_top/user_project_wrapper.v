@@ -85,8 +85,11 @@ module user_project_wrapper (
 	wire k_zero;
 	wire k_one;
 
+	wire [37:0] io_ana;
+
 	// Main core
 	tt_top top_I (
+		.io_ana      (io_ana),
 		.io_in       (io_in),
 		.io_out      (io_out),
 		.io_oeb      (io_oeb),
@@ -94,6 +97,9 @@ module user_project_wrapper (
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
+
+	// Map analog "range"
+	assign io_ana[35:7] = analog_io;
 
 	// Tie-offs
 	assign wbs_ack_o = k_zero;

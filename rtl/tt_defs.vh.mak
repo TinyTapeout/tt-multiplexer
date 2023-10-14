@@ -10,6 +10,7 @@
 `define TT_G_X  ${cfg.tt.grid.x}
 `define TT_G_Y  ${cfg.tt.grid.y}
 
+`define TT_N_A  ${cfg.tt.uio.a}
 `define TT_N_IO ${cfg.tt.uio.io}
 `define TT_N_O  ${cfg.tt.uio.o}
 `define TT_N_I  ${cfg.tt.uio.i}

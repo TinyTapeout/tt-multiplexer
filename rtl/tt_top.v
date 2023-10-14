@@ -14,11 +14,13 @@ module tt_top #(
 	parameter integer N_PADS = 38,
 	parameter integer G_X  = `TT_G_X,
 	parameter integer G_Y  = `TT_G_Y,
+	parameter integer N_A  = `TT_N_A,
 	parameter integer N_IO = `TT_N_IO,
 	parameter integer N_O  = `TT_N_O,
 	parameter integer N_I  = `TT_N_I
 )(
 	// IOs
+	inout  wire [N_PADS-1:0] io_ana,
 	input  wire [N_PADS-1:0] io_in,
 	output wire [N_PADS-1:0] io_out,
 	output wire [N_PADS-1:0] io_oeb,
@@ -162,6 +164,7 @@ module tt_top #(
 		for (i=0; i<G_Y; i=i+1)
 		begin : branch
 			// Signals
+			wire [( N_A*G_X)-1:0] l_um_ana;
 			wire [(U_OW*G_X)-1:0] l_um_ow;
 			wire [(U_IW*G_X)-1:0] l_um_iw;
 			wire [      G_X -1:0] l_um_ena;
@@ -210,10 +213,12 @@ module tt_top #(
 				tt_user_module #(
 					.POS_X (j+(i&1)*16),
 					.POS_Y ((i>>1)*2+0),
+					.N_A   (N_A),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
 				) um_bot_I (
+					.ana    (l_um_ana[(j*2+0)*N_A+:N_A]),
 					.ow     (l_um_ow[(j*2+0)*U_OW+:U_OW]),
 					.iw     (l_um_iw[(j*2+0)*U_IW+:U_IW]),
 					.ena    (l_um_ena[j*2+0]),
@@ -225,10 +230,12 @@ module tt_top #(
 				tt_user_module #(
 					.POS_X (j+(i&1)*16),
 					.POS_Y ((i>>1)*2+1),
+					.N_A   (N_A),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
 				) um_top_I (
+					.ana    (l_um_ana[(j*2+1)*N_A+:N_A]),
 					.ow     (l_um_ow[(j*2+1)*U_OW+:U_OW]),
 					.iw     (l_um_iw[(j*2+1)*U_IW+:U_IW]),
 					.ena    (l_um_ena[j*2+1]),

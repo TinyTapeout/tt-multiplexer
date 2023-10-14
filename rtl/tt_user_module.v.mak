@@ -18,6 +18,7 @@ module tt_user_module #(
 	parameter integer POS_Y  = 0,
 
 	// Config
+	parameter integer N_A    = 8,
 	parameter integer N_IO   = 8,
 	parameter integer N_O    = 8,
 	parameter integer N_I    = 10,
@@ -26,6 +27,7 @@ module tt_user_module #(
 	parameter integer N_OW = N_O + N_IO * 2 ,
 	parameter integer N_IW = N_I + N_IO
 )(
+	inout  wire   [N_A-1:0] ana,
 	output wire  [N_OW-1:0] ow,
 	input  wire  [N_IW-1:0] iw,
 	input  wire             ena,
@@ -49,6 +51,9 @@ module tt_user_module #(
 		if ((POS_Y == ${py}) && (POS_X == ${px}))
 		begin : block_${py}_${px}
 			tt_um_${mod.name} tt_um_I (
+% if mod.analog:
+				.ua      (ana),
+% endif
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),
