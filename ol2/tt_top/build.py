@@ -122,9 +122,9 @@ if __name__ == '__main__':
 				macros[m.mod_name].update({
 					'nl':   f'dir::verilog/{m.mod_name:s}.v',
 					'spef': {
-						"min_*": [ f'dir::spef/{m.mod_name:s}.min_.spef' ],
-						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom_.spef' ],
-						"max_*": [ f'dir::spef/{m.mod_name:s}.max_.spef' ],
+						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
+						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom.spef' ],
+						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
 					},
 				})
 
