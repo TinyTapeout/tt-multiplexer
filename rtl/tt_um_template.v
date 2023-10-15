@@ -10,6 +10,7 @@
 
 `default_nettype none
 
+(* noblackbox *)
 module tt_um_template (
 	input  wire [7:0] ui_in,	// Dedicated inputs
 	output wire [7:0] uo_out,	// Dedicated outputs
@@ -20,7 +21,5 @@ module tt_um_template (
 	input  wire       clk,
 	input  wire       rst_n
 );
-
-	assign { uo_out, uio_out, uio_oe } = 0;
 
 endmodule // tt_um_template
