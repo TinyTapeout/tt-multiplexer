@@ -104,7 +104,8 @@ class Rect(namedtuple('Rect', 'x0 y0 x1 y1')):
 
 class ModuleSlot:
 
-	def __init__(self, cfg_data):
+	def __init__(self, placer, cfg_data):
+		self.placer = placer
 		self.name   = cfg_data['name']
 		self.pos_x  = cfg_data.get('x')
 		self.pos_y  = cfg_data.get('y')
@@ -124,6 +125,14 @@ class ModuleSlot:
 			'analog': self.analog,
 		}
 
+	@property
+	def mux_id(self):
+		return self.placer.p2l(self.pos_x, self.pos_y)[0]
+
+	@property
+	def blk_id(self):
+		return self.placer.p2l(self.pos_x, self.pos_y)[1]
+
 
 class ModulePlacer:
 
@@ -138,12 +147,49 @@ class ModulePlacer:
 		self.place_modules()
 
 	def gen_grid(self):
-		self.grid = {}
-		self.grid_free = set()
+		self.lgrid = {}
+		self.pgrid = {}
+		self.pgrid_free = set()
 		for y in range(self.cfg.tt.grid.y):
-			for x in range(self.cfg.tt.grid.x // 2):
-				self.grid_free.add( (x, y) )
-				self.grid_free.add( (x+16, y) )
+			for x in range(self.cfg.tt.grid.x):
+				self.pgrid_free.add( (x, y) )
+
+	def p2l(self, pos_x, pos_y):
+		# Grid dimensions
+		gx = self.cfg.tt.grid.x
+		gy = self.cfg.tt.grid.y
+
+		# Position vs middle point
+		pos_x -= gx // 2
+		pos_y -= gy // 2
+
+		# TopBottom / LeftRight
+		tb = pos_y >= 0
+		lr = pos_x >= 0
+
+		# Logical position
+		pos_y = abs(pos_y + 1 - tb)
+		pos_x = abs(pos_x + 1 - lr)
+
+		mux_id = ((pos_y >> 1) << 2) | (lr << 1) | tb
+		blk_id = (pos_x << 1) | (pos_y & 1)
+
+		return mux_id, blk_id
+
+	def l2p(self, mux_id, blk_id):
+		# Grid dimensions
+		gx = self.cfg.tt.grid.x
+		gy = self.cfg.tt.grid.y
+
+		# TopBottom / LeftRight
+		tb = 1 if (mux_id & 1) else 0
+		lr = 1 if (mux_id & 2) else 0
+
+		# Physical position
+		pos_y = (gy // 2) - 1 + tb + (2 * tb - 1) * (((mux_id >> 2) << 1) + (blk_id & 1))
+		pos_x = (gx // 2) - 1 + lr + (2 * lr - 1) * (blk_id >> 1)
+
+		return pos_x, pos_y
 
 	def load_modules(self, mod_file):
 		# Load raw data from YAML
@@ -154,7 +200,7 @@ class ModulePlacer:
 		self.modules = []
 		for mc in data['modules']:
 			# Save data
-			mod = ModuleSlot(mc)
+			mod = ModuleSlot(self, mc)
 			self.modules.append(mod)
 
 			# Size & Position limits
@@ -166,8 +212,7 @@ class ModulePlacer:
 
 			if (mod.pos_x is not None) and (
 					(mod.pos_x < 0) or
-					(mod.pos_x >= 32) or
-					((mod.pos_x % 16) > self.cfg.tt.grid.x // 2)
+					(mod.pos_x >= self.cfg.tt.grid.x)
 				):
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid X position {mod.pos_x:d}")
 
@@ -184,21 +229,24 @@ class ModulePlacer:
 		with open(mod_file, 'w') as fh:
 			fh.write(yaml.dump(data))
 
-	def _site_suitable(self, mod, pos_x, pos_y):
-		# Check all positions are free
+	def _sites_for_module(self, mod, pos_x, pos_y):
+		sx = -1 if pos_x >= (self.cfg.tt.grid.x // 2) else 1
+		sy = -1 if ((pos_y & 1) == 0) else 1
 		for oy in range(mod.height):
 			for ox in range(mod.width):
-				if (pos_x+ox, pos_y+oy) not in self.grid_free:
-					return False
+				yield (pos_x+sx*ox, pos_y+sy*oy)
 
-		# For multi-height, check we're on an odd row
-		if mod.height > 1:
-			if pos_y & 1 == 0:
+	def _site_suitable(self, mod, pos_x, pos_y):
+		# Check all positions exist and are free
+		for (ox, oy) in self._sites_for_module(mod, pos_x, pos_y):
+			if (ox, oy) not in self.pgrid_free:
 				return False
 
 		# For multi-width, check we don't cross mid boundary
 		if mod.width > 1:
-			if (pos_x ^ (pos_x + mod.width - 1)) & 16:
+			mid_x = self.cfg.tt.grid.x // 2
+			sx = -1 if pos_x >= mid_x else 1
+			if (pos_x >= mid_x) ^ ((pos_x + sx * (mod.width - 1)) >= mid_x):
 				return False
 
 		# All checks out
@@ -207,12 +255,9 @@ class ModulePlacer:
 	def _find_xy_for_module(self, mod):
 		# Scan the whole grid in order and check if suitable
 		for y in range(self.cfg.tt.grid.y):
-			for x in range(self.cfg.tt.grid.x // 2):
+			for x in range(self.cfg.tt.grid.x):
 				if self._site_suitable(mod, x, y):
 					return x, y
-			for x in range(self.cfg.tt.grid.x // 2):
-				if self._site_suitable(mod, x + 16, y):
-					return x + 16, y
 		return None, None
 
 	def _find_y_for_module(self, mod):
@@ -222,12 +267,9 @@ class ModulePlacer:
 		return None, None
 
 	def _find_x_for_module(self, mod):
-		for x in range(self.cfg.tt.grid.x // 2):
+		for x in range(self.cfg.tt.grid.x):
 			if self._site_suitable(mod, x, mod.pos_y):
 				return x, mod.pos_y
-		for x in range(self.cfg.tt.grid.x // 2):
-			if self._site_suitable(mod, x + 16, mod.pos_y):
-				return x + 16, mod.pos_y
 		return None, None
 
 	def _place_module(self, mod):
@@ -252,12 +294,12 @@ class ModulePlacer:
 		mod.pos_y = y
 
 		# And in the grid
-		self.grid[ (x, y) ] = mod
+		self.pgrid[ (x, y) ] = mod
+		self.lgrid[ self.p2l(x, y) ] = mod
 
 		# And remove the sites from the free list
-		for oy in range(mod.height):
-			for ox in range(mod.width):
-				self.grid_free.remove( (x+ox, y+oy) )
+		for (ox, oy) in self._sites_for_module(mod, x, y):
+			self.pgrid_free.remove( (ox, oy) )
 
 		# Debug
 		if self.verbose:
@@ -600,10 +642,10 @@ class Layout:
 		mux_ply_top = []
 
 		for i in range(self.cfg.tt.grid.x // 2):
-			ofs = self.glb.block.pitch * i
+			ofs = self.glb.block.pitch * (self.cfg.tt.grid.x // 2 - i - 1)
 			mux_tracks.extend([x+ofs for x in tracks])
-			mux_ply_bot.extend(self._ply_expand(mux_ply(i*2+0)))
-			mux_ply_top.extend(self._ply_expand(mux_ply(i*2+1)))
+			mux_ply_bot.extend(self._ply_expand(mux_ply(i*2+1)))
+			mux_ply_top.extend(self._ply_expand(mux_ply(i*2+0)))
 
 		self.ply_mux_bot = self._ply_finalize(mux_ply_bot, mux_tracks)
 		self.ply_mux_top = self._ply_finalize(mux_ply_top, mux_tracks)
@@ -824,6 +866,16 @@ class LayoutElement:
 					pos    = cp.pos + sm.pos
 					orient = sm.orient
 
+				elif cp.orient == 'S':
+					pos = cp.pos + Point(
+						cp.elem.width  - (sm.pos.x + sm.elem.width),
+						cp.elem.height - (sm.pos.y + sm.elem.height),
+					)
+					orient = {
+						'N':  'S',
+						'FS': 'FN',
+					}[sm.orient]
+
 				elif cp.orient == 'FN':
 					pos = cp.pos + Point(
 						cp.elem.width - (sm.pos.x + sm.elem.width),
@@ -833,6 +885,17 @@ class LayoutElement:
 						'N':  'FN',
 						'FS': 'S',
 					}[sm.orient]
+
+				elif cp.orient == 'FS':
+					pos = cp.pos + Point(
+						sm.pos.x,
+						cp.elem.height - (sm.pos.y + sm.elem.height),
+					)
+					orient = {
+						'N':  'FS',
+						'FS': 'N',
+					}[sm.orient]
+
 
 				else:
 					raise RuntimeError('Not implemented')
@@ -875,6 +938,11 @@ class LayoutElement:
 			if cp.orient == 'N':
 				# Nothing to do
 				pass
+
+			elif cp.orient == 'S':
+				# South
+				cg.translate(cp.elem.width, cp.elem.height)
+				cg.scale(-1, -1)
 
 			elif cp.orient == 'FS':
 				# Flipped South
@@ -1054,7 +1122,7 @@ class Mux(LayoutElement):
 
 class Branch(LayoutElement):
 
-	def __init__(self, layout, placer, branch_id):
+	def __init__(self, layout, placer, mux_id):
 		# Super
 		super().__init__(
 			layout,
@@ -1071,16 +1139,9 @@ class Branch(LayoutElement):
 		self.add_child(mux, Point(0, mux_y), 'N', name='mux_I')
 
 		# Create Blocks
-		self.blocks_bot = []
-		self.blocks_top = []
-
-		for bx in range(layout.cfg.tt.grid.x):
-			# Grid position
-			grid_y = (branch_id >> 1) * 2  + (bx  & 1)
-			grid_x = (branch_id  & 1) * 16 + (bx >> 1)
-
+		for blk_id in range(layout.cfg.tt.grid.x):
 			# Is there anything here ?
-			mp = placer.grid.get( (grid_x, grid_y) )
+			mp = placer.lgrid.get( (mux_id, blk_id) )
 			if mp is None:
 				continue
 
@@ -1093,18 +1154,16 @@ class Branch(LayoutElement):
 				analog = mp.analog,
 			)
 
-			# Even is bottom / Odd it top
-			if bx & 1:
-				self.blocks_top.append(block)
-				blk_y = self.height - layout.glb.block.height
-			else:
-				self.blocks_bot.append(block)
-				blk_y = 0
+			# Block lower left corner position
+			blk_x = ((self.layout.cfg.tt.grid.x // 2) - (blk_id >> 1) - 1) * layout.glb.block.pitch
 
-			blk_x = (bx >> 1) * layout.glb.block.pitch
+			if blk_id & 1:
+				blk_y = layout.glb.block.height - block.height
+			else:
+				blk_y = self.height - layout.glb.block.height
 
 			# Name prefix
-			name_pfx = f'col_um\\[{bx>>1:d}\\].um_{"top" if (bx & 1) else "bot":s}_I.block_{grid_y:d}_{grid_x:d}.'
+			name_pfx = f'block\\[{blk_id:d}\\].um_I.block_{mux_id:d}_{blk_id:d}.'
 
 			# Power gating
 			if mp.pg_vdd:
@@ -1112,13 +1171,13 @@ class Branch(LayoutElement):
 				vdd_sw = PowerSwitch(layout, mh=mp.height)
 
 				# Add Power Switch as child
-				self.add_child(vdd_sw, Point(blk_x, blk_y), 'FS' if (bx & 1) else 'N', name=name_pfx+'tt_pg_vdd_I')
+				self.add_child(vdd_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vdd_I')
 
 				# Shift the block
 				blk_x += layout.glb.pg_vdd.offset
 
 			# Add Block as child
-			self.add_child(block, Point(blk_x, blk_y), 'FS' if (bx & 1) else 'N', name=name_pfx+'tt_um_I')
+			self.add_child(block, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_um_I')
 
 
 class Controller(LayoutElement):
@@ -1186,19 +1245,38 @@ class Top(LayoutElement):
 		# Create Branches
 		self.branches = []
 
-		for by in range(0, layout.cfg.tt.grid.y):
-			# Even is left / Odd is right
-			if by & 1:
-				b_x = self.width - layout.glb.branch.width
-			else:
+		for mux_id in range(0, layout.cfg.tt.grid.y):
+			# Quadrants
+			my = layout.cfg.tt.grid.y // 4
+
+			if (mux_id & 3) == 0:
+				# Lower Left
 				b_x = 0
+				b_y = (my - (mux_id >> 2) - 1) * layout.glb.branch.pitch
+				ori = 'N'
 
-			b_y = (by >> 1) * layout.glb.branch.pitch
+			elif (mux_id & 3) == 1:
+				# Upper Left
+				b_x = 0
+				b_y = (my + (mux_id >> 2)) * layout.glb.branch.pitch
+				ori = 'FS'
 
-			branch = Branch(layout, placer, by)
+			elif (mux_id & 3) == 2:
+				# Lower Right
+				b_x = self.width - layout.glb.branch.width
+				b_y = (my - (mux_id >> 2) - 1) * layout.glb.branch.pitch
+				ori = 'FN'
+
+			elif (mux_id & 3) == 3:
+				# Upper Right
+				b_x = self.width - layout.glb.branch.width
+				b_y = (my + (mux_id >> 2)) * layout.glb.branch.pitch
+				ori = 'S'
+
+			branch = Branch(layout, placer, mux_id)
 			self.branches.append(branch)
 
-			self.add_child(branch, Point(b_x, b_y), 'FN' if (by & 1) else 'N', name=f'branch\\[{by:d}\\]')
+			self.add_child(branch, Point(b_x, b_y), ori, name=f'branch\\[{mux_id:d}\\]')
 
 		# Create Controller
 		self.ctrl = ctrl = Controller(layout)

@@ -22,7 +22,7 @@ def main(argv0, tmpl_fn, data_fn):
 	placer = tt.ModulePlacer(cfg, data_fn)
 
 	template = Template(filename=tmpl_fn)
-	output = template.render(grid=placer.grid)
+	output = template.render(grid=placer.lgrid)
 
 	print(output)
 

@@ -12,8 +12,8 @@
 
 module tt_top_tb;
 
-	localparam integer POS_Y = 5;
-	localparam integer POS_X = 7;
+	localparam integer MUX_ID = 12;
+	localparam integer BLK_ID = 0;
 
 
 	// Signals
@@ -97,13 +97,13 @@ module tt_top_tb;
 		if (~rst_n)
 			ctrl_sel_inc <= 1'b0;
 		else
-			ctrl_sel_inc <= ~ctrl_sel_inc & ((cur_core[9:5] != POS_Y) | (cur_core[4:0] != POS_X));
+			ctrl_sel_inc <= ~ctrl_sel_inc & ((cur_core[9:5] != MUX_ID) | (cur_core[4:0] != BLK_ID));
 
 	always @(posedge clk_a)
 		if (~rst_n)
 			ctrl_ena <= 1'b0;
 		else
-			ctrl_ena <= ~ctrl_sel_inc & (cur_core[9:5] == POS_Y) & (cur_core[4:0] == POS_X);
+			ctrl_ena <= ~ctrl_sel_inc & (cur_core[9:5] == MUX_ID) & (cur_core[4:0] == BLK_ID);
 
 
 	// Clock / Reset gen

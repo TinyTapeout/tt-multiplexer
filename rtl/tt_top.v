@@ -207,40 +207,22 @@ module tt_top #(
 					assign l_addr[j] = l_k_zero;
 
 			// Branch User modules
-			for (j=0; j<G_X/2; j=j+1)
-			begin : col_um
-				// Bottom user module
+			for (j=0; j<G_X; j=j+1)
+			begin : block
 				tt_user_module #(
-					.POS_X (j+(i&1)*16),
-					.POS_Y ((i>>1)*2+0),
+					.MUX_ID (i),
+					.BLK_ID (j),
 					.N_A   (N_A),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
-				) um_bot_I (
-					.ana    (l_um_ana[(j*2+0)*N_A+:N_A]),
-					.ow     (l_um_ow[(j*2+0)*U_OW+:U_OW]),
-					.iw     (l_um_iw[(j*2+0)*U_IW+:U_IW]),
-					.ena    (l_um_ena[j*2+0]),
-					.k_zero (l_um_k_zero[j*2+0]),
-					.pg_vdd (l_um_pg_vdd[j*2+0])
-				);
-
-				// Top user module
-				tt_user_module #(
-					.POS_X (j+(i&1)*16),
-					.POS_Y ((i>>1)*2+1),
-					.N_A   (N_A),
-					.N_I   (N_I),
-					.N_O   (N_O),
-					.N_IO  (N_IO)
-				) um_top_I (
-					.ana    (l_um_ana[(j*2+1)*N_A+:N_A]),
-					.ow     (l_um_ow[(j*2+1)*U_OW+:U_OW]),
-					.iw     (l_um_iw[(j*2+1)*U_IW+:U_IW]),
-					.ena    (l_um_ena[j*2+1]),
-					.k_zero (l_um_k_zero[j*2+1]),
-					.pg_vdd (l_um_pg_vdd[j*2+1])
+				) um_I (
+					.ana    (l_um_ana[j*N_A+:N_A]),
+					.ow     (l_um_ow[j*U_OW+:U_OW]),
+					.iw     (l_um_iw[j*U_IW+:U_IW]),
+					.ena    (l_um_ena[j]),
+					.k_zero (l_um_k_zero[j]),
+					.pg_vdd (l_um_pg_vdd[j])
 				);
 			end
 		end

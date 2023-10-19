@@ -12,19 +12,10 @@
 *-24.299999 17310000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tt_top_tb.
 [treeopen] tt_top_tb.dut_I.
-[treeopen] tt_top_tb.dut_I.branch[0].col_um[0].
-[treeopen] tt_top_tb.dut_I.branch[0].col_um[0].um_bot_I.
-[treeopen] tt_top_tb.dut_I.branch[0].col_um[0].um_bot_I.genblk1.
-[treeopen] tt_top_tb.dut_I.branch[0].mux_I.
-[treeopen] tt_top_tb.dut_I.branch[4].
-[treeopen] tt_top_tb.dut_I.branch[4].col_um[7].
-[treeopen] tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.
 [treeopen] tt_top_tb.dut_I.branch[7].
-[treeopen] tt_top_tb.dut_I.branch[7].col_um[5].
-[treeopen] tt_top_tb.dut_I.branch[7].col_um[6].
-[treeopen] tt_top_tb.dut_I.branch[7].col_um[7].
+[treeopen] tt_top_tb.dut_I.branch[7].block[0].
 [treeopen] tt_top_tb.dut_I.branch[7].mux_I.
-[treeopen] tt_top_tb.dut_I.branch[7].mux_I.col[7].
+[treeopen] tt_top_tb.dut_I.branch[7].mux_I.block[0].
 [treeopen] tt_top_tb.dut_I.ctrl_I.
 [sst_width] 439
 [signals_width] 498
@@ -47,15 +38,15 @@ tt_top_tb.POS_Y
 @800201
 -user module x = 7, y = 5
 @29
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.clk
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.ena
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.rst_n
+tt_top_tb.dut_I.branch[12].block[0].um_I.clk
+tt_top_tb.dut_I.branch[12].block[0].um_I.ena
+tt_top_tb.dut_I.branch[12].block[0].um_I.rst_n
 @23
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.ui_in[7:0]
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uio_in[7:0]
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uio_oe[7:0]
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uio_out[7:0]
-tt_top_tb.dut_I.branch[4].col_um[7].um_top_I.uo_out[7:0]
+tt_top_tb.dut_I.branch[12].block[0].um_I.ui_in[7:0]
+tt_top_tb.dut_I.branch[12].block[0].um_I.uio_in[7:0]
+tt_top_tb.dut_I.branch[12].block[0].um_I.uio_oe[7:0]
+tt_top_tb.dut_I.branch[12].block[0].um_I.uio_out[7:0]
+tt_top_tb.dut_I.branch[12].block[0].um_I.uo_out[7:0]
 @1000201
 -user module x = 7, y = 5
 [pattern_trace] 1

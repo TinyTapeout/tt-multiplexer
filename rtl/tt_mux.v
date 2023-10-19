@@ -103,7 +103,7 @@ module tt_mux #(
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
 	) branch_addr_match_buf_I[4:0] (
-		.a  ({si_sel[9:6], si_sel[4]}),
+		.a  (si_sel[9:5]),
 		.z  (addr_match)
 	);
 
@@ -147,7 +147,7 @@ module tt_mux #(
 	tt_prim_zbuf #(
 		.HIGH_DRIVE(1)
 	) zbuf_bus_sel_I[4:0] (
-		.a  ({si_sel[3:0], si_sel[5]}),
+		.a  (si_sel[4:0]),
 		.e  (branch_sel),
 		.z  (bus_sel)
 	);
@@ -181,18 +181,18 @@ module tt_mux #(
 		end
 	endgenerate
 
-	wire [(N_UM/2)-1:0] col_sel_h_weak;
-	wire [(N_UM/2)-1:0] col_sel_h;
+	wire [(N_UM/4)-1:0] grp_sel_h_weak;
+	wire [(N_UM/4)-1:0] grp_sel_h;
 
 	generate
-		for (i=0; i<N_UM/2; i=i+1)
-		begin : col
+		for (i=0; i<N_UM; i=i+1)
+		begin : block
 			// Signals
-			wire [1:0] l_ena_weak;
-			wire [1:0] l_ena;
+			wire l_ena_weak;
+			wire l_ena;
 
 			// Mux-4
-			if ((i & 1) == 0)
+			if ((i & 3) == 0)
 			begin
 				// Signals
 				wire [U_OW-1:0] l_ow;
@@ -200,13 +200,13 @@ module tt_mux #(
 				wire      [1:0] l_sel;
 
 				// Decoder
-				assign col_sel_h_weak[i>>1] = bus_sel[4:2] == (i >> 1);
+				assign grp_sel_h_weak[i>>2] = bus_sel[4:2] == (i >> 2);
 
 				tt_prim_buf #(
 					.HIGH_DRIVE(0)
-				) col_sel_buf_I (
-					.a  (col_sel_h_weak[i>>1]),
-					.z  (col_sel_h[i>>1])
+				) grp_sel_buf_I (
+					.a  (grp_sel_h_weak[i>>2]),
+					.z  (grp_sel_h[i>>2])
 				);
 
 				// Mux
@@ -218,17 +218,17 @@ module tt_mux #(
 				);
 
 				tt_prim_mux4 mux4_I[U_OW-1:0] (
-					.a(um_owa[i*2+0]),
-					.b(um_owa[i*2+1]),
-					.c(um_owa[i*2+2]),
-					.d(um_owa[i*2+3]),
+					.a(um_owa[i+0]),
+					.b(um_owa[i+1]),
+					.c(um_owa[i+2]),
+					.d(um_owa[i+3]),
 					.x(l_ow),
 					.s(l_sel)
 				);
 
 				// T-Buf
 				tt_prim_tbuf_pol tbuf_blk_ena_I (
-					.t  (col_sel_h[i>>1]),
+					.t  (grp_sel_h[i>>2]),
 					.tx (l_tbe)
 				);
 
@@ -239,92 +239,48 @@ module tt_mux #(
 				);
 			end
 
-			// Bottom
-			assign l_ena_weak[0] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b0);
+			// Block
+			assign l_ena_weak = bus_ena & grp_sel_h[i>>2] & (bus_sel[1:0] == (i & 3));
 
 			tt_prim_buf #(
 				.HIGH_DRIVE(1)
 			) l_ena_0_I (
-				.a  (l_ena_weak[0]),
-				.z  (l_ena[0])
+				.a  (l_ena_weak),
+				.z  (l_ena)
 			);
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
 			) zbuf_bot_iw_I[U_IW-1:0] (
 				.a  (bus_iw),
-				.e  (l_ena[0]),
-				.z  (um_iwa[i*2+0])
+				.e  (l_ena),
+				.z  (um_iwa[i])
 			);
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
-			) zbuf_bot_ena_I (
+			) zbuf_ena_I (
 				.a  (1'b1),
-				.e  (l_ena[0]),
-				.z  (um_ena[i*2+0])
+				.e  (l_ena),
+				.z  (um_ena[i])
 			);
 
 			tt_prim_inv #(
 				.HIGH_DRIVE(1)
-			) zbuf_bot_pg_vdd_I (
-				.a  (l_ena[0]),
-				.z  (um_pg_vdd[i*2+0])
+			) zbuf_pg_vdd_I (
+				.a  (l_ena),
+				.z  (um_pg_vdd[i])
 			);
 
-			tt_prim_diode diode_bot_I[U_OW-1:0] (
-				.diode (um_owa[i*2+0])
+			tt_prim_diode diode_I[U_OW-1:0] (
+				.diode (um_owa[i])
 			);
 
 			tt_prim_tie #(
 				.TIE_LO(1),
 				.TIE_HI(0)
-			) tie_bot_I (
-				.lo(um_k_zero[i*2+0])
-			);
-
-			// Top
-			assign l_ena_weak[1] = bus_ena & col_sel_h[i>>1] & (bus_sel[1] == (i & 1)) & (bus_sel[0] == 1'b1);
-
-			tt_prim_buf #(
-				.HIGH_DRIVE(1)
-			) l_ena_1_I (
-				.a  (l_ena_weak[1]),
-				.z  (l_ena[1])
-			);
-
-			tt_prim_zbuf #(
-				.HIGH_DRIVE(0)
-			) zbuf_top_iw_I[U_IW-1:0] (
-				.a  (bus_iw),
-				.e  (l_ena[1]),
-				.z  (um_iwa[i*2+1])
-			);
-
-			tt_prim_zbuf #(
-				.HIGH_DRIVE(0)
-			) zbuf_top_ena_I (
-				.a  (1'b1),
-				.e  (l_ena[1]),
-				.z  (um_ena[i*2+1])
-			);
-
-			tt_prim_inv #(
-				.HIGH_DRIVE(1)
-			) zbuf_top_pg_vdd_I (
-				.a  (l_ena[1]),
-				.z  (um_pg_vdd[i*2+1])
-			);
-
-			tt_prim_diode diode_top_I[U_OW-1:0] (
-				.diode (um_owa[i*2+1])
-			);
-
-			tt_prim_tie #(
-				.TIE_LO(1),
-				.TIE_HI(0)
-			) tie_top_I (
-				.lo(um_k_zero[i*2+1])
+			) tie_I (
+				.lo(um_k_zero[i])
 			);
 
 		end

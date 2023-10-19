@@ -13,9 +13,9 @@
 `default_nettype none
 
 module tt_user_module #(
-	// Position on grid
-	parameter integer POS_X  = 0,
-	parameter integer POS_Y  = 0,
+	// Logical  Position
+	parameter integer MUX_ID = 0,
+	parameter integer BLK_ID = 0,
 
 	// Config
 	parameter integer N_A    = 8,
@@ -47,9 +47,9 @@ module tt_user_module #(
 	assign ow = { uio_oe, uio_out, uo_out };
 
 	generate
-% for (px,py), mod in grid.items():
-		if ((POS_Y == ${py}) && (POS_X == ${px}))
-		begin : block_${py}_${px}
+% for (mux_id, blk_id), mod in grid.items():
+		if ((MUX_ID == ${mux_id}) && (BLK_ID == ${blk_id}))
+		begin : block_${mux_id}_${blk_id}
 			tt_um_${mod.name} tt_um_I (
 % if mod.analog:
 				.ua      (ana),
@@ -71,8 +71,8 @@ module tt_user_module #(
 		end
 % endfor
 
-% for (px,py) in grid.keys():
-		if ((POS_Y == ${py}) && (POS_X == ${px}))
+% for (mux_id, blk_id) in grid.keys():
+		if ((MUX_ID == ${mux_id}) && (BLK_ID == ${blk_id}))
 		begin
 		end
 		else
