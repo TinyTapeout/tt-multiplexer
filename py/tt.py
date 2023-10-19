@@ -119,6 +119,8 @@ class ModuleSlot:
 			'name':   self.name,
 			'x':      self.pos_x,
 			'y':      self.pos_y,
+			'mux_id': self.mux_id,
+			'blk_id': self.blk_id,
 			'width':  self.width,
 			'height': self.height,
 			'pg_vdd': self.pg_vdd,
