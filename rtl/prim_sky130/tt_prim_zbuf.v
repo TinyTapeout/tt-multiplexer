@@ -22,7 +22,7 @@ module tt_prim_zbuf #(
 		if (HIGH_DRIVE) begin
 			wire l;
 
-			sky130_fd_sc_hd__and2_1 cell0_I (
+			sky130_fd_sc_hd__and2_2 cell0_I (
 `ifdef WITH_POWER
 				.VPWR (1'b1),
 				.VGND (1'b0),

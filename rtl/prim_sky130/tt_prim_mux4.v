@@ -19,7 +19,7 @@ module tt_prim_mux4 (
 	input  wire [1:0] s
 );
 
-	sky130_fd_sc_hd__mux4_1 cell0_I (
+	sky130_fd_sc_hd__mux4_2 cell0_I (
 `ifdef WITH_POWER
 		.VPWR (1'b1),
 		.VGND (1'b0),
