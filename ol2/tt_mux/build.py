@@ -94,6 +94,7 @@ if __name__ == '__main__':
 		"../../rtl/prim_sky130/tt_prim_dfrbp.v",
 		"../../rtl/prim_sky130/tt_prim_diode.v",
 		"../../rtl/prim_sky130/tt_prim_inv.v",
+		"../../rtl/prim_sky130/tt_prim_mux2.v",
 		"../../rtl/prim_sky130/tt_prim_mux4.v",
 		"../../rtl/prim_sky130/tt_prim_tbuf.v",
 		"../../rtl/prim_sky130/tt_prim_tie.v",

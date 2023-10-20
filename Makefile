@@ -32,6 +32,7 @@ PRIM_SRC=$(addprefix rtl/prim_$(TECH)/, \
 	tt_prim_dfrbp.v \
 	tt_prim_diode.v \
 	tt_prim_inv.v \
+	tt_prim_mux2.v \
 	tt_prim_mux4.v \
 	tt_prim_tbuf_pol.v \
 	tt_prim_tbuf.v \
