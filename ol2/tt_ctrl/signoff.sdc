@@ -14,20 +14,20 @@ set all_pads_in  [ get_ports "pad_uio_in* pad_ui_in*" ]
 set all_pads_out [ get_ports "pad_uio_out* pad_uio_oe_n* pad_uo_out*" ]
 
 # Spine
-	# [11:1] - Control
+	# [10:1] - Control
 set all_spine_ctl [list]
-for {set i 1} {$i <= 11} {incr i} {
-	lappend all_spine_ctl [ get_ports "spine_iw[$i]" ]
+for {set i 1} {$i <= 10} {incr i} {
+	lappend all_spine_ctl [ get_ports "spine_bot_iw[$i] spine_top_iw[$i]" ]
 }
 
-	# [30:13] - Inward
+	# [29:12] - Inward
 set all_spine_inward [list]
-for {set i 13} {$i <= 30} {incr i} {
-	lappend all_spine_inward [ get_ports "spine_iw[$i]" ]
+for {set i 12} {$i <= 29} {incr i} {
+	lappend all_spine_inward [ get_ports "spine_bot_iw[$i] spine_top_iw[$i]" ]
 }
 
 	# Outward
-set all_spine_outward [ get_ports spine_ow* ]
+set all_spine_outward [ get_ports "spine_bot_ow* spine_top_ow*" ]
 
 
 # Inputs
@@ -58,7 +58,7 @@ set_load 1.0 $all_spine_inward
 
 create_clock -name ctrl_inc -period 10 [ get_ports ctrl_sel_inc ]
 for {set i 0} {$i < 10} {incr i} {
-	create_generated_clock -source [ get_pins "genblk1\[$i\].cnt_bit_I.cell0_I/CLK" ] -divide_by 2 [ get_pins "genblk1\[$i\].cnt_bit_I.cell0_I/Q_N" ]
+	create_generated_clock -source [ get_pins "genblk2\[$i\].cnt_bit_I.cell0_I/CLK" ] -divide_by 2 [ get_pins "genblk2\[$i\].cnt_bit_I.cell0_I/Q_N" ]
 }
 
 

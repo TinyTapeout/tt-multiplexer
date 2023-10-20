@@ -36,7 +36,7 @@ module tt_top #(
 	localparam integer UNUSED_PADS = N_PADS - (N_IO + N_O + N_I + 8);
 
 	localparam integer S_OW = N_O + N_IO * 2 + 2;
-	localparam integer S_IW = N_I + N_IO + 10 + 1 + 2;
+	localparam integer S_IW = N_I + N_IO + 9 + 1 + 2;
 
 	localparam integer U_OW = N_O + N_IO * 2;
 	localparam integer U_IW = N_I + N_IO;
@@ -67,8 +67,11 @@ module tt_top #(
 	wire      [1:0] pad_cl_oe_n;
 
 	// Vertical spine
-	wire  [S_OW-1:0] spine_ow;
-	wire  [S_IW-1:0] spine_iw;
+	wire  [S_OW-1:0] spine_top_ow;
+	wire  [S_IW-1:0] spine_top_iw;
+
+	wire  [S_OW-1:0] spine_bot_ow;
+	wire  [S_IW-1:0] spine_bot_iw;
 
 	// Control signals
 	wire ctrl_sel_rst_n;
@@ -145,8 +148,10 @@ module tt_top #(
 		.pad_uio_oe_n   (pad_uio_oe_n),
 		.pad_uo_out     (pad_uo_out),
 		.pad_ui_in      (pad_ui_in),
-		.spine_ow       (spine_ow),
-		.spine_iw       (spine_iw),
+		.spine_top_ow   (spine_top_ow),
+		.spine_top_iw   (spine_top_iw),
+		.spine_bot_ow   (spine_bot_ow),
+		.spine_bot_iw   (spine_bot_iw),
 		.ctrl_sel_rst_n (ctrl_sel_rst_n),
 		.ctrl_sel_inc   (ctrl_sel_inc),
 		.ctrl_ena       (ctrl_ena),
@@ -164,6 +169,9 @@ module tt_top #(
 		for (i=0; i<G_Y; i=i+1)
 		begin : branch
 			// Signals
+			wire [S_OW-1:0] l_spine_ow;
+			wire [S_IW-1:0] l_spine_iw;
+
 			wire [( N_A*G_X)-1:0] l_um_ana;
 			wire [(U_OW*G_X)-1:0] l_um_ow;
 			wire [(U_IW*G_X)-1:0] l_um_iw;
@@ -171,9 +179,18 @@ module tt_top #(
 			wire [      G_X -1:0] l_um_k_zero;
 			wire [      G_X -1:0] l_um_pg_vdd;
 
-			wire [4:0] l_addr;
+			wire [3:0] l_addr;
 			wire       l_k_one;
 			wire       l_k_zero;
+
+			// Spine connection
+			if (i & 1) begin
+				assign spine_top_ow = l_spine_ow;
+				assign l_spine_iw = spine_top_iw;
+			end else begin
+				assign spine_bot_ow = l_spine_ow;
+				assign l_spine_iw = spine_bot_iw;
+			end
 
 			// Branch Mux
 			(* blackbox *)
@@ -192,16 +209,16 @@ module tt_top #(
 				.um_ena    (l_um_ena),
 				.um_k_zero (l_um_k_zero),
 				.um_pg_vdd (l_um_pg_vdd),
-				.spine_ow  (spine_ow),
-				.spine_iw  (spine_iw),
+				.spine_ow  (l_spine_ow),
+				.spine_iw  (l_spine_iw),
 				.addr      (l_addr),
 				.k_one     (l_k_one),
 				.k_zero    (l_k_zero)
 			);
 
 			// Branch address tie-offs
-			for (j=0; j<5; j=j+1)
-				if (i & (1<<j))
+			for (j=0; j<4; j=j+1)
+				if (i & (2<<j))
 					assign l_addr[j] = l_k_one;
 				else
 					assign l_addr[j] = l_k_zero;

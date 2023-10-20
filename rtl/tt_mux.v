@@ -18,7 +18,7 @@ module tt_mux #(
 
 	// auto-set
 	parameter integer S_OW = N_O + N_IO * 2 + 2,
-	parameter integer S_IW = N_I + N_IO + 10 + 1 + 2,
+	parameter integer S_IW = N_I + N_IO + 9 + 1 + 2,
 
 	parameter integer U_OW = N_O + N_IO * 2,
 	parameter integer U_IW = N_I + N_IO
@@ -35,7 +35,7 @@ module tt_mux #(
 	input  wire [S_IW-1:0] spine_iw,
 
 	// Config straps
-	input  wire [4:0] addr,
+	input  wire [3:0] addr,
 
 	// Tie-offs
 	output wire k_zero,
@@ -52,7 +52,7 @@ module tt_mux #(
 
 	wire            si_gh;
 	wire [U_IW-1:0] si_usr;
-	wire      [9:0] si_sel;
+	wire      [8:0] si_sel;
 	wire            si_ena;
 	wire            si_gl;
 
@@ -70,7 +70,7 @@ module tt_mux #(
 	wire [U_IW-1:0] um_iwa[0:N_UM-1];
 
 	// Decoding
-	wire      [4:0] addr_match;
+	wire      [3:0] addr_match;
 	wire            branch_sel_weak;
 	wire            branch_sel;
 	wire            branch_sel_tbe;
@@ -102,8 +102,8 @@ module tt_mux #(
 	// Decode branch address
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
-	) branch_addr_match_buf_I[4:0] (
-		.a  (si_sel[9:5]),
+	) branch_addr_match_buf_I[3:0] (
+		.a  (si_sel[8:5]),
 		.z  (addr_match)
 	);
 

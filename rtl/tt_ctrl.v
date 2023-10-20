@@ -17,7 +17,7 @@ module tt_ctrl #(
 
 	// auto-set
 	parameter integer S_OW = N_O + N_IO * 2 + 2,
-	parameter integer S_IW = N_I + N_IO + 10 + 1 + 2
+	parameter integer S_IW = N_I + N_IO + 9 + 1 + 2
 )(
 	// User pads connections
 	input  wire  [N_IO-1:0] pad_uio_in,
@@ -29,8 +29,11 @@ module tt_ctrl #(
 	input  wire   [N_I-1:0] pad_ui_in,
 
 	// Vertical spine connection
-	input  wire  [S_OW-1:0] spine_ow,
-	output wire  [S_IW-1:0] spine_iw,
+	input  wire  [S_OW-1:0] spine_top_ow,
+	output wire  [S_IW-1:0] spine_top_iw,
+
+	input  wire  [S_OW-1:0] spine_bot_ow,
+	output wire  [S_IW-1:0] spine_bot_iw,
 
 	// Control interface
 	input  wire ctrl_sel_rst_n,
@@ -46,64 +49,120 @@ module tt_ctrl #(
 	// -------
 
 	// Split spine connections
-	wire            so_gh;
-	wire [N_IO-1:0] so_uio_oe;
-	wire [N_IO-1:0] so_uio_out;
-	wire  [N_O-1:0] so_uo_out;
-	wire            so_gl;
+	wire            so_gh      [0:1];
+	wire [N_IO-1:0] so_uio_oe  [0:1];
+	wire [N_IO-1:0] so_uio_out [0:1];
+	wire  [N_O-1:0] so_uo_out  [0:1];
+	wire            so_gl      [0:1];
 
-	wire            si_gh;
-	wire [N_IO-1:0] si_uio_in;
-	wire  [N_I-1:0] si_ui_in;
-	wire      [9:0] si_sel;
-	wire            si_ena;
-	wire            si_gl;
+	wire            si_gh     [0:1];
+	wire [N_IO-1:0] si_uio_in [0:1];
+	wire  [N_I-1:0] si_ui_in  [0:1];
+	wire      [8:0] si_sel    [0:1];
+	wire            si_ena    [0:1];
+	wire            si_gl     [0:1];
 
 	// Selection
 	wire [9:0] sel_cnt;
 	wire [9:0] sel_cnt_n;
 	wire [9:0] sel_cnt_clk;
 
+	wire side_sel;
+	wire side_ena [0:1];
 
-	// Spine mapping
-	// -------------
 
-	assign { so_gh, so_uio_oe, so_uio_out, so_uo_out, so_gl } = spine_ow;
+	// Outward signals
+	// ---------------
 
-	tt_prim_diode spine_diode_I[S_OW-1:0] (
-		.diode (spine_ow)
+	// Signals
+	wire  [N_IO-1:0] ibuf_uio_oe    [0:1];
+	wire  [N_IO-1:0] ibuf_uio_out_n [0:1];
+	wire   [N_O-1:0] ibuf_uo_out_n  [0:1];
+
+	wire  [N_IO-1:0] mux_uio_oe;
+	wire  [N_IO-1:0] mux_uio_out_n;
+	wire   [N_O-1:0] mux_uo_out_n;
+
+	// Mapping
+	assign { so_gh[1], so_uio_oe[1], so_uio_out[1], so_uo_out[1], so_gl[1] } = spine_top_ow;
+	assign { so_gh[0], so_uio_oe[0], so_uio_out[0], so_uo_out[0], so_gl[0] } = spine_bot_ow;
+
+	// Protection diodes
+	tt_prim_diode spine_diode_I[2*S_OW-1:0] (
+		.diode ({spine_top_ow, spine_bot_ow})
+	);
+
+	// Input buffers
+	tt_prim_buf #(
+		.HIGH_DRIVE(0)
+	) uio_oe_ibuf_I[2*N_IO-1:0] (
+		.a ({   so_uio_oe[1],   so_uio_oe[0] }),
+		.z ({ ibuf_uio_oe[1], ibuf_uio_oe[0] })
+	);
+
+	tt_prim_inv #(
+		.HIGH_DRIVE(0)
+	) uio_out_ibuf_I[2*N_IO-1:0] (
+		.a ({     so_uio_out[1],     so_uio_out[0] }),
+		.z ({ ibuf_uio_out_n[1], ibuf_uio_out_n[0] })
+	);
+
+	tt_prim_inv #(
+		.HIGH_DRIVE(0)
+	) uo_out_ibuf_I[2*N_O-1:0] (
+		.a ({     so_uo_out[1],     so_uo_out[0] }),
+		.z ({ ibuf_uo_out_n[1], ibuf_uo_out_n[0] })
+	);
+
+	// Muxing
+	tt_prim_mux2 uio_oe_mux_I[N_IO-1:0](
+		.a (ibuf_uio_oe[0]),
+		.b (ibuf_uio_oe[1]),
+		.x (mux_uio_oe),
+		.s (side_sel)
+	);
+
+	tt_prim_mux2 uio_out_mux_I[N_IO-1:0](
+		.a (ibuf_uio_out_n[0]),
+		.b (ibuf_uio_out_n[1]),
+		.x (mux_uio_out_n),
+		.s (side_sel)
+	);
+
+	tt_prim_mux2 uo_out_mux_I[N_O-1:0](
+		.a (ibuf_uo_out_n[0]),
+		.b (ibuf_uo_out_n[1]),
+		.x (mux_uo_out_n),
+		.s (side_sel)
+	);
+
+	// Output buffers
+	tt_prim_inv #(
+		.HIGH_DRIVE(1)
+	) uio_oe_obuf_I[N_IO-1:0] (
+		.a (mux_uio_oe),
+		.z (pad_uio_oe_n)
 	);
 
 	tt_prim_inv #(
 		.HIGH_DRIVE(1)
-	) pad_uio_oe_n_buf_I[N_IO-1:0] (
-		.a (so_uio_oe),
-		.z (pad_uio_oe_n)
-	);
-
-	tt_prim_buf #(
-		.HIGH_DRIVE(1)
-	) pad_uio_out_buf_I[N_IO-1:0] (
-		.a (so_uio_out),
+	) uio_out_obuf_I[N_IO-1:0] (
+		.a (mux_uio_out_n),
 		.z (pad_uio_out)
 	);
 
-	tt_prim_buf #(
+	tt_prim_inv #(
 		.HIGH_DRIVE(1)
-	) pad_uo_out_buf_I[N_O-1:0] (
-		.a (so_uo_out),
+	) uo_out_obuf_I[N_O-1:0] (
+		.a (mux_uo_out_n),
 		.z (pad_uo_out)
 	);
 
-	assign spine_iw = { si_gh, si_uio_in, si_ui_in, si_sel, si_ena, si_gl };
 
-	tt_prim_tie #(
-		.TIE_LO(1),
-		.TIE_HI(0)
-	) tie_guard_I[1:0] (
-		.lo({si_gh, si_gl})
-	);
+	// Inward signals
+	// --------------
 
+	// Pad diodes
 	tt_prim_diode pad_uio_in_diode_I[N_IO-1:0] (
 		.diode (pad_uio_in)
 	);
@@ -112,33 +171,57 @@ module tt_ctrl #(
 		.diode (pad_ui_in)
 	);
 
-	tt_prim_buf #(
-		.HIGH_DRIVE(1)
-	) pad_uio_in_buf_I[N_IO-1:0] (
-		.a (pad_uio_in),
-		.z (si_uio_in)
-	);
+	// Spine split
+	assign spine_top_iw = { si_gh[1], si_uio_in[1], si_ui_in[1], si_sel[1], si_ena[1], si_gl[1] };
+	assign spine_bot_iw = { si_gh[0], si_uio_in[0], si_ui_in[0], si_sel[0], si_ena[0], si_gl[0] };
 
-	tt_prim_buf #(
-		.HIGH_DRIVE(1)
-	) pad_ui_in_buf_I[N_I-1:0] (
-		.a (pad_ui_in),
-		.z (si_ui_in)
-	);
+	// Generate for top/bottom spine
+	// We already mask at this level to avoid unneeded toggling
+	generate
+		for (i=0; i<2; i=i+1)
+		begin
 
-	tt_prim_buf #(
-		.HIGH_DRIVE(1)
-	) sel_cnt_buf_I[9:0] (
-		.a (sel_cnt),
-		.z (si_sel)
-	);
+			tt_prim_tie #(
+				.TIE_LO(1),
+				.TIE_HI(0)
+			) tie_guard_I[1:0] (
+				.lo({si_gh[i], si_gl[i]})
+			);
 
-	tt_prim_buf #(
-		.HIGH_DRIVE(1)
-	) ctrl_ena_buf_I (
-		.a (ctrl_ena),
-		.z (si_ena)
-	);
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(1)
+			) pad_uio_in_buf_I[N_IO-1:0] (
+				.a (pad_uio_in),
+				.e (side_ena[i]),
+				.z (si_uio_in[i])
+			);
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(1)
+			) pad_ui_in_buf_I[N_I-1:0] (
+				.a (pad_ui_in),
+				.e (side_ena[i]),
+				.z (si_ui_in[i])
+			);
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(1)
+			) sel_cnt_buf_I[8:0] (
+				.a ({sel_cnt[9:6], sel_cnt[4:0]}),
+				.e (side_ena[i]),
+				.z (si_sel[i])
+			);
+
+			tt_prim_zbuf #(
+				.HIGH_DRIVE(1)
+			) ctrl_ena_buf_I (
+				.a (ctrl_ena),
+				.e (side_ena[i]),
+				.z (si_ena[i])
+			);
+
+		end
+	endgenerate
 
 
 	// Selection
@@ -173,6 +256,27 @@ module tt_ctrl #(
 	endgenerate
 
 	assign sel_cnt_clk = { sel_cnt_n[8:0], ctrl_sel_inc_ibuf };
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) side_sel_buf_I (
+		.a (sel_cnt[5]),
+		.z (side_sel)
+	);
+
+	tt_prim_inv #(
+		.HIGH_DRIVE(1)
+	) side_ena0_buf_I (
+		.a (sel_cnt[5]),
+		.z (side_ena[0])
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(1)
+	) side_ena1_buf_I (
+		.a (sel_cnt[5]),
+		.z (side_ena[1])
+	);
 
 
 	// Tie points

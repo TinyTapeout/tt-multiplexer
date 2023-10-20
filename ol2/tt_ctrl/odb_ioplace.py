@@ -38,7 +38,8 @@ def io_place(
 
 	# Vertical spine
 	for pn, pp in tti.layout.ply_ctrl_vspine.items():
-		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn), pp, 'V')
+		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn.replace('spine','spine_top')), pp, 'N')
+		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn.replace('spine','spine_bot')), pp, 'S')
 
 	# IO Top
 	for pn, pp in tti.layout.ply_ctrl_io_top.items():

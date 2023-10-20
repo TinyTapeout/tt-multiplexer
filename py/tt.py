@@ -398,7 +398,7 @@ class Layout:
 		# Size of the various busses
 		self.vspine = ConfigNode({
 			'ow': self.cfg.tt.uio.o + self.cfg.tt.uio.io * 2 + 2,
-			'iw': self.cfg.tt.uio.i + self.cfg.tt.uio.io     + 10 + 1 + 2,
+			'iw': self.cfg.tt.uio.i + self.cfg.tt.uio.io     + 9 + 1 + 2,
 		})
 		self.user = ConfigNode({
 			'ow': self.cfg.tt.uio.o + self.cfg.tt.uio.io * 2,
@@ -664,13 +664,11 @@ class Layout:
 			('bus_ow',  self.user.ow),	# so_usr
 			('bus_gd',  (1,2)),			# so_gl, si_gh
 			('bus_iw',  self.user.iw),	# si_usr
-			('bus_gd',  (0,1)),			# si_sel[9]
-			(None,      3),				# si_sel[8:6]
-			('bus_sel', (0,1)),			# si_sel[5]
-			(None,      1),				# si_sel[4]
-			('bus_sel', (1,4)),			# si_sel[3:0]
+			('bus_gd',  (0,1)),			# si_sel[8]
+			(None,      3),				# si_sel[7:5]
+			('bus_sel', (0,5)),			# si_sel[4:0]
 			('bus_ena', None),			# si_ena
-			(None,      8),				# si_gl, k_zero, k_one, addr
+			(None,      7),				# si_gl, k_zero, k_one, addr
 		]
 
 		vspine_ply = [
@@ -678,7 +676,7 @@ class Layout:
 			('spine_iw', self.vspine.iw),	# { si_gh, si_usr, si_sel, si_ena, si_gl }
 			('k_zero',   None),
 			('k_one',    None),
-			('addr',     5),
+			('addr',     4),
 		]
 
 		# Expand and check consistency
@@ -1206,9 +1204,17 @@ class Controller(LayoutElement):
 		# Render pins
 			# Vspine connections
 		for pn, pp in self.layout.ply_ctrl_vspine.items():
+				# Top
+			dwg.add(svg.shapes.Rect(
+				( pp-150, self.height-1000 ),
+				( 300,    1000),
+				fill = 'black',
+			))
+
+				# Bottom
 			dwg.add(svg.shapes.Rect(
 				( pp-150, 0 ),
-				( 300,    self.height),
+				( 300,    1000),
 				fill = 'black',
 			))
 

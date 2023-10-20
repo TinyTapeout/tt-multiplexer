@@ -74,7 +74,6 @@ class Router:
 			if 'ctrl_I' in name:
 				x_spine = x
 				self.x_spine.append(x)
-				y_ctrl = [ y - 1000, y + 1000 ]
 			else:
 				y_mux.add(y)
 				self.y_muxes.setdefault(name, []).append(y)
@@ -89,13 +88,8 @@ class Router:
 		encoder.begin(wire)
 
 		# Create vertical spine
-		# (split in 2 segments to help RCX be more correct)
 		encoder.newPath(self.layer_v, 'FIXED')
 		encoder.addPoint(x_spine, y_min)
-		encoder.addPoint(x_spine, y_ctrl[0])
-
-		encoder.newPath(self.layer_v, 'FIXED')
-		encoder.addPoint(x_spine, y_ctrl[1])
 		encoder.addPoint(x_spine, y_max)
 
 		# Create horizontal link for each mux
@@ -112,10 +106,17 @@ class Router:
 		encoder.end()
 
 	def route_vspine(self):
+		# Find controller
+		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
+
+		# Route each spine net
 		for i in range(self.tti.layout.vspine.iw):
-			self.route_vspine_net(self.reader.block.findNet(f'top_I.spine_iw\\[{i:d}\\]'))
+			self.route_vspine_net(ctrl_inst.findITerm(f'spine_bot_iw[{i:d}]').getNet())
+			self.route_vspine_net(ctrl_inst.findITerm(f'spine_top_iw[{i:d}]').getNet())
+
 		for i in range(self.tti.layout.vspine.ow):
-			self.route_vspine_net(self.reader.block.findNet(f'top_I.spine_ow\\[{i:d}\\]'))
+			self.route_vspine_net(ctrl_inst.findITerm(f'spine_bot_ow[{i:d}]').getNet())
+			self.route_vspine_net(ctrl_inst.findITerm(f'spine_top_ow[{i:d}]').getNet())
 
 	def create_spine_obs(self):
 		# Find top/bottom
