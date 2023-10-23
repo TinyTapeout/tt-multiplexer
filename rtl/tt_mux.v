@@ -129,7 +129,9 @@ module tt_mux #(
 		.z  (so_usr_pre)
 	);
 
-	tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
+	tt_prim_tbuf #(
+		.HIGH_DRIVE(1)
+	) tbuf_spine_ow_I[U_OW-1:0] (
 		.a  (so_usr_pre),
 		.tx (branch_sel_tbe),
 		.z  (so_usr)
@@ -232,7 +234,9 @@ module tt_mux #(
 					.tx (l_tbe)
 				);
 
-				tt_prim_tbuf tbuf_spine_ow_I[U_OW-1:0] (
+				tt_prim_tbuf #(
+					.HIGH_DRIVE(1)
+				) tbuf_spine_ow_I[U_OW-1:0] (
 					.a  (l_ow),
 					.tx (l_tbe),
 					.z  (bus_ow)

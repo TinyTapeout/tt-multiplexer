@@ -10,7 +10,9 @@
 
 `default_nettype none
 
-module tt_prim_tbuf (
+module tt_prim_tbuf #(
+	parameter integer HIGH_DRIVE = 0
+)(
 	input  wire a,
 	input  wire tx,
 	output wire z

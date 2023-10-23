@@ -10,22 +10,40 @@
 
 `default_nettype none
 
-module tt_prim_tbuf (
+module tt_prim_tbuf #(
+	parameter integer HIGH_DRIVE = 0
+)(
 	input  wire a,
 	input  wire tx,
 	output wire z
 );
 
-	sky130_fd_sc_hd__ebufn_8 cell0_I (
+	generate
+		if (HIGH_DRIVE) begin
+			sky130_fd_sc_hd__ebufn_8 cell0_I (
 `ifdef WITH_POWER
-		.VPWR (1'b1),
-		.VGND (1'b0),
-		.VPB  (1'b1),
-		.VNB  (1'b0),
+				.VPWR (1'b1),
+				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
 `endif
-		.A    (a),
-		.TE_B (tx),
-		.Z    (z)
-	);
+				.A    (a),
+				.TE_B (tx),
+				.Z    (z)
+			);
+		end else begin
+			sky130_fd_sc_hd__ebufn_1 cell0_I (
+`ifdef WITH_POWER
+				.VPWR (1'b1),
+				.VGND (1'b0),
+				.VPB  (1'b1),
+				.VNB  (1'b0),
+`endif
+				.A    (a),
+				.TE_B (tx),
+				.Z    (z)
+			);
+		end
+	endgenerate
 
 endmodule // tt_prim_tbuf
