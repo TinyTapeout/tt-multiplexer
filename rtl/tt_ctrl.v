@@ -62,6 +62,11 @@ module tt_ctrl #(
 	wire            si_ena    [0:1];
 	wire            si_gl     [0:1];
 
+	// Control input buffer
+	wire ctrl_sel_rst_n_ibuf;
+	wire ctrl_sel_inc_ibuf;
+	wire ctrl_ena_ibuf;
+
 	// Selection
 	wire [9:0] sel_cnt;
 	wire [9:0] sel_cnt_n;
@@ -215,7 +220,7 @@ module tt_ctrl #(
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(1)
 			) ctrl_ena_buf_I (
-				.a (ctrl_ena),
+				.a (ctrl_ena_ibuf),
 				.e (side_ena[i]),
 				.z (si_ena[i])
 			);
@@ -227,18 +232,15 @@ module tt_ctrl #(
 	// Selection
 	// ---------
 
-	wire ctrl_sel_rst_n_ibuf;
-	wire ctrl_sel_inc_ibuf;
-
 	tt_prim_diode ctrl_diode_I[2:0] (
 		.diode ({ ctrl_sel_rst_n, ctrl_sel_inc, ctrl_ena })
 	);
 
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
-	) ctrl_ibuf_I[1:0] (
-		.a ({ ctrl_sel_inc,      ctrl_sel_rst_n      }),
-		.z ({ ctrl_sel_inc_ibuf, ctrl_sel_rst_n_ibuf })
+	) ctrl_ibuf_I[2:0] (
+		.a ({ ctrl_sel_rst_n,      ctrl_sel_inc,      ctrl_ena }),
+		.z ({ ctrl_sel_rst_n_ibuf, ctrl_sel_inc_ibuf, ctrl_ena_ibuf })
 	);
 
 
