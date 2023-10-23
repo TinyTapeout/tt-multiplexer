@@ -163,6 +163,40 @@ module tt_ctrl #(
 		.z (pad_uo_out)
 	);
 
+	// Floating net prevention
+	generate
+		for (i=0; i<2; i=i+1)
+		begin
+
+			wire tie_zero;
+			wire pull;
+			wire tx;
+
+			tt_prim_tie #(
+				.TIE_LO(1),
+				.TIE_HI(0)
+			) tie_I (
+				.lo(tie_zero)
+			);
+
+			assign pull = ~ctrl_ena_ibuf | ~side_ena[i];
+
+			tt_prim_tbuf_pol tbuf_pol_spine_ow_I (
+				.t  (pull),
+				.tx (tx)
+			);
+
+			tt_prim_tbuf #(
+				.HIGH_DRIVE(0)
+			) tbuf_spine_ow_I[S_OW-3:0] (
+				.a  (tie_zero),
+				.tx (tx),
+				.z  ({so_uio_oe[i], so_uio_out[i], so_uo_out[i]})
+			);
+
+		end
+	endgenerate
+
 
 	// Inward signals
 	// --------------
