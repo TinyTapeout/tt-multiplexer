@@ -75,6 +75,9 @@ module tt_mux #(
 	wire            branch_sel_weak;
 	wire            branch_sel;
 	wire            branch_sel_tbe;
+	wire            branch_sel_n;
+	wire            branch_sel_n_tbe;
+	wire            tie_zero;
 
 
 	// Spine mapping
@@ -124,12 +127,40 @@ module tt_mux #(
 		.z  (branch_sel)
 	);
 
+	tt_prim_inv #(
+		.HIGH_DRIVE(0)
+	) branch_sel_n_buf_I (
+		.a  (branch_sel),
+		.z  (branch_sel_n)
+	);
+
+	// Anti-float
+	tt_prim_tbuf_pol tbuf_row_ena_n_I (
+		.t  (branch_sel_n),
+		.tx (branch_sel_n_tbe)
+	);
+
+	tt_prim_tie #(
+		.TIE_LO(1),
+		.TIE_HI(0)
+	) bus_pull_tie_I (
+		.lo(tie_zero)
+	);
+
+	tt_prim_tbuf #(
+		.HIGH_DRIVE(0)
+	) bus_pull_ow_I[U_OW-1:0] (
+		.a  (tie_zero),
+		.tx (branch_sel_n_tbe),
+		.z  (bus_ow)
+	);
+
+	// Spine drive TBUF for Outward
 	tt_prim_tbuf_pol tbuf_row_ena_I (
 		.t  (branch_sel),
 		.tx (branch_sel_tbe)
 	);
 
-	// Spine drive TBUF for Outward
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
 	) buf_spine_ow_I[U_OW-1:0] (
