@@ -70,6 +70,7 @@ module tt_mux #(
 	wire [U_IW-1:0] um_iwa[0:N_UM-1];
 
 	// Decoding
+	wire            ena;
 	wire      [3:0] addr_match;
 	wire            branch_sel_weak;
 	wire            branch_sel;
@@ -102,12 +103,19 @@ module tt_mux #(
 	// Decode branch address
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
+	) branch_ena_buf_I (
+		.a (si_ena),
+		.z (ena)
+	);
+
+	tt_prim_buf #(
+		.HIGH_DRIVE(0)
 	) branch_addr_match_buf_I[3:0] (
 		.a  (si_sel[8:5]),
 		.z  (addr_match)
 	);
 
-	assign branch_sel_weak = (addr == addr_match);
+	assign branch_sel_weak = ena & (addr == addr_match);
 
 	tt_prim_buf #(
 		.HIGH_DRIVE(1)
@@ -154,11 +162,10 @@ module tt_mux #(
 		.z  (bus_sel)
 	);
 
-	tt_prim_zbuf #(
+	tt_prim_buf #(
 		.HIGH_DRIVE(1)
-	) zbuf_bus_ena_I (
-		.a  (si_ena),
-		.e  (branch_sel),
+	) buf_bus_ena_I (
+		.a  (branch_sel),
 		.z  (bus_ena)
 	);
 
@@ -202,7 +209,7 @@ module tt_mux #(
 				wire      [1:0] l_sel;
 
 				// Decoder
-				assign grp_sel_h_weak[i>>2] = bus_sel[4:2] == (i >> 2);
+				assign grp_sel_h_weak[i>>2] = bus_ena & (bus_sel[4:2] == (i >> 2));
 
 				tt_prim_buf #(
 					.HIGH_DRIVE(0)
@@ -244,7 +251,7 @@ module tt_mux #(
 			end
 
 			// Block
-			assign l_ena_weak = bus_ena & grp_sel_h[i>>2] & (bus_sel[1:0] == (i & 3));
+			assign l_ena_weak = grp_sel_h[i>>2] & (bus_sel[1:0] == (i & 3));
 
 			tt_prim_buf #(
 				.HIGH_DRIVE(1)
