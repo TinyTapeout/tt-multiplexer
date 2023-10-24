@@ -470,7 +470,7 @@ class PowerStrapper:
 		self.layer = tech.findLayer('met5')
 		self.via   = tech.findVia('M3M4_PR')
 
-	def _find_via(self, pg_inst):
+	def _find_via(self, inst, port_name):
 		# Helper to check if point is within a bounding box
 		def in_bbox(bbox, pt):
 			return (
@@ -479,10 +479,10 @@ class PowerStrapper:
 			)
 
 		# Block bounding box
-		bbox = pg_inst.getBBox()
+		bbox = inst.getBBox()
 
 		# Scan all geometry from special VGND wire
-		for x in pg_inst.findITerm('VPWR').getNet().getSWires()[0].getWires():
+		for x in inst.findITerm(port_name).getNet().getSWires()[0].getWires():
 			if  x.isVia() and in_bbox(bbox, x.getViaXY()):
 				return x.getBlockVia()
 
@@ -515,11 +515,13 @@ class PowerStrapper:
 
 	def _get_x_data(self, pg_inst, blk_inst):
 		# Get terminals
-		it_blk = blk_inst.findITerm('VPWR')
 		it_pg  = pg_inst.findITerm('GPWR')
+		it_blk = blk_inst.findITerm('VPWR')
 
 		# Find geometry for thos terminals
-		geom = it_pg.getGeometries() + it_blk.getGeometries()
+		geom_pg  = it_pg.getGeometries()
+		geom_blk = it_blk.getGeometries()
+		geom = geom_pg + geom_blk
 
 		# Extent
 		xl = min([x.xMin() for x in geom])
@@ -528,16 +530,19 @@ class PowerStrapper:
 		# Center positions
 		xp = [(x.xMin() + x.xMax()) // 2 for x in geom]
 
-		# Return result
-		return xl, xr, xp
+		# Via type index
+		xv = [ 0 ] * len(geom_pg) + [ 1 ] * len(geom_blk)
 
-	def _draw_stripe(self, sw, via, y, xl, xr, xp):
+		# Return result
+		return xl, xr, xp, xv
+
+	def _draw_stripe(self, sw, vias, y, xl, xr, xp, xv):
 		# Stripe
 		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, y-7000, xr, y+7000)], "STRIPE")
 
 		# Dual vias
-		for x in xp:
-			odb.createSBoxes(sw, via, [odb.Point(x, y-3500), odb.Point(x, y+3500)], "STRIPE")
+		for x, i in zip(xp, xv):
+			odb.createSBoxes(sw, vias[i], [odb.Point(x, y-3500), odb.Point(x, y+3500)], "STRIPE")
 
 	def run(self):
 		# Find all power switch instances
@@ -550,14 +555,15 @@ class PowerStrapper:
 			blk_name = '.'.join(pg_inst.getName().split('.')[:-1] + ['tt_um_I'])
 			blk_inst = self.reader.block.findInst(blk_name)
 
-			# Find the via type
-			via = self._find_via(pg_inst)
+			# Find the vias types
+			via_pg  = self._find_via(pg_inst,  'VPWR')
+			via_blk = self._find_via(blk_inst, 'VGND')
 
 			# Select the y positions
 			yp = self._get_y_pos(pg_inst)
 
 			# Get the X data (extent + via pos)
-			xl, xr, xp = self._get_x_data(pg_inst, blk_inst)
+			xl, xr, xp, xv = self._get_x_data(pg_inst, blk_inst)
 
 			# Find net and create the matching special wire
 			net = blk_inst.findITerm('VPWR').getNet()
@@ -565,7 +571,7 @@ class PowerStrapper:
 
 			# Draw for each y position
 			for y in yp:
-				self._draw_stripe(sw, via, y, xl, xr, xp)
+				self._draw_stripe(sw, [ via_pg, via_blk ], y, xl, xr, xp, xv)
 
 
 @click.command()
