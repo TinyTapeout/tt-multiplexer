@@ -47,7 +47,7 @@ class CtrlFlow(SequentialFlow):
 	Steps: List[Type[Step]] = [
 		Yosys.Synthesis,
 		Checker.YosysUnmappedCells,
-		Checker.YosysSynthChecks,
+#		Checker.YosysSynthChecks,	# FIXME: Doesn't support tristate
 		OpenROAD.CheckSDCFiles,
 		OpenROAD.Floorplan,
 		OpenROAD.TapEndcapInsertion,
