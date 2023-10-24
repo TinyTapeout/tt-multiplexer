@@ -470,7 +470,7 @@ class PowerStrapper:
 		self.layer = tech.findLayer('met5')
 		self.via   = tech.findVia('M3M4_PR')
 
-	def _find_via(self, blk_inst):
+	def _find_via(self, pg_inst):
 		# Helper to check if point is within a bounding box
 		def in_bbox(bbox, pt):
 			return (
@@ -479,10 +479,10 @@ class PowerStrapper:
 			)
 
 		# Block bounding box
-		bbox = blk_inst.getBBox()
+		bbox = pg_inst.getBBox()
 
 		# Scan all geometry from special VGND wire
-		for x in blk_inst.findITerm('VGND').getNet().getSWires()[0].getWires():
+		for x in pg_inst.findITerm('VPWR').getNet().getSWires()[0].getWires():
 			if  x.isVia() and in_bbox(bbox, x.getViaXY()):
 				return x.getBlockVia()
 
@@ -551,7 +551,7 @@ class PowerStrapper:
 			blk_inst = self.reader.block.findInst(blk_name)
 
 			# Find the via type
-			via = self._find_via(blk_inst)
+			via = self._find_via(pg_inst)
 
 			# Select the y positions
 			yp = self._get_y_pos(pg_inst)
