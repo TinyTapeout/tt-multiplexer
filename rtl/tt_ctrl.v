@@ -281,7 +281,7 @@ module tt_ctrl #(
 	genvar i;
 	generate
 		for (i=0; i<10; i=i+1)
-		begin : sel_cnt
+		begin : sel_cnt_gen
 			tt_prim_dfrbp cnt_bit_I (
 				.d     (sel_cnt_n[i]),
 				.q     (sel_cnt[i]),
