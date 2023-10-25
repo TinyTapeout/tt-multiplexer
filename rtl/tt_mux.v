@@ -293,7 +293,7 @@ module tt_mux #(
 
 			tt_prim_zbuf #(
 				.HIGH_DRIVE(0)
-			) zbuf_bot_iw_I[U_IW-1:0] (
+			) zbuf_iw_I[U_IW-1:0] (
 				.a  (bus_iw),
 				.e  (l_ena),
 				.z  (um_iwa[i])
