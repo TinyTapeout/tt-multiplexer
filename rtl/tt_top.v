@@ -112,7 +112,7 @@ module tt_top #(
 	// Tie-offs
 		// Control High
 	assign pad_ch_out  = { k_zero, k_zero, k_zero, k_zero, k_zero, k_zero };
-	assign pad_ch_oe_n = { k_zero, k_one,  k_zero, k_one,  k_zero, k_one  };
+	assign pad_ch_oe_n = { k_one,  k_one,  k_one,  k_one,  k_zero, k_one  };
 
 	assign ctrl_sel_rst_n = pad_ch_in[4];
 	assign ctrl_sel_inc   = pad_ch_in[2];
