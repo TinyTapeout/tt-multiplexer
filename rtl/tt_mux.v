@@ -299,11 +299,10 @@ module tt_mux #(
 				.z  (um_iwa[i])
 			);
 
-			tt_prim_zbuf #(
+			tt_prim_buf #(
 				.HIGH_DRIVE(0)
 			) zbuf_ena_I (
-				.a  (1'b1),
-				.e  (l_ena),
+				.a  (l_ena),
 				.z  (um_ena[i])
 			);
 
