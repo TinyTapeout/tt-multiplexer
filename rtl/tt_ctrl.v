@@ -73,7 +73,8 @@ module tt_ctrl #(
 	wire [9:0] sel_cnt_clk;
 
 	wire side_sel;
-	wire side_ena [0:1];
+	wire side_ena_weak [0:1];
+	wire side_ena      [0:1];
 
 
 	// Outward signals
@@ -179,7 +180,7 @@ module tt_ctrl #(
 				.lo(tie_zero)
 			);
 
-			assign pull = ~ctrl_ena_ibuf | ~side_ena[i];
+			assign pull = ~side_ena[i];
 
 			tt_prim_tbuf_pol tbuf_pol_spine_ow_I (
 				.t  (pull),
@@ -243,19 +244,17 @@ module tt_ctrl #(
 				.z (si_ui_in[i])
 			);
 
-			tt_prim_zbuf #(
+			tt_prim_buf #(
 				.HIGH_DRIVE(1)
 			) sel_cnt_buf_I[8:0] (
 				.a ({sel_cnt[9:6], sel_cnt[4:0]}),
-				.e (side_ena[i]),
 				.z (si_sel[i])
 			);
 
-			tt_prim_zbuf #(
+			tt_prim_buf #(
 				.HIGH_DRIVE(1)
 			) ctrl_ena_buf_I (
-				.a (ctrl_ena_ibuf),
-				.e (side_ena[i]),
+				.a (side_ena[i]),
 				.z (si_ena[i])
 			);
 
@@ -266,10 +265,12 @@ module tt_ctrl #(
 	// Selection
 	// ---------
 
+	// Protection diodes for all incoming control signals
 	tt_prim_diode ctrl_diode_I[2:0] (
 		.diode ({ ctrl_sel_rst_n, ctrl_sel_inc, ctrl_ena })
 	);
 
+	// Input buffer for incoming control signals
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
 	) ctrl_ibuf_I[2:0] (
@@ -277,7 +278,7 @@ module tt_ctrl #(
 		.z ({ ctrl_sel_rst_n_ibuf, ctrl_sel_inc_ibuf, ctrl_ena_ibuf })
 	);
 
-
+	// Ripple counter
 	genvar i;
 	generate
 		for (i=0; i<10; i=i+1)
@@ -294,6 +295,7 @@ module tt_ctrl #(
 
 	assign sel_cnt_clk = { sel_cnt_n[8:0], ctrl_sel_inc_ibuf };
 
+	// Side selection signal
 	tt_prim_buf #(
 		.HIGH_DRIVE(1)
 	) side_sel_buf_I (
@@ -301,17 +303,30 @@ module tt_ctrl #(
 		.z (side_sel)
 	);
 
+	// Side enable signals - Generation
 	tt_prim_inv #(
+		.HIGH_DRIVE(0)
+	) side_ena0_gen_I (
+		.a (sel_cnt[5]),
+		.z (side_ena_weak[0])
+	);
+
+	assign side_ena_weak[1] = sel_cnt[5];
+
+	// Side enable signal - Distribution buffers
+	tt_prim_zbuf #(
 		.HIGH_DRIVE(1)
 	) side_ena0_buf_I (
-		.a (sel_cnt[5]),
+		.a (side_ena_weak[0]),
+		.e (ctrl_ena_ibuf),
 		.z (side_ena[0])
 	);
 
-	tt_prim_buf #(
+	tt_prim_zbuf #(
 		.HIGH_DRIVE(1)
 	) side_ena1_buf_I (
-		.a (sel_cnt[5]),
+		.a (side_ena_weak[1]),
+		.e (ctrl_ena_ibuf),
 		.z (side_ena[1])
 	);
 
