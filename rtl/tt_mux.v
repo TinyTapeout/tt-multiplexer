@@ -176,7 +176,7 @@ module tt_mux #(
 		.z  (so_usr)
 	);
 
-	// Zeroing buffer for Inward
+	// (Zeroing) buffer for Inward
 	tt_prim_zbuf #(
 		.HIGH_DRIVE(1)
 	) zbuf_bus_iw_I[U_IW-1:0] (
@@ -185,11 +185,10 @@ module tt_mux #(
 		.z  (bus_iw)
 	);
 
-	tt_prim_zbuf #(
+	tt_prim_buf #(
 		.HIGH_DRIVE(1)
-	) zbuf_bus_sel_I[4:0] (
+	) buf_bus_sel_I[4:0] (
 		.a  (si_sel[4:0]),
-		.e  (branch_sel),
 		.z  (bus_sel)
 	);
 
