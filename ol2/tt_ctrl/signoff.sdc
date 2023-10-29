@@ -20,9 +20,9 @@ for {set i 1} {$i <= 10} {incr i} {
 	lappend all_spine_ctl [ get_ports "spine_bot_iw[$i] spine_top_iw[$i]" ]
 }
 
-	# [29:12] - Inward
+	# [28:12] - Inward
 set all_spine_inward [list]
-for {set i 12} {$i <= 29} {incr i} {
+for {set i 12} {$i <= 28} {incr i} {
 	lappend all_spine_inward [ get_ports "spine_bot_iw[$i] spine_top_iw[$i]" ]
 }
 
