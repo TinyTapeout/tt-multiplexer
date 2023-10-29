@@ -33,24 +33,24 @@ set all_spine_outward [ get_ports "spine_bot_ow* spine_top_ow*" ]
 # Inputs
 # ------
 
-# Estimate from gpio driving 0.35pF
+# Estimate from gpio driving 0.35 pF
 set_input_transition 0.4 $all_ctl
 
-# Estimate from gpio driving 0.7pF
+# Estimate from gpio driving 0.7 pF
 set_input_transition 0.8 $all_pads_in
 
 # Estimate from STA from tt_mux
-set_input_transition 4.0 $all_spine_outward
+set_input_transition 3.0 $all_spine_outward
 
 
 # Loads
 # -----
 
-# IO connections are faily long, 0.4pF estimate from tt_top max RCX
+# IO connections are faily long, 0.4 pF estimate from tt_top max RCX
 set_load 0.4 $all_pads_out
 
-# Spine is very capacitive. 1pF estimate from tt_top max RCX
-set_load 1.0 $all_spine_inward
+# Spine is very capacitive. 0.75 pF estimate from tt_top max RCX
+set_load 0.75 $all_spine_inward
 
 
 # Clock
@@ -69,10 +69,19 @@ for {set i 0} {$i < 10} {incr i} {
 set_input_delay  0 [all_inputs]
 set_output_delay 0 [all_outputs]
 
-# Control delays are mostly pass through
-set_max_delay -from $all_ctl -to $all_spine_ctl     2.0
-set_max_delay -from $all_ctl -to $all_spine_inward  2.0
+# Control delays are not critical
+group_path    -from $all_ctl -to $all_spine_ctl     -name ctl_to_ctl
+set_max_delay -from $all_ctl -to $all_spine_ctl     2.5
+
+group_path    -from $all_ctl -to $all_spine_inward  -name ctl_to_inward
+set_max_delay -from $all_ctl -to $all_spine_inward  5.0
+
+group_path    -from $all_ctl -to $all_pads_out      -name ctl_to_outward
+set_max_delay -from $all_ctl -to $all_pads_out      5.0
 
 # User IO should be fast-ish
-set_max_delay -from $all_pads_in        -to $all_spine_inward  2.5
-set_max_delay -from $all_spine_outward  -to $all_pads_out      2.5
+group_path    -from $all_pads_in        -to $all_spine_inward  -name io_inward
+set_max_delay -from $all_pads_in        -to $all_spine_inward  2.75
+
+group_path    -from $all_spine_outward  -to $all_pads_out      -name io_outward
+set_max_delay -from $all_spine_outward  -to $all_pads_out      2.25
