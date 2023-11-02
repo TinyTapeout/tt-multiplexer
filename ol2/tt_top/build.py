@@ -177,7 +177,7 @@ if __name__ == '__main__':
 		],
 
 		# Constraints
-		"SIGNOFF_SDC_FILE" : "signoff.sdc",
+		#"SIGNOFF_SDC_FILE" : "signoff.sdc",	# TODO: fix SDC rules
 
 		# Synthesis
 		"SYNTH_ELABORATE_ONLY"      : True,
@@ -193,8 +193,8 @@ if __name__ == '__main__':
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
-		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
-		"RT_MAX_LAYER"          : "met4",
+		"GRT_LAYER_ADJUSTMENTS" : [0.95, 0.95, 0, 0, 0],
+		"RT_MAX_LAYER"          : "Metal4",
 
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
@@ -237,7 +237,7 @@ if __name__ == '__main__':
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = "gf180mcuD",
 	)
 
 	flow.start(last_run = args.open_in_klayout)

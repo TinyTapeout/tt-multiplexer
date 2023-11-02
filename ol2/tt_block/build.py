@@ -105,7 +105,7 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, analog=False):
 		flow_cfg,
 		design_dir = design_dir,
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = "gf180mcuD",
 	)
 
 	flow.start()
@@ -126,9 +126,5 @@ if __name__ == '__main__':
 
 	# Generate block templates for all supported sizes
 	for v_mult in [ 1, 2 ]:
-		for h_mult in [ 1, 2, 3, 4, 8 ]:
-			for pg_vdd in [ False, True ]:
-				for analog in [ False, True ]:
-					if analog and not pg_vdd:
-						continue
-					gen_block_template(tti, h_mult, v_mult, pg_vdd, analog)
+		for h_mult in [ 1, 2 ]:
+				gen_block_template(tti, h_mult, v_mult)

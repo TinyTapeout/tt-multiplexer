@@ -1,10 +1,9 @@
 {
-    "PDK": "sky130A",
-    "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+    "PDK": "gf180mcuD",
     "MAGIC_ZEROIZE_ORIGIN": false,
     "//": "Do not touch this section.",
     "FP_SIZING": "absolute",
-    "DIE_AREA": "0 0 2920 3520",
+    "DIE_AREA": "0 0 2980.2 2980.2",
     "RUN_CVC": false,
     "FP_DEF_TEMPLATE": "dir::user_project_wrapper.def",
     "//": "---",
@@ -20,23 +19,17 @@
     "FP_PDN_VSPACING": "expr::5*$FP_PDN_CORE_RING_VWIDTH",
     "FP_PDN_HSPACING": "expr::5*$FP_PDN_CORE_RING_HWIDTH",
     "VDD_NETS": [
-        "vccd1",
-        "vccd2",
-        "vdda1",
-        "vdda2"
+        "VDD"
     ],
     "GND_NETS": [
-        "vssd1",
-        "vssd2",
-        "vssa1",
-        "vssa2"
+        "VSS"
     ],
     "SYNTH_USE_PG_PINS_DEFINES": "USE_POWER_PINS",
     "FP_PDN_VPITCH": 180,
     "FP_PDN_HPITCH": "expr::$FP_PDN_VPITCH",
     "FP_PDN_VOFFSET": 5,
     "FP_PDN_HOFFSET": "expr::$FP_PDN_VOFFSET",
-    "RT_MAX_LAYER": "met4",
+    "RT_MAX_LAYER": "Metal4",
     "FP_PDN_CHECK_NODES": false,
     "FP_PDN_ENABLE_RAILS": false,
     "DIODE_INSERTION_STRATEGY": false,

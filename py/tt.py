@@ -452,7 +452,7 @@ class Layout:
 
 			# Divide up assuming blocks are twice as high
 			# as the row-mux
-		HM_MUX = 1
+		HM_MUX = 1.4
 		HM_BLK = 2
 
 		tmp_height = avail_height // (self.cfg.tt.grid.y // 2)
@@ -527,7 +527,7 @@ class Layout:
 
 		return rv
 
-	def _ply_distribute(self, n_pins, start, end, step=0, layer='met4', axis='x'):
+	def _ply_distribute(self, n_pins, start, end, step=0, layer='Metal4', axis='x'):
 		# Get tracks data
 		t_offset = self.cfg.pdk.tracks[layer][axis].offset
 		t_pitch  = self.cfg.pdk.tracks[layer][axis].pitch

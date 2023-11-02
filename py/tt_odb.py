@@ -22,7 +22,7 @@ def place_pin(die_area, layer, bterm, pos, side='N', wide=False):
 	bpin.setPlacementStatus("PLACED")
 
 	# Rectangle graphic
-	WIDTH  = 300
+	WIDTH  = 600
 	LENGTH = 1000
 
 	if wide:

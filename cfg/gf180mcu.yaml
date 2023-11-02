@@ -1,0 +1,79 @@
+pdk:
+  die:
+    width: 2980200
+    height: 2980200
+    margin:
+      left:   3680
+      right:  3680
+      top:    5440
+      bottom: 5440
+  site:
+    width:  460
+    height: 2720
+  pwrgate:
+    vdd:
+      width: 9200
+  tracks:
+    Metal1:
+      x:
+        offset: 170
+        pitch:  340
+        width:  230
+      y:
+        offset: 170
+        pitch:  340
+        width:  230
+    Metal2:
+      x:
+        offset: 230
+        pitch:  460
+        width:  280
+      y:
+        offset: 230
+        pitch:  460
+        width:  280
+    Metal3:
+      x:
+        offset: 340
+        pitch:  680
+        width:  280
+      y:
+        offset: 340
+        pitch:  680
+        width:  280
+    Metal4:
+      x:
+        offset: 460
+        pitch:  920
+        width:  280
+      y:
+        offset: 460
+        pitch:  920
+        width:  280
+    Metal5:
+      x:
+        offset: 1700
+        pitch:  3400
+        width:  440
+      y:
+        offset: 1700
+        pitch:  3400
+        width:  440
+tt:
+  grid:     # In number of blocks
+    x: 16   # Must be divisible by 4
+    y: 16   # Must be EVEN
+  block:
+    w: -1
+    h: -1
+  margin:   # In 'sites'
+    x: 4
+    y: 1
+  uio:
+    a:   8
+    i:  10
+    o:   8
+    io:  8
+  spine:
+    vlayer: 'Metal4'
+    hlayer: 'Metal3'

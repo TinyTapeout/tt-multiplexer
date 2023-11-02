@@ -32,9 +32,9 @@ class Router:
 		# Find useful data
 		tech = reader.db.getTech()
 
-		self.layer_h = tech.findLayer('met3')
-		self.layer_v = tech.findLayer('met4')
-		self.via     = tech.findVia('M3M4_PR')
+		self.layer_h = tech.findLayer('Metal3')
+		self.layer_v = tech.findLayer('Metal4')
+		self.via     = tech.findVia('Via3_HV') # TODO: VH or HV?
 
 		self.x_spine = []
 		self.y_muxes = {}
@@ -170,8 +170,8 @@ class Router:
 		# Vias
 		tech = self.reader.db.getTech()
 
-		via_m23 = tech.findVia('M2M3_PR')
-		via_m34 = tech.findVia('M3M4_PR')
+		via_m23 = tech.findVia('Via2_VH') # TODO: VH or HV?
+		via_m34 = tech.findVia('Via3_HV') # TODO: VH or HV?
 
 		# Find controller instance
 		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
@@ -237,7 +237,7 @@ class Router:
 	def route_um_tieoffs(self):
 		# Get track info
 		# We route horizontally on met4, non-preferred direction ...
-		track_cfg = self.tti.cfg.pdk.tracks.met4.y
+		track_cfg = self.tti.cfg.pdk.tracks.Metal4.y
 
 		def track_align(v):
 			return track_cfg.offset + ((v - track_cfg.offset) // track_cfg.pitch) * track_cfg.pitch
@@ -315,8 +315,8 @@ class Router:
 		tech = self.reader.db.getTech()
 
 		via = {
-			('met2', 'met3'): tech.findVia('M2M3_PR'),
-			('met3', 'met4'): tech.findVia('M3M4_PR'),
+			('Metal2', 'Metal3'): tech.findVia('Via2_VH'), # TODO: VH or HV?
+			('Metal3', 'Metal4'): tech.findVia('Via3_HV'), # TODO: VH or HV?
 		}
 
 		# Get full die area
@@ -334,20 +334,20 @@ class Router:
 				continue
 
 			# Limits
-			cfg_tv = self.tti.cfg.pdk.tracks.met4.x
-			cfg_th = self.tti.cfg.pdk.tracks.met3.y
+			cfg_tv = self.tti.cfg.pdk.tracks.Metal4.x
+			cfg_th = self.tti.cfg.pdk.tracks.Metal3.y
 
 			def a(cfg, v):
 				return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
 
 			lx = [
-				cfg_tv.offset + cfg_tv.pitch * idx,
-				a(cfg_tv, die.xMax() - cfg_tv.pitch * idx)
+				cfg_tv.offset + cfg_tv.pitch * 2 * idx,
+				a(cfg_tv, die.xMax() - cfg_tv.pitch * 2 * idx)
 			]
 
 			ly = [
-				cfg_th.offset + cfg_th.pitch * idx,
-				a(cfg_th, die.yMax() - cfg_th.pitch * idx)
+				cfg_th.offset + cfg_th.pitch * 2 * idx,
+				a(cfg_th, die.yMax() - cfg_th.pitch * 2 * idx)
 			]
 
 			# Net / Wire
@@ -417,11 +417,11 @@ class Router:
 		# Get all layers and config
 		tech = self.reader.db.getTech()
 
-		layer_v = tech.findLayer('met4')
-		layer_h = tech.findLayer('met3')
+		layer_v = tech.findLayer('Metal4')
+		layer_h = tech.findLayer('Metal3')
 
-		cfg_v = self.tti.cfg.pdk.tracks.met4.x
-		cfg_h = self.tti.cfg.pdk.tracks.met3.y
+		cfg_v = self.tti.cfg.pdk.tracks.Metal4.x
+		cfg_h = self.tti.cfg.pdk.tracks.Metal3.y
 
 		die = self.reader.block.getDieArea()
 
@@ -467,8 +467,7 @@ class PowerStrapper:
 		# Find useful data
 		tech = reader.db.getTech()
 
-		self.layer = tech.findLayer('met5')
-		self.via   = tech.findVia('M3M4_PR')
+		self.layer = tech.findLayer('Metal5')
 
 	def _find_via(self, inst, port_name):
 		# Helper to check if point is within a bounding box
@@ -515,8 +514,8 @@ class PowerStrapper:
 
 	def _get_x_data(self, pg_inst, blk_inst):
 		# Get terminals
-		it_pg  = pg_inst.findITerm('GPWR')
-		it_blk = blk_inst.findITerm('VPWR')
+		it_pg  = pg_inst.findITerm('VSS')
+		it_blk = blk_inst.findITerm('VDD')
 
 		# Find geometry for thos terminals
 		geom_pg  = it_pg.getGeometries()
@@ -556,8 +555,8 @@ class PowerStrapper:
 			blk_inst = self.reader.block.findInst(blk_name)
 
 			# Find the vias types
-			via_pg  = self._find_via(pg_inst,  'VPWR')
-			via_blk = self._find_via(blk_inst, 'VGND')
+			via_pg  = self._find_via(pg_inst,  'VDD')
+			via_blk = self._find_via(blk_inst, 'VSS')
 
 			# Select the y positions
 			yp = self._get_y_pos(pg_inst)
@@ -566,7 +565,7 @@ class PowerStrapper:
 			xl, xr, xp, xv = self._get_x_data(pg_inst, blk_inst)
 
 			# Find net and create the matching special wire
-			net = blk_inst.findITerm('VPWR').getNet()
+			net = blk_inst.findITerm('VDD').getNet()
 			sw = odb.dbSWire.create(net, "ROUTED")
 
 			# Draw for each y position
@@ -590,7 +589,7 @@ def route(
 	r.create_macro_obs()
 	r.route_k01()
 	r.create_k01_obs()
-	r.route_pad()
+	r.route_pad() # TODO: update route_data for gf180mcu
 	r.route_um_tieoffs()
 
 	# Create the power strapper

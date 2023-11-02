@@ -107,16 +107,16 @@ if __name__ == '__main__':
 	# Create and run custom flow
 	verilog_files = [
 		"../../rtl/tt_ctrl.v",
-		"../../rtl/prim_sky130/tt_prim_buf.v",
-		"../../rtl/prim_sky130/tt_prim_dfrbp.v",
-		"../../rtl/prim_sky130/tt_prim_diode.v",
-		"../../rtl/prim_sky130/tt_prim_inv.v",
-		"../../rtl/prim_sky130/tt_prim_mux2.v",
-		"../../rtl/prim_sky130/tt_prim_mux4.v",
-		"../../rtl/prim_sky130/tt_prim_tbuf.v",
-		"../../rtl/prim_sky130/tt_prim_tie.v",
-		"../../rtl/prim_sky130/tt_prim_tbuf_pol.v",
-		"../../rtl/prim_sky130/tt_prim_zbuf.v",
+		"../../rtl/prim_gf180mcu/tt_prim_buf.v",
+		"../../rtl/prim_generic/tt_prim_dfrbp.v",
+		"../../rtl/prim_generic/tt_prim_diode.v",
+		"../../rtl/prim_generic/tt_prim_inv.v",
+		"../../rtl/prim_generic/tt_prim_mux2.v",
+		"../../rtl/prim_generic/tt_prim_mux4.v",
+		"../../rtl/prim_gf180mcu/tt_prim_tbuf.v",
+		"../../rtl/prim_generic/tt_prim_tie.v",
+		"../../rtl/prim_gf180mcu/tt_prim_tbuf_pol.v",
+		"../../rtl/prim_generic/tt_prim_zbuf.v",
 	]
 
 	flow_cfg = {
@@ -156,17 +156,20 @@ if __name__ == '__main__':
 
 		# Routing
 		"DIODE_PADDING" : 0,
-		"RT_MAX_LAYER"  : "met4",
+		"RT_MAX_LAYER"  : "Metal4",
 
 		# Workaround LEF/GDS pin naming issue
 		"MAGIC_LEF_WRITE_USE_GDS" : False,
+
+		# LVS
+		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
 	}
 
 	flow = CtrlFlow(
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = "gf180mcuD",
 	)
 
 	flow.start()
