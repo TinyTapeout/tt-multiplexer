@@ -342,12 +342,12 @@ class Router:
 
 			lx = [
 				cfg_tv.offset + cfg_tv.pitch * idx,
-				a(cfg_tv, die.xMax() - cfg_tv.pitch * idx)
+				a(cfg_tv, die.xMax() - cfg_tv.offset - cfg_tv.pitch * idx)
 			]
 
 			ly = [
 				cfg_th.offset + cfg_th.pitch * idx,
-				a(cfg_th, die.yMax() - cfg_th.pitch * idx)
+				a(cfg_th, die.yMax() - cfg_th.offset - cfg_th.pitch * idx)
 			]
 
 			# Net / Wire
@@ -431,12 +431,12 @@ class Router:
 
 		lx = [
 			cfg_v.offset + cfg_v.pitch,
-			a(cfg_v, die.xMax() - cfg_v.pitch)
+			a(cfg_v, die.xMax() - cfg_v.offset - cfg_v.pitch)
 		]
 
 		ly = [
 			cfg_h.offset + cfg_h.pitch,
-			a(cfg_h, die.yMax() - cfg_h.pitch)
+			a(cfg_h, die.yMax() - cfg_h.offset - cfg_h.pitch)
 		]
 
 		# Left
@@ -588,9 +588,10 @@ def route(
 	r.route_vspine()
 	r.create_spine_obs()
 	r.create_macro_obs()
-	r.route_k01()
-	r.create_k01_obs()
-	r.route_pad()
+  # These k_zero / k_one conflict with the DEF template pins
+	#r.route_k01()
+	#r.create_k01_obs()
+	#r.route_pad()
 	r.route_um_tieoffs()
 
 	# Create the power strapper

@@ -5,3 +5,4 @@ gds/*.gds
 verilog/*.v
 spef/*.spef
 config-tmp.json
+CustomApplyDEFTemplate/__pycache__

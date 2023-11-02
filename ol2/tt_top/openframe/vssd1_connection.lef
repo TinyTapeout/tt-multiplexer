@@ -1,0 +1,16 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO vssd1_connection
+  CLASS BLOCK ;
+  FOREIGN vssd1_connection ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 45.400 BY 74.600 ;
+  OBS
+      LAYER met3 ;
+        RECT 0.105 0.100 45.340 74.300 ;
+  END
+END vssd1_connection
+END LIBRARY
+

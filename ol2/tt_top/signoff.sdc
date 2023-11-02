@@ -7,7 +7,7 @@
 # ---------------
 
 # Port: Control inputs
-set all_ctl      [ get_ports { "io_in[36]" "io_in[34]" "io_in[32]" }  ]
+set all_ctl      [ get_ports { "gpio_in[36]" "gpio_in[34]" "gpio_in[32]" }  ]
 
 # Port: User IO
 set all_pads_in  [list]
@@ -16,21 +16,21 @@ set all_pads_out [list]
 	# UIO
 for {set i 0} {$i < 8} {incr i} {
 	set j [expr $i+24]
-	lappend all_pads_in  [ get_ports "io_in[$j]" ]
-	lappend all_pads_out [ get_ports "io_out[$j]" ]
-	lappend all_pads_out [ get_ports "io_oeb[$j]" ]
+	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
+	lappend all_pads_out [ get_ports "gpio_out[$j]" ]
+	lappend all_pads_out [ get_ports "gpio_oeb[$j]" ]
 }
 
 	# UO
 for {set i 0} {$i < 8} {incr i} {
 	set j [expr $i+16]
-	lappend all_pads_out [ get_ports "io_out[$j]" ]
+	lappend all_pads_out [ get_ports "gpio_out[$j]" ]
 }
 
 	# UI
 for {set i 0} {$i < 10} {incr i} {
 	set j [expr $i+6]
-	lappend all_pads_in  [ get_ports "io_in[$j]" ]
+	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
 }
 
 # Pins: User modules

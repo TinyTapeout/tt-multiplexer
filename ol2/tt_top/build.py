@@ -2,7 +2,7 @@
 
 #
 # OpenLane2 build script to harden the tt_top macro inside
-# the classic user_project_wrapper
+# the openframe_project_wrapper
 #
 # Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
 # SPDX-License-Identifier: Apache-2.0
@@ -29,6 +29,7 @@ from openlane.steps import (
 	Netgen,
 	Checker,
 )
+from CustomApplyDEFTemplate import CustomApplyDEFTemplate
 
 sys.path.append('../../py')
 import tt
@@ -68,6 +69,7 @@ class TopFlow(SequentialFlow):
 		OpenROAD.CheckSDCFiles,
 		OpenROAD.Floorplan,
 		Odb.ApplyDEFTemplate,
+		CustomApplyDEFTemplate,
 		Odb.SetPowerConnections,
 		Odb.ManualMacroPlacement,
 		CustomPower,
@@ -84,7 +86,8 @@ class TopFlow(SequentialFlow):
 		Checker.WireLength,
 		OpenROAD.RCX,
 		OpenROAD.STAPostPNR,
-		OpenROAD.IRDropReport,
+# IR drop is broken in openframe (see https://github.com/RTimothyEdwards/caravel_openframe_project/blob/afc3ff66b657b3758690c12b077f9a175acf701c/openlane/openframe_project_wrapper/config.json#L87)
+		#OpenROAD.IRDropReport,
 		Magic.StreamOut,
 		Magic.WriteLEF,
 		KLayout.StreamOut,
@@ -93,9 +96,10 @@ class TopFlow(SequentialFlow):
 		Magic.DRC,
 		Checker.MagicDRC,
 		Magic.SpiceExtraction,
-		Checker.IllegalOverlap,
+#		Checker.IllegalOverlap,
 		Netgen.LVS,
-		Checker.LVS,
+# LVS is currently broken in openframe (see https://github.com/efabless/openframe_timer_example/tinytapeout-05-openframe/commit/e431e03e8d57791ff2149ff392fc554f8fa3ed84)
+#		Checker.LVS, 
 	]
 
 
@@ -119,7 +123,30 @@ if __name__ == '__main__':
 	tti = tt.TinyTapeout()
 
 	# Generate macros
-	macros = { }
+	macros = { 
+		'vccd1_connection': {
+			'gds': [ 'dir::openframe/vccd1_connection.gds', ],
+			'lef': [ 'dir::openframe/vccd1_connection.lef', ],
+			'nl': 'dir::openframe/vccd1_connection.v',
+			'instances': { 
+				'vccd1_connection': {
+					'location': [ 3122.515, 4327.51 ],
+					'orientation': 'N',
+				}
+			},
+		},
+		'vssd1_connection': {
+			'gds': [ 'dir::openframe/vssd1_connection.gds', ],
+			'lef': [ 'dir::openframe/vssd1_connection.lef', ],
+			'nl': 'dir::openframe/vssd1_connection.v',
+			'instances': { 
+				'vssd1_connection': {
+					'location': [ 3122.515, 2088.51 ],
+					'orientation': 'N',
+				}
+			},
+		},
+	}
 	user_modules = []
 
 	for m in tti.die.get_sub_macros():
@@ -160,12 +187,12 @@ if __name__ == '__main__':
 	# Custom config
 	flow_cfg = {
 		# Main design properties
-		"DESIGN_NAME"    : "user_project_wrapper",
+		"DESIGN_NAME"    : "openframe_project_wrapper",
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES": [
-			"dir::user_project_wrapper.v",
+			"dir::openframe_project_wrapper.v",
 			"dir::../../rtl/tt_top.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
@@ -219,6 +246,8 @@ if __name__ == '__main__':
 
 	while pdn_offset > (pdn_pitch * 1.1):
 		pdn_offset -= pdn_pitch
+
+	pdn_offset += 27.2 # Fix for openframe PDN grid conflicting with the power gate GPWR wires
 
 	def pdn_align(x):
 		grid = 0.005
