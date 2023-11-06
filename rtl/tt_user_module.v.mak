@@ -30,6 +30,7 @@ module tt_user_module #(
 	inout  wire   [N_A-1:0] ana,
 	output wire  [N_OW-1:0] ow,
 	input  wire  [N_IW-1:0] iw,
+	input  wire  [31:0] mask_rev,
 	input  wire             ena,
 	input  wire             k_zero,
 	input  wire             pg_vdd
@@ -53,6 +54,9 @@ module tt_user_module #(
 			tt_um_${mod.name} tt_um_I (
 % if mod.analog:
 				.ua      (ana),
+% endif
+% if mod.mask_rev:
+				.mask_rev (mask_rev),
 % endif
 				.uio_in  (uio_in),
 				.uio_out (uio_out),

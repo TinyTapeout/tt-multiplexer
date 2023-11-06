@@ -114,6 +114,7 @@ module openframe_project_wrapper (
 		.io_out      (gpio_out[37:0]),
 		.io_oeb      (gpio_oeb[37:0]),
 		.user_clock2 (k_zero),
+		.mask_rev    (mask_rev),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);

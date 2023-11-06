@@ -28,6 +28,9 @@ module tt_top #(
 	// From caravel
 	input  wire user_clock2,
 
+	// For Tim Edwards - mask_rev
+	input  wire [31:0] mask_rev,
+
 	// Convenient constants for top-level tie-offs
 	output wire k_zero,
 	output wire k_one
@@ -237,6 +240,7 @@ module tt_top #(
 					.ana    (l_um_ana[j*N_A+:N_A]),
 					.ow     (l_um_ow[j*U_OW+:U_OW]),
 					.iw     (l_um_iw[j*U_IW+:U_IW]),
+					.mask_rev(mask_rev),
 					.ena    (l_um_ena[j]),
 					.k_zero (l_um_k_zero[j]),
 					.pg_vdd (l_um_pg_vdd[j])

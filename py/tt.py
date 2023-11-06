@@ -113,6 +113,7 @@ class ModuleSlot:
 		self.height = cfg_data.get('height', 1)
 		self.pg_vdd = cfg_data.get('pg_vdd', False)
 		self.analog = cfg_data.get('analog', False)
+		self.mask_rev = cfg_data.get('mask_rev', False)
 
 	def as_dict(self):
 		return {
@@ -125,6 +126,7 @@ class ModuleSlot:
 			'height': self.height,
 			'pg_vdd': self.pg_vdd,
 			'analog': self.analog,
+			'mask_rev': self.mask_rev,
 		}
 
 	@property
