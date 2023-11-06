@@ -589,7 +589,7 @@ def route(
 	r.create_macro_obs()
 	r.route_k01()
 	r.create_k01_obs()
-	r.route_pad() # TODO: update route_data for gf180mcu
+	#r.route_pad() # TODO: update route_data for gf180mcu
 	r.route_um_tieoffs()
 
 	# Create the power strapper

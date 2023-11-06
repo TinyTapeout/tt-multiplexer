@@ -81,7 +81,7 @@ module user_project_wrapper (
 		.io_in       (io_in),
 		.io_out      (io_out),
 		.io_oeb      (io_oeb),
-		.user_clock2 (user_clock2),
+		.user_clock2 (),			 // disabled - we don't really use it, and it fails routing
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
