@@ -146,6 +146,17 @@ if __name__ == '__main__':
 				}
 			},
 		},
+		'tt_autosel': {
+			'gds': [ 'dir::gds/tt_autosel.gds', ],
+			'lef': [ 'dir::lef/tt_autosel.lef', ],
+			'nl': 'dir::verilog/tt_autosel.v',
+			'instances': {
+				'autosel_I': {
+					'location': [ 1500, 100 ],
+					'orientation': 'N',
+				}
+			}
+		}
 	}
 	user_modules = []
 

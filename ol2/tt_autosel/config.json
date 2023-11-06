@@ -1,0 +1,33 @@
+{
+    "DESIGN_NAME": "tt_autosel",
+    "VERILOG_FILES": ["dir::tt_autosel.v", "dir::i2c_eeprom.v", "dir::i2c_master.v"],
+    "FP_SIZING": "absolute",
+    "DIE_AREA": "0 0 250 80",
+  
+    "FP_IO_HLENGTH": 2,
+    "FP_IO_VLENGTH": 2,
+  
+    "//": "use alternative efabless decap cells to solve LI density issue",
+    "DECAP_CELL": "sky130_fd_sc_hd__decap_3 sky130_fd_sc_hd__decap_4 sky130_fd_sc_hd__decap_6 sky130_fd_sc_hd__decap_8 sky130_ef_sc_hd__decap_12",
+  
+    "//": "period is in ns, so 20ns == 50mHz",
+    "CLOCK_PERIOD": 20,
+    "CLOCK_PORT": "clk",
+  
+    "//": "don't use power rings or met5",
+    "DESIGN_IS_CORE": false,
+    "RT_MAX_LAYER": "met4",
+  
+    "//": "make the PDN denser",
+    "FP_PDN_VOFFSET": 20.355,
+    "FP_PDN_VPITCH": 40.710,
+  
+    "//": "save some time",
+    "RUN_KLAYOUT_XOR": false,
+  
+    "//": "reduce wasted space",
+    "TOP_MARGIN_MULT": 1,
+    "BOTTOM_MARGIN_MULT": 1,
+    "LEFT_MARGIN_MULT": 8,
+    "RIGHT_MARGIN_MULT": 8  
+}

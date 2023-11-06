@@ -118,6 +118,24 @@ module openframe_project_wrapper (
 		.k_one       (k_one)
 	);
 
+    tt_autosel autosel_I (
+        .clk(gpio_in[41]),
+        .rst_n(resetb_l),
+
+        // I2C master interface
+        .scl_i(gpio_in[42]),
+        .sda_i(gpio_in[43]),
+        .scl_o(gpio_out[42]),
+        .scl_oe_n(gpio_oeb[42]),
+        .sda_o(gpio_out[43]),
+        .sda_oe_n(gpio_oeb[43]),
+
+        // Mux ctrl interface
+        .ctrl_sel_rst_n(gpio_out[38]),
+        .ctrl_sel_inc(gpio_out[39]),
+        .ctrl_ena(gpio_out[40])
+    );
+
     /* NOTE:  Openframe signals not used in this project: */
     /* porb_h:    3.3V domain signal                      */
     /* resetb_h:  3.3V domain signal                      */
@@ -187,11 +205,29 @@ module openframe_project_wrapper (
     assign gpio_dm1[36] = gpio_loopback_zero[36];
     assign gpio_dm0[36] = gpio_loopback_one[36];
 
-    // Remaining pins are unused:
-    assign gpio_inp_dis[`OPENFRAME_IO_PADS-1:37] = gpio_loopback_one[`OPENFRAME_IO_PADS-1:37];
-    assign gpio_dm2[`OPENFRAME_IO_PADS-1:37] = gpio_loopback_zero[`OPENFRAME_IO_PADS-1:37];
-    assign gpio_dm1[`OPENFRAME_IO_PADS-1:37] = gpio_loopback_zero[`OPENFRAME_IO_PADS-1:37];
-    assign gpio_dm0[`OPENFRAME_IO_PADS-1:37] = gpio_loopback_zero[`OPENFRAME_IO_PADS-1:37];
+    // pin 37 is unused:
+    assign gpio_inp_dis[37] = gpio_loopback_one[37];
+    assign gpio_dm2[37] = gpio_loopback_zero[37];
+    assign gpio_dm1[37] = gpio_loopback_zero[37];
+    assign gpio_dm0[37] = gpio_loopback_zero[37];
+
+    // pins 38...40 are the outputs of the EEPROM controller:
+    assign gpio_inp_dis[40:38] = gpio_loopback_zero[40:38];
+    assign gpio_dm2[40:38] = gpio_loopback_one[40:38];
+    assign gpio_dm1[40:38] = gpio_loopback_one[40:38];
+    assign gpio_dm0[40:38] = gpio_loopback_zero[40:38];
+
+    // pin 41 is the clock input to the EEPROM controller:
+    assign gpio_inp_dis[41] = gpio_loopback_zero[41];
+    assign gpio_dm2[41] = gpio_loopback_zero[41];
+    assign gpio_dm1[41] = gpio_loopback_zero[41];
+    assign gpio_dm0[41] = gpio_loopback_one[41];
+
+    // pins 42..43 are the SCL/SDA of the EEPROM controller:
+    assign gpio_inp_dis[43:42] = gpio_loopback_zero[43:42];
+    assign gpio_dm2[43:42] = gpio_loopback_one[43:42];
+    assign gpio_dm1[43:42] = gpio_loopback_one[43:42];
+    assign gpio_dm0[43:42] = gpio_loopback_zero[43:42];
 
     assign gpio_ib_mode_sel = gpio_loopback_zero;
     assign gpio_vtrip_sel = gpio_loopback_zero;
