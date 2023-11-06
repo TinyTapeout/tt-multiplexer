@@ -556,9 +556,12 @@ class Layout:
 
 		return tracks[i_start:i_end:step]
 
-	def _ply_finalize(self, pins, tracks):
+	def _ply_finalize(self, pins, tracks, mult = 1):
 		if len(pins) != len(tracks):
 			raise RuntimeError('Mismatch pin/track list')
+		
+		if mult != 1:
+			tracks = [t * mult for t in tracks]
 
 		return dict([(p,t) for p,t in zip(pins, tracks) if p is not None])
 
@@ -636,7 +639,7 @@ class Layout:
 		tracks = tracks_pg + tracks_um
 
 		# Create pins for user blocks
-		self.ply_block = self._ply_finalize(block_ply_e, tracks)
+		self.ply_block = self._ply_finalize(block_ply_e, tracks, 2)
 
 		# Create pins for mux blocks
 		mux_tracks  = []
@@ -649,8 +652,8 @@ class Layout:
 			mux_ply_bot.extend(self._ply_expand(mux_ply(i*2+1)))
 			mux_ply_top.extend(self._ply_expand(mux_ply(i*2+0)))
 
-		self.ply_mux_bot = self._ply_finalize(mux_ply_bot, mux_tracks)
-		self.ply_mux_top = self._ply_finalize(mux_ply_top, mux_tracks)
+		self.ply_mux_bot = self._ply_finalize(mux_ply_bot, mux_tracks, 2)
+		self.ply_mux_top = self._ply_finalize(mux_ply_top, mux_tracks, 2)
 
 	def hspine_layout(self):
 
@@ -697,8 +700,8 @@ class Layout:
 		)
 
 		# Create pins for user blocks
-		self.ply_mux_bus  = self._ply_finalize(hspine_ply_e, tracks)
-		self.ply_mux_port = self._ply_finalize(vspine_ply_e, tracks)
+		self.ply_mux_bus  = self._ply_finalize(hspine_ply_e, tracks, mult=2)
+		self.ply_mux_port = self._ply_finalize(vspine_ply_e, tracks, mult=2)
 
 	def vspine_layout(self):
 
@@ -723,7 +726,7 @@ class Layout:
 		)
 
 		# Create pins for control block
-		self.ply_ctrl_vspine = self._ply_finalize(ply_e, tracks)
+		self.ply_ctrl_vspine = self._ply_finalize(ply_e, tracks, mult=2)
 
 	def ctrl_layout(self):
 		# Config for up/down mapping of IO pads
@@ -814,8 +817,8 @@ class Layout:
 		self.ply_ctrl_io_bot = {}
 		self.ply_ctrl_io_top.update( spread(tl_pads, 0,           limit_left) )
 		self.ply_ctrl_io_bot.update( spread(bl_pads, 0,           limit_left) )
-		self.ply_ctrl_io_top.update( spread(tr_pads, limit_right, self.glb.ctrl.width) )
-		self.ply_ctrl_io_bot.update( spread(br_pads, limit_right, self.glb.ctrl.width) )
+		self.ply_ctrl_io_top.update( spread(tr_pads, limit_right, self.glb.ctrl.width * 2) )
+		self.ply_ctrl_io_bot.update( spread(br_pads, limit_right, self.glb.ctrl.width * 2) )
 
 
 # ----------------------------------------------------------------------------
