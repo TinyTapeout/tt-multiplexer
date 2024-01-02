@@ -9,8 +9,8 @@ It has the following features:
 - 10 dedicated inputs
 - 8 dedicated outputs
 - 8 bidirectional IOs
-- Supports up to 384 user designs (24 mux units, each with up to 16 designs)
-- Designs can have different sizes. The basic unit is a called a tile, and designs can occupy 1, 2, 4, 6, 8, or 16 tiles.
+- Supports up to 512 user designs (32 mux units, each with up to 16 designs)
+- Designs can have different sizes. The basic unit is a called a tile, and each design can occupy up to 16 tiles.
 
 ## Operation
 
@@ -84,47 +84,51 @@ For all others, inactive designs (including all designs in inactive muxes):
 
 ## Pinout
 
-| mprj_io pin | Function            | Signal         | QFN64 pin |
-| ----------- | ------------------- | -------------- | --------- |
-| 0           |                     | (none)         | 31        |
-| 1           | Housekeeping SPI \* | SDO            | 32        |
-| 2           | Housekeeping SPI    | SDI            | 33        |
-| 3           | Housekeeping SPI    | CSB            | 34        |
-| 4           | Housekeeping SPI    | SCK            | 35        |
-| 5           | Clock output        | user_clock2 †  | 36        |
-| 6           | Input               | clk            | 37        |
-| 7           | Input               | rst_n          | 41        |
-| 8           | Input               | ui_in[0] ‡     | 42        |
-| 9           | Input               | ui_in[1]       | 43        |
-| 10          | Input               | ui_in[2]       | 44        |
-| 11          | Input               | ui_in[3]       | 45        |
-| 12          | Input               | ui_in[4]       | 46        |
-| 13          | Input               | ui_in[5]       | 48        |
-| 14          | Input               | ui_in[6]       | 50        |
-| 15          | Input               | ui_in[7]       | 51        |
-| 16          | Output              | uo_out[0]      | 53        |
-| 17          | Output              | uo_out[1]      | 54        |
-| 18          | Output              | uo_out[2]      | 55        |
-| 19          | Output              | uo_out[3]      | 57        |
-| 20          | Output              | uo_out[4]      | 58        |
-| 21          | Output              | uo_out[5]      | 59        |
-| 22          | Output              | uo_out[6]      | 60        |
-| 23          | Output              | uo_out[7]      | 61        |
-| 24          | Bidirectional       | uio[0]         | 62        |
-| 25          | Bidirectional       | uio[1]         | 2         |
-| 26          | Bidirectional       | uio[2]         | 3         |
-| 27          | Bidirectional       | uio[3]         | 4         |
-| 28          | Bidirectional       | uio[4]         | 5         |
-| 29          | Bidirectional       | uio[5]         | 6         |
-| 30          | Bidirectional       | uio[6]         | 7         |
-| 31          | Bidirectional       | uio[7]         | 8         |
-| 32          | Mux Control         | ctrl_ena       | 11        |
-| 33          |                     | (none)         | 12        |
-| 34          | Mux Control         | ctrl_sel_inc   | 13        |
-| 35          |                     | (none)         | 14        |
-| 36          | Mux Control         | ctrl_sel_rst_n | 15        |
-| 37          |                     | (none)         | 16        |
+| mprj_io pin | Function      | Signal     | QFN64 pin |
+| ----------- | ------------- | ---------- | --------- |
+| 0           | Analog        | analogB[0] | 31        |
+| 1           | Analog        | analogB[1] | 32        |
+| 2           | Analog        | analogB[2] | 33        |
+| 3           | Analog        | analogB[3] | 34        |
+| 4           | Output        | uo_out[0]  | 35        |
+| 5           | Output        | uo_out[1]  | 36        |
+| 6           | Output        | uo_out[2]  | 37        |
+| 7           | Output        | uo_out[3]  | 41        |
+| 8           | Output        | uo_out[4]  | 42        |
+| 9           | Output        | uo_out[5]  | 43        |
+| 10          | Output        | uo_out[6]  | 44        |
+| 11          | Output        | uo_out[7]  | 45        |
+| 12          | Analog        | analogA[0] | 46        |
+| 13          | Analog        | analogA[1] | 48        |
+| 14          | Analog        | analogA[2] | 50        |
+| 15          | Bidirectional | uio[0]     | 51        |
+| 16          | Bidirectional | uio[1]     | 53        |
+| 17          | Bidirectional | uio[2]     | 54        |
+| 18          | Bidirectional | uio[3]     | 55        |
+| 19          | Bidirectional | uio[4]     | 57        |
+| 20          | Bidirectional | uio[5]     | 58        |
+| 21          | Bidirectional | uio[6]     | 59        |
+| 22          | Bidirectional | uio[7]     | 60        |
+| 23          | Analog        | analogA[3] | 61        |
+| 24          | Analog        | analogA[4] | 62        |
+| 25          | Analog        | analogA[5] | 2         |
+| 26          | Input         | clk        | 3         |
+| 27          | Input         | rst_n      | 4         |
+| 28          | Input         | ui_in[0] † | 5         |
+| 29          | Input         | ui_in[1]   | 6         |
+| 30          | Input         | ui_in[2]   | 7         |
+| 31          | Input         | ui_in[3]   | 8         |
+| 32          | Input         | ui_in[4]   | 11        |
+| 33          | Input         | ui_in[5]   | 12        |
+| 34          | Input         | ui_in[6]   | 13        |
+| 35          | Input         | ui_in[7]   | 14        |
+| 36          | Analog        | analogB[4] | 15        |
+| 37          | Analog        | analogB[5] | 16        |
+| 38          | Mux Control   | TBD        | 22        |
+| 39          | Mux Control   | TBD        | 24        |
+| 40          | Mux Control   | TBD        | 25        |
+| 41          | Mux Control   | TBD        | 26        |
+| 42          | Mux Control   | TBD        | 27        |
+| 43          | Mux Control   | TBD        | 28        |
 
-\* The [Housekeeping SPI](https://caravel-harness.readthedocs.io/en/latest/housekeeping-spi.html) is an SPI interfaces provided by the Caravel harness. You can use it to change the configuration of the GPIO pins and control the clock for the internal Caravel RISC-V core. We do not plan to use it in the Tiny Tapeout Demo board.  
-† The `user_clock2` signal outputs the internal clock signal of caravel. You could use it to provide a clock to your design by connecting it to the `clk` input (mprj_io pin 6). We do not plan to use it in the Tiny Tapeout Demo board.  
-‡ Internally, there's no difference between `clk`, `rst_n`, and `ui_in` pins. They are all just bits in the `pad_ui_in` bus. However, we use different names to make it easier to understand the purpose of each bit.
+† Internally, there's no difference between `clk`, `rst_n`, and `ui_in` pins. They are all just bits in the `pad_ui_in` bus. However, we use different names to make it easier to understand the purpose of each signal.
