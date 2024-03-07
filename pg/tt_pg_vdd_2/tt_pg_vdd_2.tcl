@@ -40,6 +40,6 @@ port make
 port class input
 port use signal
 
-lef write /tmp/tt_pg_vdd_2.lef
-gds write /tmp/tt_pg_vdd_2.gds
+lef write tt_pg_vdd_2.lef -hide -pinonly
+gds write tt_pg_vdd_2.gds
 save tt_pg_vdd_2.mag
