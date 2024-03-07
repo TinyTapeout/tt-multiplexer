@@ -1,6 +1,11 @@
 cellname rename (UNNAMED) tt_pg_vdd_1
 
 box position 0 0
+box height 11152
+box width 920
+property FIXED_BBOX [box values]
+
+box position 0 0
 box heigh 11000
 box width 120
 paint met4

@@ -1,7 +1,7 @@
 magic
 tech sky130A
 magscale 1 2
-timestamp 1697797911
+timestamp 1709841996
 << nwell >>
 rect 0 22898 1838 44352
 rect 0 400 1838 21854
@@ -21795,4 +21795,6 @@ rlabel metal4 970 0 1500 44848 1 GPWR
 port 3 n power output
 rlabel metal4 0 45052 1840 45152 1 ctrl
 port 4 n signal input
+<< properties >>
+string FIXED_BBOX 0 0 1840 45152
 << end >>
