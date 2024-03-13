@@ -14,7 +14,8 @@ module tt_top #(
 	parameter integer N_PADS = 38,
 	parameter integer G_X  = `TT_G_X,
 	parameter integer G_Y  = `TT_G_Y,
-	parameter integer N_A  = `TT_N_A,
+	parameter integer N_AE = `TT_N_AE,
+	parameter integer N_AU = `TT_N_AU,
 	parameter integer N_IO = `TT_N_IO,
 	parameter integer N_O  = `TT_N_O,
 	parameter integer N_I  = `TT_N_I
@@ -182,7 +183,7 @@ module tt_top #(
 			wire [S_OW-1:0] l_spine_ow;
 			wire [S_IW-1:0] l_spine_iw;
 
-			wire [( N_A*G_X)-1:0] l_um_ana;
+			wire [(N_AU*G_X)-1:0] l_um_ana;
 			wire [(U_OW*G_X)-1:0] l_um_ow;
 			wire [(U_IW*G_X)-1:0] l_um_iw;
 			wire [      G_X -1:0] l_um_ena;
@@ -243,7 +244,7 @@ module tt_top #(
 				tt_user_module #(
 					.MUX_ID (i),
 					.BLK_ID (j),
-					.N_A   (N_A),
+					.N_A   (N_AU),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
@@ -252,7 +253,7 @@ module tt_top #(
 					.VPWR   (VPWR),
 					.VGND   (VGND),
 `endif
-					.ana    (l_um_ana[j*N_A+:N_A]),
+					.ana    (l_um_ana[j*N_AU+:N_AU]),
 					.ow     (l_um_ow[j*U_OW+:U_OW]),
 					.iw     (l_um_iw[j*U_IW+:U_IW]),
 					.ena    (l_um_ena[j]),

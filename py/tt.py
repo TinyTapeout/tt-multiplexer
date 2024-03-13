@@ -565,7 +565,7 @@ class Layout:
 	def user_analog_layout(self):
 		# Pin Layouts
 		ply = [
-			('ua', self.cfg.tt.uio.a),
+			('ua', self.cfg.tt.uio.au),
 		]
 
 		# Expand and check consistency
