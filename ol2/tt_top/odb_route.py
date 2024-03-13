@@ -479,7 +479,7 @@ class Router:
 
 
 
-class PowerStrapper:
+class ModulePowerStrapper:
 
 	def __init__(self, reader, tti):
 		# Save vars
@@ -615,8 +615,8 @@ def route(
 	r.route_pad()
 	r.route_um_tieoffs()
 
-	# Create the power strapper
-	p = PowerStrapper(reader, tti)
+	# Create the module power straps
+	p = ModulePowerStrapper(reader, tti)
 	p.run()
 
 
