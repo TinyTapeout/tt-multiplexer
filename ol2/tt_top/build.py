@@ -10,6 +10,7 @@
 
 import argparse
 import json
+import math
 import os
 import sys
 
@@ -214,10 +215,16 @@ if __name__ == '__main__':
 	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +
-		(pdn_pitch - tti.layout.glb.margin.y) // 2 -
-		(pdn_spacing + pdn_width) // 2 +
-		2720 * 3	# ???
+		tti.layout.glb.branch.pitch // 10 -
+		tti.layout.glb.margin.y // 2
 	) / 1000
+	pdn_offset -= (pdn_spacing + pdn_width) / 2
+
+	sh = tti.cfg.pdk.site.height / 1000
+	if 'CORE_AREA' in flow_cfg:
+		pdn_offset -= math.ceil(flow_cfg['CORE_AREA'][1] / sh) * sh
+	else:
+		pdn_offset -= sh * flow_cfg.get('BOTTOM_MARGIN_MULT', 4)
 
 	while pdn_offset > (pdn_pitch * 1.1):
 		pdn_offset -= pdn_pitch
