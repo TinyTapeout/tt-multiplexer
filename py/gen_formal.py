@@ -16,5 +16,6 @@ args = parser.parse_args()
 
 print("modules:")
 for x in range(16):
-    for y in range(24):
+    for y in range(32):
         print(f'  - name: "{args.module}"')
+        print(f'    pg_vdd: false')
