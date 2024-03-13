@@ -7,7 +7,11 @@
 # ---------------
 
 # Port: Control inputs
-set all_ctl      [ get_ports { "io_in[36]" "io_in[34]" "io_in[32]" }  ]
+set all_ctl [list]
+for {set i 0} {$i < 6} {incr i} {
+	set j [expr $i+38]
+	lappend all_ctl [ get_ports "gpio_in[$j]" ]
+}
 
 # Port: User IO
 set all_pads_in  [list]
@@ -15,22 +19,26 @@ set all_pads_out [list]
 
 	# UIO
 for {set i 0} {$i < 8} {incr i} {
-	set j [expr $i+24]
-	lappend all_pads_in  [ get_ports "io_in[$j]" ]
-	lappend all_pads_out [ get_ports "io_out[$j]" ]
-	lappend all_pads_out [ get_ports "io_oeb[$j]" ]
+	set j [expr $i+16]
+	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
+	lappend all_pads_out [ get_ports "gpio_out[$j]" ]
+	lappend all_pads_out [ get_ports "gpio_oeb[$j]" ]
 }
 
 	# UO
 for {set i 0} {$i < 8} {incr i} {
-	set j [expr $i+16]
-	lappend all_pads_out [ get_ports "io_out[$j]" ]
+	set j [expr $i+24]
+	lappend all_pads_out [ get_ports "gpio_out[$j]" ]
 }
 
 	# UI
-for {set i 0} {$i < 10} {incr i} {
-	set j [expr $i+6]
-	lappend all_pads_in  [ get_ports "io_in[$j]" ]
+for {set i 0} {$i < 7} {incr i} {
+	set j [expr $i+0]
+	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
+}
+for {set i 0} {$i < 3} {incr i} {
+	set j [expr $i+13]
+	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
 }
 
 # Pins: User modules
@@ -69,7 +77,7 @@ set_case_analysis one [get_pins *.ctrl_I/*tbuf_spine_ow_I*/TE_B]
 # Only clock is the ctrl_sel_inc
 # The internal sub-divided clocks are checked internally when
 # hardening tt_ctrl itself so don't bother here
-create_clock -name ctrl_inc -period 10 [ get_ports "io_in[34]" ]
+create_clock -name ctrl_inc -period 10 [ get_ports "gpio_in[39]" ]
 
 
 # Max delays
