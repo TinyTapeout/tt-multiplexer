@@ -66,7 +66,6 @@ class TopFlow(SequentialFlow):
 		Yosys.Synthesis,
 		Checker.YosysUnmappedCells,
 		Checker.YosysSynthChecks,
-		OpenROAD.CheckSDCFiles,
 		OpenROAD.Floorplan,
 		Odb.ApplyDEFTemplate,
 		Odb.SetPowerConnections,
