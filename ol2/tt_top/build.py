@@ -202,6 +202,7 @@ if __name__ == '__main__':
 		"MAGIC_DRC_USE_GDS": True,
 
 		# LVS
+		"MAGIC_DEF_LABELS": False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
 	}
 
