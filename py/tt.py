@@ -728,69 +728,62 @@ class Layout:
 	def ctrl_layout(self):
 		# Config for up/down mapping of IO pads
 		# FIXME: Part of this should be from config and is sky130 specific
-		LOW  =  8		# 8 pins are lower than control block
-		PADS = 38		# 38 pins total and mapped at the end except for 6 control pins
-		OFFS = 38 - (self.cfg.tt.uio.o + self.cfg.tt.uio.i + self.cfg.tt.uio.io) - 6
-
-		# List of pads
-		usr_pads = (
-			[ ( 'i', i) for i in range(self.cfg.tt.uio.i ) ] +
-			[ ( 'o', i) for i in range(self.cfg.tt.uio.o ) ] +
-			[ ('io', i) for i in range(self.cfg.tt.uio.io) ]
-		)
-
-		usr_pad = [ (a,b,i+OFFS) for (i, (a,b)) in enumerate(usr_pads) ]
 
 		# Classify and order them up / down
-		bl_pads  = []
-		br_pads  = []
-		top_pads = []
+		bot_pads  = [
+			( 'o', 7, None ),
+			( 'ctrl_ena',       None, None ),
+			( 'ctrl_sel_inc',   None, None ),
+			( 'ctrl_sel_rst_n', None, None ),
+			( 'k_one',          None, None ),
+			( 'k_zero',         None, None ),
+			( 'i', 2, 8 ),
+		]
 
-		for t, ti, gi in usr_pad:
-			# Bottom Right
-			if gi < LOW:
-				br_pads.append( (t, ti) )
-
-			# Bottom Left
-			elif gi >= PADS - LOW:
-				bl_pads.append( (t, ti) )
-
-			# Top side
-			else:
-				top_pads.insert(0, (t, ti))
+		top_pads = [
+			(  'o', 6, 0 ),
+			( 'io', 7, 0 ),
+			(  'i', 1, 0 ),
+			(  'i', 9, None ),
+		]
 
 		# Create expanded pins for each
 		def expand(l):
 			rv = []
-			for t, ti in l:
-				if t == 'i':
-					rv.append(f'pad_ui_in[{ti:d}]')
+			for t, ts, te in l:
+				if ts is None:
+					rv.append(t)
+					continue
 
-				elif t == 'o':
-					rv.append(f'pad_uo_out[{ti:d}]')
+				if te is None:
+					indexes = [ts]
+				elif ts > te:
+					indexes = list(range(ts, te-1, -1))
+				else:
+					indexes = list(range(ts, te+1))
 
-				elif t == 'io':
-					rv.append(f'pad_uio_in[{ti:d}]')
-					rv.append(f'pad_uio_out[{ti:d}]')
-					rv.append(f'pad_uio_oe_n[{ti:d}]')
+				for ti in indexes:
+					if t == 'i':
+						rv.append(f'pad_ui_in[{ti:d}]')
+
+					elif t == 'o':
+						rv.append(f'pad_uo_out[{ti:d}]')
+
+					elif t == 'io':
+						rv.append(f'pad_uio_oe_n[{ti:d}]')
+						rv.append(f'pad_uio_out[{ti:d}]')
+						rv.append(f'pad_uio_in[{ti:d}]')
 			return rv
 
-		bl_pads  = expand(bl_pads)
-		br_pads  = expand(br_pads)
+		bot_pads = expand(bot_pads)
 		top_pads = expand(top_pads)
 
-		# Append the control signal on the bottom left side
-		bl_pads.extend([
-			'k_one',
-			'k_zero',
-			'ctrl_sel_rst_n',
-			'ctrl_sel_inc',
-			'ctrl_ena',
-		])
+		# Split into left/right
+		bs = len(bot_pads) // 2
+		bl_pads = bot_pads[0:bs]
+		br_pads = bot_pads[bs:]
 
-		# Split top into left/right
 		ts = len(top_pads) // 2
-
 		tl_pads = top_pads[0:ts]
 		tr_pads = top_pads[ts:]
 
