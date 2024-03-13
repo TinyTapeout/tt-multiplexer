@@ -19,7 +19,6 @@ module tt_formal;
 	wire [37:0] io_in;
 	wire [37:0] io_out;
 	wire [37:0] io_oeb;
-	wire        user_clock2;
 	wire        k_zero;
 	wire        k_one;
 
@@ -28,7 +27,7 @@ module tt_formal;
 	// ---
 
 	tt_top #(
-		.N_PADS (38),
+		.N_PADS (44),
         .G_X    (16),
 		.G_Y    (24),
 		.N_IO   (8),
@@ -38,7 +37,6 @@ module tt_formal;
 		.io_in       (io_in),
 		.io_out      (io_out),
 		.io_oeb      (io_oeb),
-		.user_clock2 (user_clock2),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
@@ -47,19 +45,21 @@ module tt_formal;
     IO in/out/oeb is split like this:
     io_oeb is 'output enable bar': low means a pin is an output
 
-    37:32 control
-    31:24 user in/out
-    23:16 user out
-    15:06 user in
-    05:04 clock
+	31:24 user out
+	23:16 user io
+	   15 user rst
+	   14 user clk
+	   13 user in [7]
+	 6: 0 user in [6:0]
+
 
     */
 
     // loop back dedicated outs to ins
-    assign io_in[15:8] = io_out[23:16];
+    assign { io_in[13], io_in[6:0] } = io_out[31:24];
 
     // loop back bidirectional outs to ins, depending on output enable
-    assign io_in[31:24] = io_out[31:24] & (~io_oeb[31:24]);
+    assign io_in[23:16] = io_out[23:16] & (~io_oeb[23:16]);
 
 
 endmodule // tt_formal
