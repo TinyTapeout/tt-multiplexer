@@ -42,8 +42,7 @@ set_voltage_domain -name CORE -power $::env(VDD_NET) -ground $::env(GND_NET) \
 define_pdn_grid \
     -name stdcell_grid \
     -starts_with POWER \
-    -voltage_domain CORE \
-    -pins "$::env(FP_PDN_VERTICAL_LAYER) $::env(FP_PDN_HORIZONTAL_LAYER)"
+    -voltage_domain CORE
 
 add_pdn_stripe \
     -grid stdcell_grid \
