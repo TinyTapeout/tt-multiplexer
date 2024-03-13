@@ -111,7 +111,7 @@ class ModuleSlot:
 		self.pos_y  = cfg_data.get('y')
 		self.width  = cfg_data.get('width', 1)
 		self.height = cfg_data.get('height', 1)
-		self.pg_vdd = cfg_data.get('pg_vdd', False)
+		self.pg_vdd = cfg_data.get('pg_vdd', True)
 		self.analog = cfg_data.get('analog', False)
 
 	def as_dict(self):
