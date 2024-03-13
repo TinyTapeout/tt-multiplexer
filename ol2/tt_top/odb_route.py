@@ -325,6 +325,12 @@ class Router:
 		# Find controller instance
 		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
 
+		# Prepare recording of used tracks
+		self.k01_x_left  = []
+		self.k01_x_right = []
+		self.k01_y_bot   = []
+		self.k01_y_top   = []
+
 		# Deal with each constant
 		for idx, port_name in enumerate(['k_zero', 'k_one']):
 			# ITerm on controller
@@ -332,6 +338,9 @@ class Router:
 			r, x, y = ctrl_iterm.getAvgXY()
 			if r is not True:
 				continue
+
+			# Set the margin
+			margin = 0
 
 			# Limits
 			cfg_tv = self.tti.cfg.pdk.tracks.met4.x
@@ -341,14 +350,20 @@ class Router:
 				return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
 
 			lx = [
-				cfg_tv.offset + cfg_tv.pitch * idx,
-				a(cfg_tv, die.xMax() - cfg_tv.pitch * idx)
+				cfg_tv.offset + cfg_tv.pitch * (idx + margin),
+				a(cfg_tv, die.xMax() - cfg_tv.pitch * (idx + margin))
 			]
 
 			ly = [
-				cfg_th.offset + cfg_th.pitch * idx,
-				a(cfg_th, die.yMax() - cfg_th.pitch * idx)
+				cfg_th.offset + cfg_th.pitch * (idx + margin),
+				a(cfg_th, die.yMax() - cfg_th.pitch * (idx + margin))
 			]
+
+			# Record the tracks we used so we can create obstructions
+			self.k01_x_left.append  (lx[0])
+			self.k01_x_right.append (lx[1])
+			self.k01_y_bot.append   (ly[0])
+			self.k01_y_top.append   (ly[1])
 
 			# Net / Wire
 			net = ctrl_iterm.getNet()
@@ -426,34 +441,41 @@ class Router:
 		die = self.reader.block.getDieArea()
 
 		# Limits
-		def a(cfg, v):
-			return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
-
-		lx = [
-			cfg_v.offset + cfg_v.pitch,
-			a(cfg_v, die.xMax() - cfg_v.pitch)
+		lx_left = [
+			min(self.k01_x_left) - cfg_v.pitch // 2,
+			max(self.k01_x_left) + cfg_v.pitch // 2,
 		]
 
-		ly = [
-			cfg_h.offset + cfg_h.pitch,
-			a(cfg_h, die.yMax() - cfg_h.pitch)
+		lx_right = [
+			min(self.k01_x_right) - cfg_v.pitch // 2,
+			max(self.k01_x_right) + cfg_v.pitch // 2,
+		]
+
+		ly_bot = [
+			min(self.k01_y_bot) - cfg_h.pitch // 2,
+			max(self.k01_y_bot) + cfg_h.pitch // 2,
+		]
+
+		ly_top = [
+			min(self.k01_y_top) - cfg_h.pitch // 2,
+			max(self.k01_y_top) + cfg_h.pitch // 2,
 		]
 
 		# Left
 		odb.dbObstruction_create(self.reader.block,
-			layer_v, 0, 0, lx[0], die.yMax())
+			layer_v, lx_left[0], ly_bot[0], lx_left[1], ly_top[1])
 
 		# Right
 		odb.dbObstruction_create(self.reader.block,
-			layer_v, lx[1], 0, die.xMax(), die.yMax())
+			layer_v, lx_right[0], ly_bot[0], lx_right[1], ly_top[1])
 
 		# Bottom
 		odb.dbObstruction_create(self.reader.block,
-			layer_h, 0, 0, die.xMax(), ly[0])
+			layer_h, lx_left[0], ly_bot[0], lx_right[1], ly_bot[1])
 
 		# Top
 		odb.dbObstruction_create(self.reader.block,
-			layer_h, 0, ly[1], die.xMax(), die.yMax())
+			layer_h, lx_left[0], ly_top[0], lx_right[1], ly_top[1])
 
 
 
