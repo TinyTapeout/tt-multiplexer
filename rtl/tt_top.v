@@ -11,7 +11,7 @@
 `include "tt_defs.vh"
 
 module tt_top #(
-	parameter integer N_PADS = 38,
+	parameter integer N_PADS = 44,
 	parameter integer G_X  = `TT_G_X,
 	parameter integer G_Y  = `TT_G_Y,
 	parameter integer N_AE = `TT_N_AE,
@@ -32,15 +32,10 @@ module tt_top #(
 	output wire [N_PADS-1:0] io_out,
 	output wire [N_PADS-1:0] io_oeb,
 
-	// From caravel
-	input  wire user_clock2,
-
 	// Convenient constants for top-level tie-offs
 	output wire k_zero,
 	output wire k_one
 );
-
-	localparam integer UNUSED_PADS = N_PADS - (N_IO + N_O + N_I + 8);
 
 	localparam integer S_OW = N_O + N_IO * 2 + 2;
 	localparam integer S_IW = N_I + N_IO + 9 + 1 + 2;
@@ -53,9 +48,9 @@ module tt_top #(
 	// -------
 
 	// Pads
-	wire      [5:0] pad_ch_in;
-	wire      [5:0] pad_ch_out;
-	wire      [5:0] pad_ch_oe_n;
+	wire      [5:0] pad_ctl_in;
+	wire      [5:0] pad_ctl_out;
+	wire      [5:0] pad_ctl_oe_n;
 
 	wire [N_IO-1:0] pad_uio_in;
 	wire [N_IO-1:0] pad_uio_out;
@@ -69,9 +64,9 @@ module tt_top #(
 	wire  [N_I-1:0] pad_ui_out;
 	wire  [N_I-1:0] pad_ui_oe_n;
 
-	wire      [1:0] pad_cl_in;
-	wire      [1:0] pad_cl_out;
-	wire      [1:0] pad_cl_oe_n;
+	wire [N_AE-1:0] pad_ana_in;
+	wire [N_AE-1:0] pad_ana_out;
+	wire [N_AE-1:0] pad_ana_oe_n;
 
 	// Vertical spine
 	wire  [S_OW-1:0] spine_top_ow;
@@ -91,50 +86,58 @@ module tt_top #(
 
 	// Split in groups
 	assign {
-		pad_ch_in,
-		pad_uio_in,
+		pad_ctl_in,
+		pad_ana_in[11:6],
 		pad_uo_in,
-		pad_ui_in,
-		pad_cl_in
-	} = io_in[N_PADS-1:UNUSED_PADS];
+		pad_uio_in,
+		pad_ui_in[1],	// u_rst
+		pad_ui_in[0],	// u_clk
+		pad_ui_in[9],
+		pad_ana_in[5:0],
+		pad_ui_in[8:2]
+	} = io_in;
 
 	assign io_out = {
-		pad_ch_out,
-		pad_uio_out,
+		pad_ctl_out,
+		pad_ana_out[11:6],
 		pad_uo_out,
-		pad_ui_out,
-		pad_cl_out,
-		{ UNUSED_PADS{k_one} }
+		pad_uio_out,
+		pad_ui_out[1],	// u_rst
+		pad_ui_out[0],	// u_clk
+		pad_ui_out[9],
+		pad_ana_out[5:0],
+		pad_ui_out[8:2]
 	};
 
 	assign io_oeb = {
-		pad_ch_oe_n,
-		pad_uio_oe_n,
+		pad_ctl_oe_n,
+		pad_ana_oe_n[11:6],
 		pad_uo_oe_n,
-		pad_ui_oe_n,
-		pad_cl_oe_n,
-		{ UNUSED_PADS{k_one} }
+		pad_uio_oe_n,
+		pad_ui_oe_n[1],	// u_rst
+		pad_ui_oe_n[0],	// u_clk
+		pad_ui_oe_n[9],
+		pad_ana_oe_n[5:0],
+		pad_ui_oe_n[8:2]
 	};
 
 	// Tie-offs
-		// Control High
-	assign pad_ch_out  = { k_zero, k_zero, k_zero, k_zero, k_zero, k_zero };
-	assign pad_ch_oe_n = { k_zero, k_one,  k_zero, k_one,  k_zero, k_one  };
+		// Control
+	assign pad_ctl_oe_n   = { 6{k_one} };
+	assign pad_ctl_out    = { 6{k_one} };
 
-	assign ctrl_sel_rst_n = pad_ch_in[4];
-	assign ctrl_sel_inc   = pad_ch_in[2];
-	assign ctrl_ena       = pad_ch_in[0];
-
-		// Control Low
-	assign pad_cl_out  = { user_clock2, k_zero };
-	assign pad_cl_oe_n = { k_zero, k_zero };
+	assign ctrl_sel_rst_n = pad_ctl_in[2];
+	assign ctrl_sel_inc   = pad_ctl_in[1];
+	assign ctrl_ena       = pad_ctl_in[0];
 
 		// Output enables
-	assign pad_uo_oe_n = { N_O{k_zero} };
-	assign pad_ui_oe_n = { N_I{k_one} };
+	assign pad_uo_oe_n  = { N_O{k_zero} };
+	assign pad_ui_oe_n  = { N_I{k_one} };
+	assign pad_ana_oe_n = { N_AE{k_one} };
 
 		// Output signal
 	assign pad_ui_out  = { N_I{k_one} };
+	assign pad_ana_out = { N_AE{k_one} };
 
 
 	// Controller
