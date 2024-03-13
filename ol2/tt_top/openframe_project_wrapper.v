@@ -109,6 +109,11 @@ module openframe_project_wrapper (
 	wire k_zero;
 	wire k_one;
 
+	wire [`OPENFRAME_IO_PADS-1:0] pad_in;
+	wire [`OPENFRAME_IO_PADS-1:0] pad_out;
+	wire [`OPENFRAME_IO_PADS-1:0] pad_oeb;
+	wire [`OPENFRAME_IO_PADS-1:0] pad_ana;
+
 
 	// Main core
 	// ---------
@@ -118,10 +123,10 @@ module openframe_project_wrapper (
 		.VPWR        (vccd1),
 		.VGND        (vssd1),
 `endif
-		.io_ana      (analog_io),
-		.io_in       (gpio_in),
-		.io_out      (gpio_out),
-		.io_oeb      (gpio_oeb),
+		.io_ana      (pad_ana),
+		.io_in       (pad_in),
+		.io_out      (pad_out),
+		.io_oeb      (pad_oeb),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
@@ -130,28 +135,101 @@ module openframe_project_wrapper (
 	// GPIO configuration
 	// ------------------
 
-	// FIXME
-//	assign gpio_inp_dis     = gpio_loopback_zero;
-//	assign gpio_ib_mode_sel = gpio_loopback_zero;
-//	assign gpio_vtrip_sel   = gpio_loopback_zero;
-//	assign gpio_slow_sel    = gpio_loopback_zero;
-//	assign gpio_holdover    = gpio_loopback_zero;
-//	assign gpio_analog_en   = gpio_loopback_zero;
-//	assign gpio_analog_sel  = gpio_loopback_zero;
-//	assign gpio_analog_pol  = gpio_loopback_zero;
-//	assign gpio_dm2         = gpio_loopback_zero;
-//	assign gpio_dm1         = gpio_loopback_zero;
-//	assign gpio_dm0         = gpio_loopback_zero;
-	assign gpio_inp_dis     = {44{k_zero}};
-	assign gpio_ib_mode_sel = {44{k_zero}};
-	assign gpio_vtrip_sel   = {44{k_zero}};
-	assign gpio_slow_sel    = {44{k_zero}};
-	assign gpio_holdover    = {44{k_zero}};
-	assign gpio_analog_en   = {44{k_zero}};
-	assign gpio_analog_sel  = {44{k_zero}};
-	assign gpio_analog_pol  = {44{k_zero}};
-	assign gpio_dm2         = {44{k_zero}};
-	assign gpio_dm1         = {44{k_zero}};
-	assign gpio_dm0         = {44{k_zero}};
+	localparam [15:0] TT_PAD_CTRL   = 16'b0_00_00_0_0_0_0_0_0_0_0_001;
+	localparam [15:0] TT_PAD_IN     = 16'b0_00_00_0_0_0_0_0_0_0_0_001;
+	localparam [15:0] TT_PAD_OUT    = 16'b0_11_00_1_0_0_0_0_0_0_0_110;
+	localparam [15:0] TT_PAD_INOUT  = 16'b0_10_00_0_0_0_0_0_0_0_0_110;
+	localparam [15:0] TT_PAD_ANALOG = 16'b0_00_00_1_0_0_0_0_0_0_0_000;
+	//                                    | |     | | | | | | | |  |
+	// [   15] Analog path select --------' |     | | | | | | | |  |
+	// [14:13] Output wiring mode ----------'     | | | | | | | |  |
+	// [   10] gpio_inp_dis       ----------------' | | | | | | |  |
+	// [    9] gpio_ib_mode_sel   ------------------' | | | | | |  |
+	// [    8] gpio_vtrip_sel     --------------------' | | | | |  |
+	// [    7] gpio_slow_sel      ----------------------' | | | |  |
+	// [    6] gpio_holdover      ------------------------' | | |  |
+	// [    5] gpio_analog_en     --------------------------' | |  |
+	// [    4] gpio_analog_sel    ----------------------------' |  |
+	// [    3] gpio_analog_pol    ------------------------------'  |
+	// [ 2: 0] gpio_dm[2:0]       ---------------------------------'
+
+	localparam [(`OPENFRAME_IO_PADS*16)-1:0] CONFIG = {
+		TT_PAD_CTRL,	// 43 - ctrl[5]
+		TT_PAD_CTRL,	// 42 - ctrl[4]
+		TT_PAD_CTRL,	// 41 - ctrl[3]
+		TT_PAD_CTRL,	// 40 - ctrl[2] ctrl_sel_rst_n
+		TT_PAD_CTRL,	// 39 - ctrl[1] ctrl_sel_inc
+		TT_PAD_CTRL,	// 38 - ctrl[0] ctrl_ena
+		TT_PAD_ANALOG,	// 37 - usr_ana[11]
+		TT_PAD_ANALOG,	// 36 - usr_ana[10]
+		TT_PAD_ANALOG,	// 35 - usr_ana[9]
+		TT_PAD_ANALOG,	// 34 - usr_ana[8]
+		TT_PAD_ANALOG,	// 33 - usr_ana[7]
+		TT_PAD_ANALOG,	// 32 - usr_ana[6]
+		TT_PAD_OUT,		// 31 - usr_out[7]
+		TT_PAD_OUT,		// 30 - usr_out[6]
+		TT_PAD_OUT,		// 29 - usr_out[5]
+		TT_PAD_OUT,		// 28 - usr_out[4]
+		TT_PAD_OUT,		// 27 - usr_out[3]
+		TT_PAD_OUT,		// 26 - usr_out[2]
+		TT_PAD_OUT,		// 25 - usr_out[1]
+		TT_PAD_OUT,		// 24 - usr_out[0]
+		TT_PAD_INOUT,	// 23 - usr_io[7]
+		TT_PAD_INOUT,	// 22 - usr_io[6]
+		TT_PAD_INOUT,	// 21 - usr_io[5]
+		TT_PAD_INOUT,	// 20 - usr_io[4]
+		TT_PAD_INOUT,	// 19 - usr_io[3]
+		TT_PAD_INOUT,	// 18 - usr_io[2]
+		TT_PAD_INOUT,	// 17 - usr_io[1]
+		TT_PAD_INOUT,	// 16 - usr_io[0]
+		TT_PAD_IN,		// 15 - usr_rst
+		TT_PAD_IN,		// 14 - usr_clk
+		TT_PAD_IN,		// 13 - usr_in[7]
+		TT_PAD_ANALOG,	// 12 - usr_ana[5]
+		TT_PAD_ANALOG,	// 11 - usr_ana[4]
+		TT_PAD_ANALOG,	// 10 - usr_ana[3]
+		TT_PAD_ANALOG,	// 9  - usr_ana[2]
+		TT_PAD_ANALOG,	// 8  - usr_ana[1]
+		TT_PAD_ANALOG,	// 7  - usr_ana[0]
+		TT_PAD_IN,		// 6  - usr_in[6]
+		TT_PAD_IN,		// 5  - usr_in[5]
+		TT_PAD_IN,		// 4  - usr_in[4]
+		TT_PAD_IN,		// 3  - usr_in[3]
+		TT_PAD_IN,		// 2  - usr_in[2]
+		TT_PAD_IN,		// 1  - usr_in[1]
+		TT_PAD_IN		// 0  - usr_in[0]
+	};
+
+	genvar i;
+	for (i=0; i<`OPENFRAME_IO_PADS; i=i+1)
+	begin : gpio
+		tt_gpio #(
+			.CONFIG(CONFIG[16*i+:16])
+		) gpio_I (
+			.pad_ana             (pad_ana[i]),
+			.pad_in              (pad_in[i]),
+			.pad_out             (pad_out[i]),
+			.pad_oeb             (pad_oeb[i]),
+			.gpio_in             (gpio_in[i]),
+			.gpio_in_h           (gpio_in_h[i]),
+			.gpio_out            (gpio_out[i]),
+			.gpio_oeb            (gpio_oeb[i]),
+			.gpio_inp_dis        (gpio_inp_dis[i]),
+			.gpio_ib_mode_sel    (gpio_ib_mode_sel[i]),
+			.gpio_vtrip_sel      (gpio_vtrip_sel[i]),
+			.gpio_slow_sel       (gpio_slow_sel[i]),
+			.gpio_holdover       (gpio_holdover[i]),
+			.gpio_analog_en      (gpio_analog_en[i]),
+			.gpio_analog_sel     (gpio_analog_sel[i]),
+			.gpio_analog_pol     (gpio_analog_pol[i]),
+			.gpio_dm2            (gpio_dm2[i]),
+			.gpio_dm1            (gpio_dm1[i]),
+			.gpio_dm0            (gpio_dm0[i]),
+			.analog_io           (analog_io[i]),
+			.analog_noesd_io     (analog_noesd_io[i]),
+			.gpio_loopback_one   (k_one),
+			.gpio_loopback_zero  (k_zero)
+		);
+	end
 
 endmodule	// openframe_project_wrapper

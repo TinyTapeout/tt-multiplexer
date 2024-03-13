@@ -167,6 +167,7 @@ if __name__ == '__main__':
 		"VERILOG_FILES": [
 			"dir::openframe_project_wrapper.v",
 			"dir::../../rtl/tt_top.v",
+			"dir::../../rtl/tt_gpio.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
 
