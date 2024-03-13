@@ -17,4 +17,8 @@ module tt_pg_vdd_2 (
 	input  wire ctrl
 );
 
+`ifdef USE_POWER_PINS
+	assign GPWR = !ctrl ? VPWR : 1'bz;
+`endif
+
 endmodule
