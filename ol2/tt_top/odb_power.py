@@ -32,11 +32,15 @@ def power(
 	tti = tt.TinyTapeout(modules=False)
 
 	# Create ground / power nets
-	net_gnd = odb.dbNet.create(reader.block, 'vssd1')
+	net_gnd = reader.block.findNet('vssd1')
+	if net_gnd is None:
+		net_gnd = odb.dbNet.create(reader.block, 'vssd1')
 	net_gnd.setSpecial()
 	net_gnd.setSigType('GROUND')
 
-	net_pwr = odb.dbNet.create(reader.block, 'vccd1')
+	net_pwr = reader.block.findNet('vccd1')
+	if net_pwr is None:
+		net_pwr = odb.dbNet.create(reader.block, 'vccd1')
 	net_pwr.setSpecial()
 	net_pwr.setSigType('POWER')
 
