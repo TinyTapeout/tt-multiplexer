@@ -596,6 +596,169 @@ class ModulePowerStrapper:
 				self._draw_stripe(sw, [ via_pg, via_blk ], y, xl, xr, xp, xv)
 
 
+class RingPowerStrapper:
+
+	def __init__(self, reader):
+		# Save vars
+		self.reader = reader
+
+		# Find useful data
+		tech = reader.db.getTech()
+
+		self.layer = tech.findLayer('met3')
+		self.tech = self.reader.db.getTech()
+		self.via_rule = self.tech.findViaGenerateRule('M3M4_PR')
+		self.vias = {}
+
+	def find_ring_for_net(self, net):
+		# Find all the boxes on met4
+		boxes = []
+		for sw in net.getSWires():
+			for w in sw.getWires():
+				# Skip vias
+				if w.isVia():
+					continue
+
+				# Only met4/met5
+				if w.getTechLayer().getName() != 'met4':
+					continue
+
+				boxes.append(w)
+
+		# There should be none or 2
+		if len(boxes) == 0:
+			return None
+
+		if len(boxes) != 2:
+			raise RuntimeError(f'Unexpected boxes for net {net.getName():s}')
+
+		# Sort and return
+		boxes = sorted(boxes, key=lambda x:x.xMin())
+
+		return {
+			'l': boxes[0],
+			'r': boxes[1],
+		}
+
+	def gen_via(self, vw, vh):
+		# Find the rules for top/cut/bot
+		met = []
+
+		for i in range(self.via_rule.getViaLayerRuleCount()):
+			# Get rule and associated layer
+			r = self.via_rule.getViaLayerRule(i)
+			ln = r.getLayer().getName()
+
+			# Is it the cut ?
+			if 'via' in ln.lower():
+				cut_ln = ln
+				cut = [ r.getRect().dx(), r.getRect().dy() ]
+				spacing = r.getSpacing()
+
+			# Metal
+			elif 'met' in ln.lower():
+				met.append(ln)
+
+			# WTF ?
+			else:
+				raise RuntimeError('Unknown via rule')
+
+		met = sorted(met)
+
+		# Compute row / columns
+		ncols = (vw // (cut[0] + spacing[0])) - 1
+		nrows = (vh // (cut[1] + spacing[1])) - 1
+
+		# Create via
+		v = odb.dbVia.create(self.reader.block, f'prs_{vw:d}x{vh:d}')
+		v.setViaGenerateRule(self.via_rule)
+
+		# Configure params
+		vp = v.getViaParams()
+
+		vp.setBottomLayer(self.tech.findLayer(met[0]))
+		vp.setCutLayer(self.tech.findLayer(cut_ln))
+		vp.setTopLayer(self.tech.findLayer(met[1]))
+		vp.setNumCutCols(ncols)
+		vp.setNumCutRows(nrows)
+		vp.setXCutSize(cut[0])
+		vp.setYCutSize(cut[1])
+		vp.setXCutSpacing(spacing[0])
+		vp.setYCutSpacing(spacing[1])
+
+		v.setViaParams(vp)
+
+		# Done
+		return v
+
+	def get_via(self, vw, vh):
+		k = (vw, vh)
+		if k not in self.vias:
+			self.vias[k] = self.gen_via(vw, vh)
+		return self.vias[k]
+
+	def strap_draw(self, sw, sxl, sxr, rxl, rxr, yb, yt):
+		# Stripe
+		odb.createSBoxes(sw, self.layer, [odb.Rect(sxl, yb, sxr, yt)], "STRIPE")
+
+		via = self.tech.findVia('M3M4_PR')
+
+
+		# Connecting via
+		via = self.get_via(rxr-rxl, yt-yb)
+
+		rxm = (rxl + rxr) // 2
+		ym  = ( yb +  yt) // 2
+		odb.createSBoxes(sw, via, [odb.Point(rxm, ym)], "STRIPE")
+
+	def strap_bterm(self, bterm):
+		# Die area
+		die = self.reader.block.getDieArea()
+
+		# Find all the rings boxes
+		ring = self.find_ring_for_net(bterm.getNet())
+		if ring is None:
+			return
+
+		# Create new SWire for our straps
+		net = bterm.getNet()
+		sw = odb.dbSWire.create(net, "ROUTED")
+
+		# Scan all the boxes for that bterm and connect it
+		# to the appropriate rail
+		for bpin in  bterm.getBPins():
+			for bbox in bpin.getBoxes():
+				# Only process pins on side which should be met3
+				if bbox.getTechLayer().getName() != 'met3':
+					continue
+
+				# Is pin left or right ?
+				xl  = ring['r'].xMin()
+				xr  = ring['l'].xMax()
+				yb  = bbox.yMin()
+				yt  = bbox.yMax()
+
+				if bbox.xMin() < die.xMin():
+					side = 'l'
+					xl = bbox.xMin()
+
+				elif bbox.xMax() > die.xMax():
+					side = 'r'
+					xr = bbox.xMax()
+
+				else:
+					# ???
+					continue
+
+				self.strap_draw(sw, xl, xr, ring[side].xMin(), ring[side].xMax(), yb, yt)
+
+	def run(self):
+		# Scan all power rails
+		for bterm in self.reader.block.getBTerms():
+			if bterm.getSigType() in ['POWER', 'GROUND']:
+				self.strap_bterm(bterm)
+
+
 @click.command()
 @click_odb
 def route(
@@ -617,6 +780,10 @@ def route(
 
 	# Create the module power straps
 	p = ModulePowerStrapper(reader, tti)
+	p.run()
+
+	# Create the ring power straps
+	p = RingPowerStrapper(reader)
 	p.run()
 
 
