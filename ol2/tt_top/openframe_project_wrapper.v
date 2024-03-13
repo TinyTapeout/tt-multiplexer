@@ -154,11 +154,4 @@ module openframe_project_wrapper (
 	assign gpio_dm1         = {44{k_zero}};
 	assign gpio_dm0         = {44{k_zero}};
 
-
-	// Power links
-	// -----------
-
-//	(* keep *) vccd1_connection vccd1_connection ();
-//	(* keep *) vssd1_connection vssd1_connection ();
-
 endmodule	// openframe_project_wrapper
