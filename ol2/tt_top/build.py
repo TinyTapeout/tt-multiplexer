@@ -2,7 +2,7 @@
 
 #
 # OpenLane2 build script to harden the tt_top macro inside
-# the classic user_project_wrapper
+# the openframe_project_wrapper
 #
 # Copyright (c) 2023 Sylvain Munaut <tnt@246tNt.com>
 # SPDX-License-Identifier: Apache-2.0
@@ -160,12 +160,12 @@ if __name__ == '__main__':
 	# Custom config
 	flow_cfg = {
 		# Main design properties
-		"DESIGN_NAME"    : "user_project_wrapper",
+		"DESIGN_NAME"    : "openframe_project_wrapper",
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES": [
-			"dir::user_project_wrapper.v",
+			"dir::openframe_project_wrapper.v",
 			"dir::../../rtl/tt_top.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
