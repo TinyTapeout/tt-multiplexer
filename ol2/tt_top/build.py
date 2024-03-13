@@ -184,14 +184,14 @@ if __name__ == '__main__':
 
 		# Synthesis
 		"SYNTH_ELABORATE_ONLY"      : True,
-		"SYNTH_EXCLUSION_CELL_LIST" : "no_synth_cells.txt",
-		"PNR_EXCLUSION_CELL_LIST"   : "no_drc_cells.txt",
-		"DRC_EXCLUDE_CELL_LIST"     : "no_drc_cells.txt",
+		"SYNTH_EXCLUSION_CELL_LIST" : "dir::no_synth_cells.txt",
+		"PNR_EXCLUSION_CELL_LIST"   : "dir::no_drc_cells.txt",
+		"DRC_EXCLUDE_CELL_LIST"     : "dir::no_drc_cells.txt",
 
 		# PDN
 		"PDN_CONNECT_MACROS_TO_GRID": False,
 		"PDN_ENABLE_GLOBAL_CONNECTIONS": False,
-		"PDN_CFG": "pdn.tcl",
+		"PDN_CFG": "dir::pdn.tcl",
 
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
