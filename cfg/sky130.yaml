@@ -1,12 +1,12 @@
 pdk:
   die:
-    width: 2920000
-    height: 3520000
+    width: 3166630
+    height: 4766630
     margin:
-      left:   3680
-      right:  3680
-      top:    5440
-      bottom: 5440
+      left:   95000
+      right:  95000
+      top:    95000
+      bottom: 90000
   site:
     width:  460
     height: 2720
@@ -71,7 +71,7 @@ pdk:
 tt:
   grid:     # In number of blocks
     x: 16   # Must be divisible by 4
-    y: 24   # Must be EVEN
+    y: 32   # Must be EVEN
   block:
     w: -1
     h: -1
