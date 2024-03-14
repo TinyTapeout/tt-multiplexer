@@ -310,7 +310,48 @@ class Router:
 				# End routing
 				encoder.end()
 
-	def route_k01(self):
+	def k01_get_track(self, side, idx):
+		# Get full die area
+		die = self.reader.block.getDieArea()
+
+		# Prepare recording of used tracks if not done already
+		if not hasattr(self, 'k01_tracks'):
+			self.k01_tracks = {
+				'left':  [],
+				'right': [],
+				'bot':   [],
+				'top':   [],
+			}
+
+		# Track config
+		cfg_tv = self.tti.cfg.pdk.tracks.met4.x
+		cfg_th = self.tti.cfg.pdk.tracks.met3.y
+
+		# Alignement function
+		def a(cfg, v):
+			return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
+
+		# Return requested track
+		if side == 'left':
+			t = cfg_tv.offset + cfg_tv.pitch * idx
+
+		elif side == 'right':
+			t = a(cfg_tv, die.xMax() - cfg_tv.pitch * idx)
+
+		elif side == 'bot':
+			t = cfg_th.offset + cfg_th.pitch * idx
+
+		elif side == 'top':
+			t = a(cfg_th, die.yMax() - cfg_th.pitch * idx)
+
+		else:
+			# ?!!?
+			t = None
+
+		self.k01_tracks[side].append(t)
+		return t;
+
+	def route_k01_global(self):
 		# Vias
 		tech = self.reader.db.getTech()
 
@@ -325,48 +366,38 @@ class Router:
 		# Find controller instance
 		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
 
-		# Prepare recording of used tracks
-		self.k01_x_left  = []
-		self.k01_x_right = []
-		self.k01_y_bot   = []
-		self.k01_y_top   = []
+		# Start index
+		idx = 2
 
 		# Deal with each constant
-		for idx, port_name in enumerate(['k_zero', 'k_one']):
+		for port_name in ['k_zero', 'k_one']:
 			# ITerm on controller
 			ctrl_iterm = ctrl_inst.findITerm(port_name)
 			r, x, y = ctrl_iterm.getAvgXY()
 			if r is not True:
 				continue
 
-			# Set the margin
-			margin = 2
+			# Get associated net
+			net = ctrl_iterm.getNet()
+
+			# Check if there are any users
+			if (net is None) or (len(net.getBTerms()) == 0):
+				continue
 
 			# Limits
-			cfg_tv = self.tti.cfg.pdk.tracks.met4.x
-			cfg_th = self.tti.cfg.pdk.tracks.met3.y
-
-			def a(cfg, v):
-				return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
-
 			lx = [
-				cfg_tv.offset + cfg_tv.pitch * (idx + margin),
-				a(cfg_tv, die.xMax() - cfg_tv.pitch * (idx + margin))
+				self.k01_get_track('left', idx),
+				self.k01_get_track('right', idx),
 			]
 
 			ly = [
-				cfg_th.offset + cfg_th.pitch * (idx + margin),
-				a(cfg_th, die.yMax() - cfg_th.pitch * (idx + margin))
+				self.k01_get_track('bot', idx),
+				self.k01_get_track('top', idx),
 			]
 
-			# Record the tracks we used so we can create obstructions
-			self.k01_x_left.append  (lx[0])
-			self.k01_x_right.append (lx[1])
-			self.k01_y_bot.append   (ly[0])
-			self.k01_y_top.append   (ly[1])
+			idx += 1
 
-			# Net / Wire
-			net = ctrl_iterm.getNet()
+			# Create new wire
 			wire = odb.dbWire.create(net)
 
 			# Encoder start
@@ -429,6 +460,10 @@ class Router:
 
 	def create_k01_obs(self):
 
+		# No tracks ?
+		if not hasattr(self, 'k01_tracks'):
+			return
+
 		# Get all layers and config
 		tech = self.reader.db.getTech()
 
@@ -441,41 +476,57 @@ class Router:
 		die = self.reader.block.getDieArea()
 
 		# Limits
-		lx_left = [
-			min(self.k01_x_left) - cfg_v.pitch // 2,
-			max(self.k01_x_left) + cfg_v.pitch // 2,
-		]
+		if self.k01_tracks['left']:
+			lx_left = [
+				min(self.k01_tracks['left']) - cfg_v.pitch // 2,
+				max(self.k01_tracks['left']) + cfg_v.pitch // 2,
+			]
+		else:
+			lx_left = [ die.xMin(), die.xMin() ]
 
-		lx_right = [
-			min(self.k01_x_right) - cfg_v.pitch // 2,
-			max(self.k01_x_right) + cfg_v.pitch // 2,
-		]
+		if self.k01_tracks['right']:
+			lx_right = [
+				min(self.k01_tracks['right']) - cfg_v.pitch // 2,
+				max(self.k01_tracks['right']) + cfg_v.pitch // 2,
+			]
+		else:
+			lx_right = [ die.xMax(), die.xMax() ]
 
-		ly_bot = [
-			min(self.k01_y_bot) - cfg_h.pitch // 2,
-			max(self.k01_y_bot) + cfg_h.pitch // 2,
-		]
+		if self.k01_tracks['bot']:
+			ly_bot = [
+				min(self.k01_tracks['bot']) - cfg_h.pitch // 2,
+				max(self.k01_tracks['bot']) + cfg_h.pitch // 2,
+			]
+		else:
+			ly_bot = [ die.yMin(), die.yMin() ]
 
-		ly_top = [
-			min(self.k01_y_top) - cfg_h.pitch // 2,
-			max(self.k01_y_top) + cfg_h.pitch // 2,
-		]
+		if self.k01_tracks['top']:
+			ly_top = [
+				min(self.k01_tracks['top']) - cfg_h.pitch // 2,
+				max(self.k01_tracks['top']) + cfg_h.pitch // 2,
+			]
+		else:
+			ly_top = [ die.yMax(), die.yMax() ]
 
 		# Left
-		odb.dbObstruction_create(self.reader.block,
-			layer_v, lx_left[0], ly_bot[0], lx_left[1], ly_top[1])
+		if self.k01_tracks['left']:
+			odb.dbObstruction_create(self.reader.block,
+				layer_v, lx_left[0], ly_bot[0], lx_left[1], ly_top[1])
 
 		# Right
-		odb.dbObstruction_create(self.reader.block,
-			layer_v, lx_right[0], ly_bot[0], lx_right[1], ly_top[1])
+		if self.k01_tracks['right']:
+			odb.dbObstruction_create(self.reader.block,
+				layer_v, lx_right[0], ly_bot[0], lx_right[1], ly_top[1])
 
 		# Bottom
-		odb.dbObstruction_create(self.reader.block,
-			layer_h, lx_left[0], ly_bot[0], lx_right[1], ly_bot[1])
+		if self.k01_tracks['bot']:
+			odb.dbObstruction_create(self.reader.block,
+				layer_h, lx_left[0], ly_bot[0], lx_right[1], ly_bot[1])
 
 		# Top
-		odb.dbObstruction_create(self.reader.block,
-			layer_h, lx_left[0], ly_top[0], lx_right[1], ly_top[1])
+		if self.k01_tracks['top']:
+			odb.dbObstruction_create(self.reader.block,
+				layer_h, lx_left[0], ly_top[0], lx_right[1], ly_top[1])
 
 
 
@@ -773,7 +824,7 @@ def route(
 	r.route_vspine()
 	r.create_spine_obs()
 	r.create_macro_obs()
-	r.route_k01()
+	r.route_k01_global()
 	r.create_k01_obs()
 	r.route_pad()
 	r.route_um_tieoffs()
