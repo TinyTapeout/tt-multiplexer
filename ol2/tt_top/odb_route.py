@@ -48,7 +48,7 @@ class Router:
 		y_max   = None
 
 		x_spine = None
-		y_mux   = set()
+		y_mux   = dict()
 		y_ctrl  = [None, None]
 
 		for it in net.getITerms():
@@ -58,12 +58,6 @@ class Router:
 				continue
 
 			# Collect the extent
-			if (x_min is None) or (x < x_min):
-				x_min = x
-
-			if (x_max is None) or (x > x_max):
-				x_max = x
-
 			if (y_min is None) or (y < y_min):
 				y_min = y
 
@@ -75,11 +69,8 @@ class Router:
 				x_spine = x
 				self.x_spine.append(x)
 			else:
-				y_mux.add(y)
-				self.y_muxes.setdefault(name, []).append(y)
-
-		self.x_min = x_min
-		self.x_max = x_max
+				y_mux.setdefault(y, []).append(x)
+				self.y_muxes.setdefault(name, (x, []))[1].append(y)
 
 		# Create wire and matching encoder
 		wire = odb.dbWire.create(net)
@@ -93,11 +84,17 @@ class Router:
 		encoder.addPoint(x_spine, y_max)
 
 		# Create horizontal link for each mux
-		for y in y_mux:
+		for y,xl in y_mux.items():
+			xl.append(x_spine)
+			x_min_l = min(xl)
+			x_max_l = max(xl)
+
 			encoder.newPath(self.layer_h, 'FIXED')
-			encoder.addPoint(x_min, y)
+			if x_min_l < x_spine:
+				encoder.addPoint(x_min_l, y)
 			encoder.addPoint(x_spine, y)
-			encoder.addPoint(x_max, y)
+			if x_max_l > x_spine:
+				encoder.addPoint(x_max_l, y)
 
 			encoder.newPath(self.layer_v, 'FIXED')
 			encoder.addPoint(x_spine, y)
@@ -120,8 +117,8 @@ class Router:
 
 	def create_spine_obs(self):
 		# Find top/bottom
-		y_min = min(sum(self.y_muxes.values(), []))
-		y_max = max(sum(self.y_muxes.values(), []))
+		y_min = min(sum([yl for xl,yl in self.y_muxes.values()], []))
+		y_max = max(sum([yl for xl,yl in self.y_muxes.values()], []))
 
 		# Create vspine obstruction
 		x_min_spine = min(self.x_spine)
@@ -135,13 +132,15 @@ class Router:
 
 		# Create horizontal link obstruction for each mux
 		for k, v in self.y_muxes.items():
-			y_min_hlink = min(v)
-			y_max_hlink = max(v)
+			x_min_hlink = min([v[0], x_min_spine])
+			x_max_hlink = max([v[0], x_max_spine])
+			y_min_hlink = min(v[1])
+			y_max_hlink = max(v[1])
 
 			odb.dbObstruction_create(self.reader.block,
 				self.layer_h,
-				self.x_min, y_min_hlink,
-				self.x_max, y_max_hlink,
+				x_min_hlink, y_min_hlink,
+				x_max_hlink, y_max_hlink,
 			)
 
 	def create_macro_obs(self):
