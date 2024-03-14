@@ -227,8 +227,8 @@ module openframe_project_wrapper (
 			.gpio_dm0            (gpio_dm0[i]),
 			.analog_io           (analog_io[i]),
 			.analog_noesd_io     (analog_noesd_io[i]),
-			.gpio_loopback_one   (k_one),
-			.gpio_loopback_zero  (k_zero)
+			.gpio_loopback_one   (gpio_loopback_one[i]),
+			.gpio_loopback_zero  (gpio_loopback_zero[i])
 		);
 	end
 
