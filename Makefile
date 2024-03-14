@@ -27,6 +27,11 @@ SIM_SRC=$(addprefix sim/, \
 	tt_um_test.v \
 )
 
+SIM_SRC+=$(addprefix pg/, \
+	tt_pg_vdd_1/tt_pg_vdd_1.v \
+	tt_pg_vdd_2/tt_pg_vdd_2.v \
+)
+
 PRIM_SRC=$(addprefix rtl/prim_$(TECH)/, \
 	tt_prim_buf.v \
 	tt_prim_dfrbp.v \
