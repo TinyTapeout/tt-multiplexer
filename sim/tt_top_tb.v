@@ -20,10 +20,9 @@ module tt_top_tb;
 	// -------
 
 	// DUT signals
-	wire [37:0] io_in;
-	wire [37:0] io_out;
-	wire [37:0] io_oeb;
-	wire        user_clock2;
+	wire [43:0] io_in;
+	wire [43:0] io_out;
+	wire [43:0] io_oeb;
 	wire        k_zero;
 	wire        k_one;
 
@@ -46,9 +45,9 @@ module tt_top_tb;
 	// ---
 
 	tt_top #(
-		.N_PADS (38),
+		.N_PADS (44),
 		.G_X    (16),
-		.G_Y    (24),
+		.G_Y    (32),
 		.N_IO   (8),
 		.N_O    (8),
 		.N_I    (10)
@@ -56,7 +55,6 @@ module tt_top_tb;
 		.io_in       (io_in),
 		.io_out      (io_out),
 		.io_oeb      (io_oeb),
-		.user_clock2 (user_clock2),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
@@ -64,15 +62,13 @@ module tt_top_tb;
 	// DUT connections
 	// ---------------
 
-	assign user_clock2 = clk_b;
+	assign io_in[40] = ctrl_sel_rst_n;
+	assign io_in[39] = ctrl_sel_inc;
+	assign io_in[38] = ctrl_ena;
 
-	assign io_in[36] = ctrl_sel_rst_n;
-	assign io_in[34] = ctrl_sel_inc;
-	assign io_in[32] = ctrl_ena;
-
-	assign io_in[6] = io_out[5];	// Loop back clk_out to clk_in
-	assign io_in[7] = um_rst_cnt[3];
-	assign io_in[8] = 1'b1;
+	assign io_in[14] = clk_b;
+	assign io_in[15] = um_rst_cnt[3];
+	assign io_in[ 0] = 1'b1;
 
 
 	always @(negedge io_out[5])
