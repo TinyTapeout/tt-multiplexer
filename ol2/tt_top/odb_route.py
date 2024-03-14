@@ -351,6 +351,103 @@ class Router:
 		self.k01_tracks[side].append(t)
 		return t;
 
+	def route_k01_gpio(self):
+		# Get full die area
+		die = self.reader.block.getDieArea()
+
+		# Vias
+		tech = self.reader.db.getTech()
+
+		via = {
+			('met2', 'met3'): tech.findVia('M2M3_PR'),
+			('met3', 'met4'): tech.findVia('M3M4_PR'),
+		}
+
+		# Scan all BTerm to find gpio_loopback_{zero,one}[]
+		for bterm in self.reader.block.getBTerms():
+			# Check it's a bterm of interest
+			if not bterm.getName().startswith('gpio_loopback'):
+				continue
+
+			# Select index
+			if 'zero' in bterm.getName():
+				idx = 0
+			elif 'one' in bterm.getName():
+				idx = 1
+
+			# Select side
+			bt_bbox = bterm.getBBox()
+			if   bt_bbox.xMin() < die.xMin():
+				side = 'left'
+			elif bt_bbox.xMax() > die.xMax():
+				side = 'right'
+			elif bt_bbox.yMin() < die.yMin():
+				side = 'bot'
+			elif bt_bbox.yMax() > die.yMax():
+				side = 'top'
+
+			# Get track
+			trk = self.k01_get_track(side, idx)
+
+			# Get layer of bterm
+			bterm_box = bterm.getBPins()[0].getBoxes()[0]
+			bterm_ly  = bterm_box.getTechLayer()
+
+			# Get the coordinates for all other bterms on net
+			net = bterm.getNet()
+
+			pos = []
+
+			for bterm_sec in net.getBTerms():
+				# Check it's in the same layer
+				if bterm_sec.getBPins()[0].getBoxes()[0].getTechLayer().getName() != bterm_ly.getName():
+					continue
+
+				# Get position
+				pr, px, py = bterm_sec.getFirstPinLocation()
+				if pr is not True:
+					continue
+
+				# Record it
+				pos.append( (px, py) )
+
+			# Create new wire
+			wire = odb.dbWire.create(net)
+
+			# Encoder start
+			encoder = odb.dbWireEncoder()
+			encoder.begin(wire)
+
+			# Draw
+			if side in ['left', 'right']:
+				# Vertical segment
+				encoder.newPath(self.layer_v, 'FIXED')
+				encoder.addPoint(trk, min([p[1] for p in pos]))
+				encoder.addPoint(trk, max([p[1] for p in pos]))
+
+				# Connect each position
+				for px, py in pos:
+					encoder.newPath(bterm_ly, 'FIXED')
+					encoder.addPoint(px, py)
+					encoder.addPoint(trk, py)
+					encoder.addTechVia(via[(bterm_ly.getName(), self.layer_v.getName())])
+
+			elif side in ['bot', 'top']:
+				# Horizontal segment
+				encoder.newPath(self.layer_h, 'FIXED')
+				encoder.addPoint(min([p[0] for p in pos]), trk)
+				encoder.addPoint(max([p[0] for p in pos]), trk)
+
+				# Connect each position
+				for px, py in pos:
+					encoder.newPath(bterm_ly, 'FIXED')
+					encoder.addPoint(px, py)
+					encoder.addPoint(px, trk)
+					encoder.addTechVia(via[(bterm_ly.getName(), self.layer_h.getName())])
+
+			# Encoder end
+			encoder.end()
+
 	def route_k01_global(self):
 		# Vias
 		tech = self.reader.db.getTech()
@@ -825,6 +922,7 @@ def route(
 	r.create_spine_obs()
 	r.create_macro_obs()
 	r.route_k01_global()
+	r.route_k01_gpio()
 	r.create_k01_obs()
 	r.route_pad()
 	r.route_um_tieoffs()
