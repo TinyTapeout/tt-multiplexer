@@ -56,6 +56,12 @@ class ModulePlacer:
 		self.cfg = cfg
 		self.verbose = verbose
 
+		# Extract analog muxes positions
+		self.mux_analog = set()
+		if hasattr(self.cfg.tt, 'analog'):
+			for grp in self.cfg.tt.analog:
+				self.mux_analog.update(grp['mux_id'])
+
 		# Run placement
 		self.gen_grid()
 		self.load_modules(mod_file)
@@ -152,6 +158,11 @@ class ModulePlacer:
 				yield (pos_x+sx*ox, pos_y+sy*oy)
 
 	def _site_suitable(self, mod, pos_x, pos_y):
+		# Check this is a connectable position
+		mux_id = self.p2l(pos_x, pos_y)[0]
+		if mux_id in self.mux_analog:
+			return False
+
 		# Check all positions exist and are free
 		for (ox, oy) in self._sites_for_module(mod, pos_x, pos_y):
 			if (ox, oy) not in self.pgrid_free:
