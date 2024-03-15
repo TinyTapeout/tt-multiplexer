@@ -465,6 +465,10 @@ class Top(LayoutElement):
 		self.branches = []
 
 		for mux_id in range(0, layout.cfg.tt.grid.y):
+			# Check if mux exists
+			if not layout.mux_exists(mux_id):
+				continue
+
 			# Quadrants
 			my = layout.cfg.tt.grid.y // 4
 
@@ -495,7 +499,7 @@ class Top(LayoutElement):
 			branch = Branch(layout, placer, mux_id)
 			self.branches.append(branch)
 
-			self.add_child(branch, Point(b_x, b_y), ori, name=f'branch\\[{mux_id:d}\\]')
+			self.add_child(branch, Point(b_x, b_y), ori, name=f'branch\\[{mux_id:d}\\].check_mask')
 
 		# Create Controller
 		self.ctrl = ctrl = Controller(layout)

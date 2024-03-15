@@ -18,7 +18,8 @@ module tt_top #(
 	parameter integer N_AU = `TT_N_AU,
 	parameter integer N_IO = `TT_N_IO,
 	parameter integer N_O  = `TT_N_O,
-	parameter integer N_I  = `TT_N_I
+	parameter integer N_I  = `TT_N_I,
+	parameter [G_Y-1:0] MUX_MASK = `TT_MUX_MASK
 )(
 	// Power
 `ifdef USE_POWER_PINS
@@ -179,9 +180,10 @@ module tt_top #(
 
 	genvar i, j;
 
-	generate
-		for (i=0; i<G_Y; i=i+1)
-		begin : branch
+	for (i=0; i<G_Y; i=i+1)
+	begin : branch
+		if (~MUX_MASK[i])
+		begin : check_mask
 			// Signals
 			wire [S_OW-1:0] l_spine_ow;
 			wire [S_IW-1:0] l_spine_iw;
@@ -265,6 +267,6 @@ module tt_top #(
 				);
 			end
 		end
-	endgenerate
+	end
 
 endmodule // tt_top

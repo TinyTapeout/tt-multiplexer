@@ -15,3 +15,12 @@
 `define TT_N_IO ${cfg.tt.uio.io}
 `define TT_N_O  ${cfg.tt.uio.o}
 `define TT_N_I  ${cfg.tt.uio.i}
+
+<%
+mux_mask = 0
+if hasattr(cfg.tt, 'analog'):
+	for grp in cfg.tt.analog:
+		for mux_id in grp['mux_id']:
+			mux_mask |= 1 << mux_id
+%>
+`define TT_MUX_MASK ${cfg.tt.grid.y}'h${'{:X}'.format(mux_mask)}

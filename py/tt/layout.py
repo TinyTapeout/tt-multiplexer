@@ -30,6 +30,7 @@ class Layout:
 		self.hspine_layout()
 		self.vspine_layout()
 		self.ctrl_layout()
+		self.analog_layout()
 
 	def _align(self, v, layer, dir_, ceil=False):
 		# Grab config data for tracks / sites
@@ -487,4 +488,17 @@ class Layout:
 		self.ply_ctrl_io_bot.update( spread(bl_pads, 0,           limit_left) )
 		self.ply_ctrl_io_top.update( spread(tr_pads, limit_right, self.glb.ctrl.width) )
 		self.ply_ctrl_io_bot.update( spread(br_pads, limit_right, self.glb.ctrl.width) )
+
+	def analog_layout(self):
+		# Generate list of masked muxes
+		self.mux_mask = 0
+
+		if hasattr(self.cfg.tt, 'analog'):
+			for grp in self.cfg.tt.analog:
+				for mux_id in grp['mux_id']:
+					self.mux_mask |= 1 << mux_id
+
+	def mux_exists(self, mux_id):
+		# Check if a given mux exists or is masked for some reason
+		return not ((self.mux_mask >> mux_id) & 1)
 
