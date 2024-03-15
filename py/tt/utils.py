@@ -22,11 +22,17 @@ class ConfigNode:
 	def __init__(self, cfg = None):
 		self._cfg = cfg or {}
 
-	def __getattr__(self, k):
+	def __get(self, k):
 		v = self._cfg[k]
 		if isinstance(v, dict):
 			self._cfg[k] = v = ConfigNode(v)
 		return v
+
+	def __getattr__(self, k):
+		try:
+			return self.__get(k)
+		except KeyError:
+			raise AttributeError()
 
 	def __setattr__(self, k, v):
 		if k[0] != '_':
@@ -35,7 +41,7 @@ class ConfigNode:
 			super().__setattr__(k,v)
 
 	def __getitem__(self, k):
-		return self.__getattr__(k)
+		return self.__get(k)
 
 	def __setitem__(self, k, v):
 		self.__setattr__(k, v)
