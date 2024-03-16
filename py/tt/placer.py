@@ -58,6 +58,9 @@ class ModulePlacer:
 		self.cfg = cfg
 		self.verbose = verbose
 
+		# Current place mode
+		self.analog_fill = False
+
 		# Extract analog muxes positions
 		self.mux_analog = set()
 		if hasattr(self.cfg.tt, 'analog'):
@@ -194,9 +197,15 @@ class ModulePlacer:
 
 	def _site_suitable(self, mod, pos_x, pos_y):
 		# Check this is a connectable position
-		mux_id = self.p2l(pos_x, pos_y)[0]
+		mux_id, blk_id = self.p2l(pos_x, pos_y)
 		if mux_id in self.mux_analog:
 			return False
+
+		# If in analog fill mode, that slot must be facing an analog slot
+		if self.analog_fill:
+			amux_id, ablk_id = self.ld2la(mux_id, blk_id)
+			if not amux_id in self.mux_analog:
+				return False
 
 		# Check all positions exist and are free
 		for (ox, oy) in self._sites_for_module(mod, pos_x, pos_y):
@@ -233,7 +242,20 @@ class ModulePlacer:
 				return x, mod.pos_y
 		return None, None
 
+	def _module_placed(self, mod):
+		if (mod.pos_x is None) or (mod.pos_y is None):
+			return False
+		return self.pgrid.get((mod.pos_x, mod.pos_y)) == mod
+
 	def _place_module(self, mod):
+		# Already dealt with ?
+		if self._module_placed(mod):
+			return
+
+		# If we're trying to fill analog slots, only height=2 matters
+		if self.analog_fill and (mod.height != 2):
+			return
+
 		# Find final X, Y
 		if (mod.pos_x is None) and (mod.pos_y is None):
 			x, y = self._find_xy_for_module(mod)
@@ -248,6 +270,8 @@ class ModulePlacer:
 
 		# Valid ?
 		if (x is None) or (y is None):
+			if self.analog_fill:
+				return
 			raise RuntimeError(f"Module '{mod.name:s}' couldn't be placed")
 
 		# Actually place it
@@ -293,10 +317,18 @@ class ModulePlacer:
 				auto_placed.append(m)
 
 		# Place them from most constrained to less constrained
+			# Fully placed are just checked
 		self._place_modules_group(full_placed)
+
+			# Semi/Auto trying to fill analog positions first
+		self.analog_fill = True
 		self._place_modules_group(semi_placed)
 		self._place_modules_group(auto_placed)
 
+			# And then normal mode
+		self.analog_fill = False
+		self._place_modules_group(semi_placed)
+		self._place_modules_group(auto_placed)
 
 
 AnalogPin = namedtuple('AnalogPin', 'num y mods dedicated')
