@@ -9,6 +9,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+from collections import namedtuple
+
 import yaml
 
 
@@ -25,7 +27,7 @@ class ModuleSlot:
 		self.width  = cfg_data.get('width', 1)
 		self.height = cfg_data.get('height', 1)
 		self.pg_vdd = cfg_data.get('pg_vdd', True)
-		self.analog = cfg_data.get('analog', False)
+		self.analog = cfg_data.get('analog', {})
 
 	def as_dict(self):
 		return {
@@ -111,6 +113,39 @@ class ModulePlacer:
 		pos_x = (gx // 2) - 1 + lr + (2 * lr - 1) * (blk_id >> 1)
 
 		return pos_x, pos_y
+
+	def la2ld(self, amux_id, ablk_id):
+		"""
+		Converts a logical position on an 'analog mux' to the matching position
+		on a 'digital mux' where the module actually is located
+		"""
+		# Side toward or away from controller
+		if ablk_id & 1:
+			# Away from the controller
+			dmux_id = amux_id + 4
+			dblk_id = ablk_id ^ 1
+
+		else:
+			# Toward the controller
+			if amux_id >= 4:
+				# Normal case
+				dmux_id = amux_id - 4
+				dblk_id = ablk_id ^ 1
+
+			else:
+				# We're crossing over the other side of the controller
+				dmux_id = amux_id ^ 1
+				dblk_id = ablk_id ^ 1
+
+		return dmux_id, dblk_id
+
+	def ld2la(self, dmux_id, dblk_id):
+		"""
+		Converts a logical position on an 'digital mux' to the matching position
+		on a 'analog mux' where the module analog ports would be
+		"""
+		# Turns out it's an involution
+		return self.la2ld(dmux_id, dblk_id)
 
 	def load_modules(self, mod_file):
 		# Load raw data from YAML
@@ -240,6 +275,10 @@ class ModulePlacer:
 			self._place_module(m)
 
 	def place_modules(self):
+		# Deal with analog modules first
+		ap = AnalogPlacer(self)
+		ap.place_modules(self.modules)
+
 		# Sort modules into 3 sets
 		full_placed = []
 		semi_placed = []
@@ -258,3 +297,245 @@ class ModulePlacer:
 		self._place_modules_group(semi_placed)
 		self._place_modules_group(auto_placed)
 
+
+
+AnalogPin = namedtuple('AnalogPin', 'num y mods dedicated')
+
+class AnalogPinGroup:
+
+	def __init__(self, placer, cfg_grp):
+		# Save placer & Config
+		self.placer = placer
+		self.cfg = cfg = placer.cfg
+
+		# Save list of pins and Y position and assigned modules
+		self.pins = dict([
+			(k, AnalogPin(k, v, [], k in cfg_grp.get('dedicated',[])))
+				for k, v in cfg_grp['pins'].items()
+		])
+
+		# Estimate mux position
+		mux_id = cfg_grp['mux_id'][0]
+
+		h_avail = cfg.pdk.die.height - (cfg.pdk.die.margin.top + cfg.pdk.die.margin.top)
+		h_mid   = cfg.pdk.die.margin.bottom + h_avail // 2
+		h_mux   = h_avail // (cfg.tt.grid.y // 2)
+
+		d = round(((mux_id >> 2) + 0.5) * h_mux)
+		if mux_id & 1:
+			self.pos_y = h_mid + d
+		else:
+			self.pos_y = h_mid - d
+
+		# Generate free spots in order of preference
+		mux_ids = cfg_grp['mux_id']
+		l = len(mux_ids)
+		n = cfg.tt.grid.x // 2
+
+		self.pos_free = pos_free = []
+
+		if l == 1:
+			# Only one mux, prefer outside of the mux (closer to pad frame)
+			for x in range(n):
+				pos_free.append( (mux_ids[0], 2*(n-x-1) + 0) )
+				pos_free.append( (mux_ids[0], 2*(n-x-1) + 1) )
+
+		elif l == 2:
+			# Check they are on the same line
+			if (mux_ids[0] & ~2) != (mux_ids[1] & ~2):
+				raise RuntimeError("Two mux in a group are not on the same line")
+
+			# The first mux we prefer the outside first
+			for x in range(n):
+				pos_free.append( (mux_ids[0], 2*(n-x-1) + 0) )
+				pos_free.append( (mux_ids[0], 2*(n-x-1) + 1) )
+
+			# The second mux we prefer the inside first
+			for x in range(n):
+				pos_free.append( (mux_ids[1], 2*x + 0) )
+				pos_free.append( (mux_ids[1], 2*x + 1) )
+
+		else:
+			# ?!?
+			raise RuntimeError("Can't have more than 2 mux per group !")
+
+		# Debug print
+		if False:
+			for amux_id, ablk_id, inv in pos_free:
+				dmux_id, dblk_id = self.placer.la2ld(amux_id, ablk_id)
+				ax, ay = self.placer.l2p(amux_id, ablk_id)
+				dx, dy = self.placer.l2p(dmux_id, dblk_id)
+				print(f'{amux_id:2d}/{ablk_id:2d} - {dmux_id:2d}/{dblk_id:2d} | {ax:2d}/{ay:2d} - {dx:2d}/{dy:2d}')
+			print("-----")
+
+	def pick_pins_in_set(self, pins, n):
+		# Sort by user * distance
+		return sorted(pins, key=lambda p: (len(p.mods) + 1) * abs(p.y - self.pos_y))[0:n]
+
+	def pick_pins_for_module(self, m):
+		# How many pins needed ?
+		n = len([x for x in m.analog.values() if x is None])
+
+		# Build a map of # users -> pin list
+		use_map = {}
+		for pin in self.pins.values():
+			if pin.dedicated:
+				continue
+			use_map.setdefault(len(pin.mods), []).append(pin)
+
+		use_cnt = sorted(use_map.keys())
+
+		# Check the least 2 used groups see if there are enough pins
+		for i in range(min([len(use_cnt), 2])):
+			if len(use_map[use_cnt[i]]) >= n:
+				return self.pick_pins_in_set(use_map[use_cnt[i]], n)
+
+		# Just use the N least used pins
+		pl = []
+
+		for k in use_cnt:
+			pl.extend(use_map[k])
+			if len(pl) >= n:
+				break
+
+		if len(pl) < n:
+			return None
+
+		return self.pick_pins_in_set(pl, n)
+
+	def pick_pos_for_module(self, mod):
+		# Is there even space ?
+		if mod.width > len(self.pos_free):
+			return None
+
+		# Scan for a match
+		for mux_id, blk_id in self.pos_free:
+			# Check if it fits
+			fit = True
+			for i in range(mod.width):
+				if (mux_id, blk_id - 2*i) not in self.pos_free:
+					fit = False
+					break
+
+			# Yes ?
+			if fit:
+				return mux_id, blk_id
+
+		# No match found
+		return None
+
+	def cost(self, mod, pins):
+		# If it doesn't fit, give up
+		if pins is None:
+			return None
+
+		if self.pick_pos_for_module(mod) is None:
+			return None
+
+		# FIXME:
+		#  Higher cost if less free slots
+		#  Higher cost if more analog pins used
+		#  Higher cost depending on min-max pin loading difference
+		return sum([len(pin.mods) for pin in self.pins.values()])
+
+	def place(self, mod, pins):
+		# Actually assign the pins to the module
+		for k,v in mod.analog.items():
+			if v is not None:
+				continue
+			pin = pins.pop()
+			pin.mods.append(mod)
+			mod.analog[k] = pin.num
+
+		# Find a position for it
+		mux_id, blk_id = self.pick_pos_for_module(mod)
+
+		# Assign it as constraint
+		x, y = self.placer.l2p(*self.placer.la2ld(mux_id, blk_id))
+
+		mod.pos_x = x
+		mod.pos_y = y
+
+		# Remove from free list
+		for i in range(mod.width):
+			self.pos_free.remove( (mux_id, blk_id - 2*i) )
+
+
+class AnalogPlacer:
+
+	def __init__(self, placer):
+		# Save placer
+		self.placer = placer
+
+		# Create the pin groups
+		self.groups = [AnalogPinGroup(placer, g) for g in placer.cfg.tt.analog]
+
+	def place_modules(self, mods):
+		# Check modules with fixed position and marked those as occupied
+			# FIXME
+
+		# Collect all modules with analog pins
+		analog_mods = [m for m in mods if len(m.analog)]
+
+		# Sort them
+		analog_mods.sort(key=lambda m: m.width * len(m.analog) * len(m.analog), reverse=True)
+
+		# Scan once to check for pre-assigned pins
+		mods_fixed = {}
+
+		for m in analog_mods:
+			# No group identified yet
+			grp = None
+
+			# Scan pins
+			for v in m.analog.values():
+				if v is None:
+					continue
+
+				# Find which group it belongs to
+				for g in self.groups:
+					if v in g.pins:
+						# Check consistency
+						if grp is None:
+							grp = g
+						elif grp != g:
+							raise RuntimeError(f'Module {mod.name} has assigned analog pins in several groups')
+
+						# Mark pin as used in the group
+						grp.pins[v].mods.append(m)
+
+				# If we have a group, keep it
+				mods_fixed[m] = grp
+
+		# Scan those a second time to assign pins in the same group
+		for m, grp in mods_fixed.items():
+			pins = grp.pick_pins_for_module(m)
+			grp.place(m, pins)
+
+		# Finally place the rest
+		for m in analog_mods:
+			# If it was processed, skip
+			if m in mods_fixed:
+				continue
+
+			# Pick pins and Evaluate cost for each group and pick best
+			l = []
+
+			for grp in self.groups:
+				pins = grp.pick_pins_for_module(m)
+				if pins is None:
+					continue
+
+				cost = grp.cost(m, pins)
+				if cost is None:
+					continue
+
+				l.append( (grp, pins, cost) )
+
+			if len(l) == 0:
+				raise RuntimeError(f"Module {m.name} couldn't be placed")
+
+			grp, pins, cost = sorted(l, key=lambda gp: gp[2])[0]
+
+			# Place module in it
+			grp.place(m, pins)
