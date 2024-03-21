@@ -26,7 +26,7 @@ def place_pin(die_area, layer, bterm, pos, side='N', wide=False):
 	LENGTH = 1000
 
 	if wide:
-		WIDTH *= 2
+		WIDTH *= 3
 
 	if side == 'N':
 		rect = odb.Rect(0, 0, WIDTH, LENGTH)
