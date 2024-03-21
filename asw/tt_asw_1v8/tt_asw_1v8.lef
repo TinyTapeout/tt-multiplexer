@@ -1,0 +1,58 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_asw_1v8
+  CLASS BLOCK ;
+  FOREIGN tt_asw_1v8 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 18.400 BY 21.760 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 0.600 0.000 1.800 21.760 ;
+    END
+  END VGND
+  PIN VPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 16.600 0.000 17.800 21.760 ;
+    END
+  END VPWR
+  PIN mod
+    DIRECTION INOUT ;
+    USE ANALOG ;
+    PORT
+      LAYER met4 ;
+        RECT 8.750 19.760 9.650 21.760 ;
+    END
+  END mod
+  PIN bus
+    DIRECTION INOUT ;
+    USE ANALOG ;
+    PORT
+      LAYER met4 ;
+        RECT 8.750 11.760 9.650 13.760 ;
+    END
+  END bus
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER met3 ;
+        RECT 4.450 20.860 4.750 21.760 ;
+    END
+  END ctrl
+  OBS
+      LAYER met3 ;
+        RECT 0.600 20.460 4.050 21.760 ;
+        RECT 5.150 20.460 17.800 21.760 ;
+        RECT 0.600 11.760 17.800 20.460 ;
+  END
+END tt_asw_1v8
+END LIBRARY
+
