@@ -18,7 +18,8 @@ module tt_user_module #(
 	parameter integer BLK_ID = 0,
 
 	// Config
-	parameter integer N_A    = 8,
+	parameter integer N_AE   = 12,
+	parameter integer N_AU   = 8,
 	parameter integer N_IO   = 8,
 	parameter integer N_O    = 8,
 	parameter integer N_I    = 10,
@@ -31,7 +32,7 @@ module tt_user_module #(
 	input  wire VPWR,
 	input  wire VGND,
 `endif
-	inout  wire   [N_A-1:0] ana,
+	inout  wire  [N_AE-1:0] ana,
 	output wire  [N_OW-1:0] ow,
 	input  wire  [N_IW-1:0] iw,
 	input  wire             ena,
@@ -39,6 +40,7 @@ module tt_user_module #(
 	input  wire             pg_vdd
 );
 
+	wire [N_AU-1:0] ua;
 	wire [7:0] uio_in;
 	wire [7:0] uio_out;
 	wire [7:0] uio_oe;
@@ -62,9 +64,9 @@ module tt_user_module #(
 				.VPWR    (l_vpwr),
 				.VGND    (VGND),
 `endif
-% if mod.analog:
-				.ua      (ana),
-% endif
+%  if mod.analog:
+				.ua      (ua),
+%  endif
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),

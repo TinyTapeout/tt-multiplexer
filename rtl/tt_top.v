@@ -68,6 +68,7 @@ module tt_top #(
 	wire [N_AE-1:0] pad_ana_in;
 	wire [N_AE-1:0] pad_ana_out;
 	wire [N_AE-1:0] pad_ana_oe_n;
+	wire [N_AE-1:0] pad_ana_analog;
 
 	// Vertical spine
 	wire  [S_OW-1:0] spine_top_ow;
@@ -120,6 +121,11 @@ module tt_top #(
 		pad_ui_oe_n[9],
 		pad_ana_oe_n[5:0],
 		pad_ui_oe_n[8:2]
+	};
+
+	assign pad_ana_analog = {
+		io_ana[37:32],
+		io_ana[12:7]
 	};
 
 	// Tie-offs
@@ -188,7 +194,6 @@ module tt_top #(
 			wire [S_OW-1:0] l_spine_ow;
 			wire [S_IW-1:0] l_spine_iw;
 
-			wire [(N_AU*G_X)-1:0] l_um_ana;
 			wire [(U_OW*G_X)-1:0] l_um_ow;
 			wire [(U_IW*G_X)-1:0] l_um_iw;
 			wire [      G_X -1:0] l_um_ena;
@@ -249,7 +254,8 @@ module tt_top #(
 				tt_user_module #(
 					.MUX_ID (i),
 					.BLK_ID (j),
-					.N_A   (N_AU),
+					.N_AE  (N_AE),
+					.N_AU  (N_AU),
 					.N_I   (N_I),
 					.N_O   (N_O),
 					.N_IO  (N_IO)
@@ -258,7 +264,7 @@ module tt_top #(
 					.VPWR   (VPWR),
 					.VGND   (VGND),
 `endif
-					.ana    (l_um_ana[j*N_AU+:N_AU]),
+					.ana    (pad_ana_analog),
 					.ow     (l_um_ow[j*U_OW+:U_OW]),
 					.iw     (l_um_iw[j*U_IW+:U_IW]),
 					.ena    (l_um_ena[j]),
