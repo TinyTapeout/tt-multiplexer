@@ -76,6 +76,19 @@ module tt_user_module #(
 				.clk     (clk),
 				.rst_n   (rst_n)
 			);
+%  if mod.analog:
+%   for (pin_int, pin_ext) in mod.analog.items():
+			tt_asw_1v8 tt_asw_${pin_int}_I (
+`ifdef USE_POWER_PINS
+				.VPWR    (VPWR),
+				.VGND    (VGND),
+`endif
+				.mod     (ua[${pin_int}]),
+				.bus     (ana[${pin_ext}]),
+				.ctrl	 (ena)
+			);
+%   endfor
+%  endif
 %  if mod.pg_vdd:
 			tt_pg_vdd_${mod.height} tt_pg_vdd_I (
 `ifdef USE_POWER_PINS

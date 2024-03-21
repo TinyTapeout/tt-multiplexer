@@ -131,7 +131,7 @@ if __name__ == '__main__':
 			}
 			if m.mod_name.startswith('tt_um_'):
 				user_modules.append(m.mod_name)
-			elif m.mod_name.startswith('tt_pg_'):
+			elif m.mod_name.startswith('tt_pg_') or m.mod_name.startswith('tt_asw_'):
 				macros[m.mod_name].update({
 					'nl': f'dir::verilog/{m.mod_name:s}.v',
 				})
