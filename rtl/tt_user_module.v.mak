@@ -74,7 +74,7 @@ module tt_user_module #(
 				.clk     (clk),
 				.rst_n   (rst_n)
 			);
-% if mod.pg_vdd:
+%  if mod.pg_vdd:
 			tt_pg_vdd_${mod.height} tt_pg_vdd_I (
 `ifdef USE_POWER_PINS
 				.GPWR    (l_vpwr),
@@ -83,11 +83,11 @@ module tt_user_module #(
 `endif
 				.ctrl    (pg_vdd)
 			);
-% else:
+%  else:
 `ifdef USE_POWER_PINS
 			assign l_vpwr = VPWR;
 `endif
-% endif
+%  endif
 		end
 % endfor
 
