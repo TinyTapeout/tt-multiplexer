@@ -1192,21 +1192,25 @@ class AnalogRouter:
 			# Get actual net, associated bterm and routing infos
 			net = self.reader.block.findNet(net_name)
 			bterm = net.getBTerms()[0]
+			bbox  = bterm.getBBox()
 			ri = data[bterm.getName()]
 
 			# Actual IO position
 			_, xp_bterm, yp_bterm = bterm.getFirstPinLocation()
 
 			# Side of the IO
+			w = self.ndr.getLayerRule(self.layer_bot).getWidth()
 			mid = self.reader.block.getDieArea().dx() // 2
 
 			if xp_bterm > mid:
 				# IO goes right side
 				xp_start = min(xpl) - OFFSET
+				xp_pad   = bbox.xMin() - (w//2)
 
 			else:
 				# IO goes left side
 				xp_start = max(xpl) + OFFSET
+				xp_pad   = bbox.xMax() + (w//2)
 
 			# Prepare for routing
 			net.setNonDefaultRule(self.ndr)
@@ -1222,6 +1226,10 @@ class AnalogRouter:
 			encoder.addPoint(xp_start, ri[0])
 			encoder.addPoint(ri[1],    ri[0])
 			encoder.addPoint(ri[1],    yp_bterm)
+			encoder.addPoint(xp_pad,   yp_bterm)
+
+			encoder.newPath(self.layer_bot, 'FIXED')
+			encoder.addPoint(xp_pad,   yp_bterm)
 			encoder.addPoint(xp_bterm, yp_bterm)
 
 			# Create all the stubs
