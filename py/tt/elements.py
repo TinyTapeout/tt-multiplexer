@@ -220,7 +220,6 @@ class PowerSwitch(LayoutElement):
 
 class Block(LayoutElement):
 
-	color = 'crimson'
 
 	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False, analog=False):
 
@@ -285,6 +284,10 @@ class Block(LayoutElement):
 				( 600,    1000),
 				fill = 'black',
 			))
+
+	@property
+	def color(self):
+		return 'orange' if self.analog else 'crimson'
 
 
 class Mux(LayoutElement):
