@@ -24,6 +24,7 @@ __all__ = [
 	'LayoutElementPlacement',
 	'MacroInstance',
 	'PowerSwitch',
+	'AnalogSwitch',
 	'Block',
 	'Mux',
 	'Branch',
@@ -218,8 +219,27 @@ class PowerSwitch(LayoutElement):
 		)
 
 
-class Block(LayoutElement):
+class AnalogSwitch(LayoutElement):
 
+	color = 'green'
+
+	def __init__(self, layout):
+		# Width / Height
+		width  = 18400
+		height = 21760
+
+		# Set mod_name
+		self.mod_name = f'tt_asw_1v8'
+
+		# Super
+		super().__init__(
+			layout,
+			width,
+			height,
+		)
+
+
+class Block(LayoutElement):
 
 	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False, analog=False):
 
@@ -378,6 +398,25 @@ class Branch(LayoutElement):
 
 			# Name prefix
 			name_pfx = f'block\\[{blk_id:d}\\].um_I.block_{mux_id:d}_{blk_id:d}.'
+
+			# Analog ?
+			if mp.analog:
+				for k, v in mp.analog.items():
+					# Instance
+					ana_sw = AnalogSwitch(layout)
+
+					# Position
+					if blk_id & 1:
+						pos_y = blk_y - (layout.glb.margin.y + ana_sw.height)
+						orient = 'N'
+					else:
+						pos_y = blk_y + (layout.glb.margin.y + block.height)
+						orient = 'FS'
+
+					pos_x = blk_x + layout.ply_block_analog[f'ua[{k:d}]'] - ana_sw.width // 2
+
+					# Add as child
+					self.add_child(ana_sw, Point(pos_x, pos_y), orient, name=name_pfx+f'tt_asw_{k:d}_I')
 
 			# Power gating
 			if mp.pg_vdd:
