@@ -906,6 +906,399 @@ class RingPowerStrapper:
 				self.strap_bterm(bterm)
 
 
+class AnalogRouter:
+
+	def __init__(self, reader, tti):
+		# Save vars
+		self.reader = reader
+		self.tti    = tti
+
+		# Create tech rules
+		self.prepare_tech()
+
+		# Find all analog switches
+		self.asw = [
+			inst
+				for inst in self.reader.block.getInsts()
+				if inst.getMaster().getName().startswith('tt_asw')
+		]
+
+	def prepare_tech(self):
+		# Find tech and layers
+		tech = self.reader.db.getTech()
+		self.layer_bot = tech.findLayer('met3')
+		self.layer_cut = tech.findLayer('via3')
+		self.layer_top = tech.findLayer('met4')
+
+		# Create via
+		via_rule  = tech.findViaGenerateRule('M3M4_PR')
+
+		v = odb.dbVia.create(self.reader.block, f'analog_via')
+		v.setViaGenerateRule(via_rule)
+
+		# Configure via params
+		vp = v.getViaParams()
+
+		vp.setBottomLayer(self.layer_bot)
+		vp.setCutLayer(self.layer_cut)
+		vp.setTopLayer(self.layer_top)
+
+		vp.setNumCutCols(3)
+		vp.setNumCutRows(3)
+		vp.setXCutSize(200)
+		vp.setYCutSize(200)
+		vp.setXCutSpacing(200)
+		vp.setYCutSpacing(200)
+		vp.setXBottomEnclosure(90)
+		vp.setYBottomEnclosure(60)
+		vp.setXTopEnclosure(65)
+		vp.setYTopEnclosure(65)
+
+		v.setViaParams(vp)
+
+		self.via = v
+
+		# Create non-default rule
+		self.ndr = ndr = odb.dbTechNonDefaultRule_create(self.reader.block, 'analog_track')
+		for ln in [ 'li1', 'met1', 'met2', 'met3', 'met4', 'met5' ]:
+			ly = tech.findLayer(ln)
+			lr = odb.dbTechLayerRule_create(ndr, ly)
+			lr.setWidth(900)
+			lr.setSpacing(2700)
+
+	def _asw_group(self, lst):
+		grp = []
+		for c_ymin, c_ymax in lst:
+			# Mid position
+			c_ymid  = (c_ymax + c_ymin) // 2
+			c_yspan = (c_ymax - c_ymin)
+
+			# Scan existing group
+			for i, (g_ymin, g_ymax) in enumerate(grp):
+				g_ymid = (g_ymax + g_ymin) // 2
+				if abs(g_ymid - c_ymid) < (2 * c_yspan):
+					grp[i] = ( min([g_ymin, c_ymin]), max([g_ymax, c_ymax]) )
+					break
+
+			else:
+				grp.append( (c_ymin, c_ymax) )
+
+		return grp
+
+	def _asw_power_solo(self, asw):
+		# Process each power pin
+		via = None
+		to_connect = []
+
+		for it in asw.getITerms():
+			# Only consider power/ground
+			if it.getSigType() not in ['POWER', 'GROUND']:
+				continue
+
+			# Check if there is a via inside the pin already
+			bbox  = it.getBBox()
+			net   = it.getNet()
+			found = False
+
+			for sw in net.getSWires():
+				for sb in sw.getWires():
+					if not sb.isVia():
+						continue
+
+					if not bbox.intersects(odb.Point(*sb.getViaXY())):
+						continue
+
+					via = sb.getBlockVia()
+					found = True
+					break
+				else:
+					continue
+
+				break
+
+			# If not, add to the list
+			else:
+				to_connect.append(it)
+
+		# If we found no via, we have no reference
+		if via is None:
+			raise RuntimeError('No via reference found')
+
+		# Process the connections
+		for it in to_connect:
+			# Find the closest 'met5' stripe
+			it_bbox = it.getBBox()
+			net     = it.getNet()
+
+			m_sb   = None
+			m_dist = None
+
+			for sw in net.getSWires():
+				for sb in sw.getWires():
+					# Don't consider via
+					if sb.isVia():
+						continue
+
+					# Don't consider anything else than met5
+					if sb.getTechLayer().getName() != 'met5':
+						continue
+
+					# Must be stripe
+					if sb.getWireShapeType() != 'STRIPE':
+						continue
+
+					# Check we're within in horizontally
+					if (sb.xMin() > it_bbox.xMin()) or (sb.xMax() < it_bbox.xMax()):
+						continue
+
+					# Distance
+					d = ((sb.yMin() + sb.yMax()) // 2) - it_bbox.yCenter()
+
+					if (m_dist is None) or (abs(d) < abs(m_dist)):
+						m_sb   = sb
+						m_dist = d
+
+			# Prepare to add special routing
+			net = it.getNet()
+			sw = odb.dbSWire.create(net, "ROUTED")
+
+			# Extend the stripe to it
+			xl = it_bbox.xMin()
+			xv = it_bbox.xCenter()
+			xr = it_bbox.xMax()
+
+			yv = (m_sb.yMin() + m_sb.yMax()) // 2
+
+			if m_dist > 0:
+				yb = it_bbox.yMin()
+				yt = m_sb.yMax()
+			else:
+				yb = m_sb.yMin()
+				yt = it_bbox.yMax()
+
+			odb.createSBoxes(sw, via.getBottomLayer(), [odb.Rect(xl, yb, xr, yt)], "STRIPE")
+
+			# Add via
+			odb.createSBoxes(sw, via, [odb.Point(xv, yv)], "STRIPE")
+
+	def _asw_power_pair(self, asw_bot, asw_top):
+		# Process each power pin
+		for it_bot in asw_bot.getITerms():
+			# Only consider power/ground
+			if it_bot.getSigType() not in ['POWER', 'GROUND']:
+				continue
+
+			# Get matching iterm
+			it_top = asw_top.findITerm(it_bot.getMTerm().getName())
+
+			# Coordinates
+			bbox_bot = it_bot.getBBox()
+			bbox_top = it_top.getBBox()
+
+			xl = bbox_bot.xMin()
+			xr = bbox_bot.xMax()
+			yb = bbox_bot.yMin()
+			yt = bbox_top.yMax()
+
+			# Create strap
+			net = it_bot.getNet()
+			sw = odb.dbSWire.create(net, "ROUTED")
+			odb.createSBoxes(sw, self.layer_top, [odb.Rect(xl, yb, xr, yt)], "STRIPE")
+
+	def asw_power(self):
+		# Group the analog switch per x coordinate
+		xgrp = {}
+		for inst in self.asw:
+			xgrp.setdefault(inst.getLocation()[0], set()).add(inst)
+
+		# Try to pair them
+		asw_grp = []
+
+		for grp in xgrp.values():
+			while len(grp):
+				# Pick one
+				asw0 = grp.pop()
+
+				# Scan the rest of the group for a potential pair
+				for inst in grp:
+					# Pair must have opposite orientation
+					if inst.getOrient() == asw0.getOrient():
+						continue
+
+					# Pair must be close
+					dist  = abs(inst.getLocation()[1] - asw0.getLocation()[1])
+					limit = asw0.getBBox().getDY() * 3
+
+					if dist < limit:
+						asw1 = inst
+						break
+				else:
+					# Nothing found
+					asw_grp.append( (asw0, None) )
+					continue
+
+				# We found a pair, sort them as (bot, top)
+				if asw0.getLocation()[1] > asw1.getLocation()[1]:
+					asw_grp.append( (asw1, asw0) )
+				else:
+					asw_grp.append( (asw0, asw1) )
+
+				# Also remove the match from the set
+				grp.remove(asw1)
+
+		# Process each group
+		for asw0, asw1 in asw_grp:
+			if asw1 is None:
+				self._asw_power_solo(asw0)
+			else:
+				self._asw_power_pair(asw0, asw1)
+
+	def asw_bus(self):
+		# Offset
+		OFFSET = 1350
+
+		# Load data file
+		data = yaml.load(open('route_data.yaml'), yaml.FullLoader)['analog']
+
+		# Look at all analog switches to find extent
+		#  First scan to group per block
+		abi  = {}
+		nets = set()
+
+		for inst in self.asw:
+			# Which block does it belong do
+			blk = inst.getName().rsplit('.',1)[0]
+
+			# Record position and and net
+			it = inst.findITerm('bus')
+
+			xpos = it.getAvgXY()[1]
+			net  = it.getNet()
+
+			bi = abi.setdefault(blk, ([], []))
+			bi[0].append(xpos)
+			bi[1].append(net.getName())
+
+			nets.add(net.getName())
+
+		#  Then for each net
+		for net_name in nets:
+			# Accumulate all relevant X positions
+			xpl = []
+			for blk, bi in abi.items():
+				if net_name in bi[1]:
+					xpl.extend(bi[0])
+
+			# Get actual net, associated bterm and routing infos
+			net = self.reader.block.findNet(net_name)
+			bterm = net.getBTerms()[0]
+			ri = data[bterm.getName()]
+
+			# Actual IO position
+			_, xp_bterm, yp_bterm = bterm.getFirstPinLocation()
+
+			# Side of the IO
+			mid = self.reader.block.getDieArea().dx() // 2
+
+			if xp_bterm > mid:
+				# IO goes right side
+				xp_start = min(xpl) - OFFSET
+
+			else:
+				# IO goes left side
+				xp_start = max(xpl) + OFFSET
+
+			# Prepare for routing
+			net.setNonDefaultRule(self.ndr)
+
+			wire = odb.dbWire.create(net)
+
+			encoder = odb.dbWireEncoder()
+			encoder.begin(wire)
+
+			# Create the 'bus' part
+			encoder.newPath(self.layer_bot, 'FIXED', self.ndr.getLayerRule(self.layer_bot))
+
+			encoder.addPoint(xp_start, ri[0])
+			encoder.addPoint(ri[1],    ri[0])
+			encoder.addPoint(ri[1],    yp_bterm)
+			encoder.addPoint(xp_bterm, yp_bterm)
+
+			# Create all the stubs
+			for inst in self.asw:
+				# Connected to this net ?
+				it = inst.findITerm('bus')
+
+				if it.getNet().getName() != net_name:
+					continue
+
+				# Position of terminal
+				_, xp_iterm, yp_iterm = it.getAvgXY()
+
+				# Offset Shift
+				if yp_iterm > ri[0]:
+					xp_int = xp_iterm + OFFSET
+					yp_int = yp_iterm - OFFSET * 2
+				else:
+					xp_int = xp_iterm - OFFSET
+					yp_int = yp_iterm + OFFSET * 2
+
+				# Create stub
+				encoder.newPath(self.layer_top, 'FIXED', self.ndr.getLayerRule(self.layer_top))
+
+				encoder.addPoint(xp_iterm, yp_iterm)
+				encoder.addPoint(xp_iterm, yp_int)
+				encoder.addPoint(xp_int,   yp_int)
+				encoder.addPoint(xp_int,   ri[0])
+				encoder.addVia(self.via)
+
+			# Done routing
+			encoder.end()
+
+	def asw_mod(self):
+		# Scan all switches
+		for inst_asw in self.asw:
+			# Get the module connection
+			it_asw = inst_asw.findITerm('mod')
+
+			# Get net
+			net = it_asw.getNet()
+			net.setNonDefaultRule(self.ndr)
+
+			# Get the two iterms to connect
+			its = net.getITerms()
+			if len(its) != 2:
+				raise RuntimeError('Too many module connections')
+
+			_, x0, y0 = its[0].getAvgXY()
+			_, x1, y1 = its[1].getAvgXY()
+
+			# Prepare to route
+			wire = odb.dbWire.create(net)
+
+			encoder = odb.dbWireEncoder()
+			encoder.begin(wire)
+			encoder.newPath(self.layer_top, 'FIXED', self.ndr.getLayerRule(self.layer_top))
+
+			# Path
+			encoder.addPoint(x0, y0)
+
+			if x0 != x1:
+				ym = (y0 + y1) // 2
+				encoder.addPoint(x0, ym)
+				encoder.addPoint(x1, ym)
+
+			encoder.addPoint(x1, y1)
+
+			# Done routing
+			encoder.end()
+
+	def run(self):
+		self.asw_power()
+		self.asw_bus()
+		self.asw_mod()
+
+
 @click.command()
 @click_odb
 def route(
@@ -934,6 +1327,9 @@ def route(
 	p = RingPowerStrapper(reader)
 	p.run()
 
+	# Analog router
+	a = AnalogRouter(reader, tti)
+	a.run()
 
 if __name__ == "__main__":
 	route()
