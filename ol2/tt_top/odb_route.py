@@ -1270,17 +1270,28 @@ class AnalogRouter:
 			if len(its) != 2:
 				raise RuntimeError('Too many module connections')
 
-			_, x0, y0 = its[0].getAvgXY()
-			_, x1, y1 = its[1].getAvgXY()
+			it_mod = its[0] if (its[1].this == it_asw.this) else its[1]
+
+			_, x0, y0 = it_mod.getAvgXY()
+			_, x1, y1 = it_asw.getAvgXY()
 
 			# Prepare to route
 			wire = odb.dbWire.create(net)
 
 			encoder = odb.dbWireEncoder()
 			encoder.begin(wire)
-			encoder.newPath(self.layer_top, 'FIXED', self.ndr.getLayerRule(self.layer_top))
+
+			# Workaround for narrow pads
+			# Remove in TT7 when analog template is updated ...
+			w = self.ndr.getLayerRule(self.layer_top).getWidth()
+
+			encoder.newPath(self.layer_top, 'FIXED')
+			encoder.addPoint(x0, y0)
+			y0 = (it_mod.getBBox().yMin() - (w//2)) if (y0 > y1) else (it_mod.getBBox().yMax() + (w//2))
+			encoder.addPoint(x0, y0)
 
 			# Path
+			encoder.newPath(self.layer_top, 'FIXED', self.ndr.getLayerRule(self.layer_top))
 			encoder.addPoint(x0, y0)
 
 			if x0 != x1:
