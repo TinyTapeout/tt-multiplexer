@@ -84,51 +84,51 @@ For all others, inactive designs (including all designs in inactive muxes):
 
 ## Pinout
 
-| mprj_io pin | Function      | Signal     | QFN64 pin |
-| ----------- | ------------- | ---------- | --------- |
-| 0           | Analog        | analogB[0] | 31        |
-| 1           | Analog        | analogB[1] | 32        |
-| 2           | Analog        | analogB[2] | 33        |
-| 3           | Analog        | analogB[3] | 34        |
-| 4           | Output        | uo_out[0]  | 35        |
-| 5           | Output        | uo_out[1]  | 36        |
-| 6           | Output        | uo_out[2]  | 37        |
-| 7           | Output        | uo_out[3]  | 41        |
-| 8           | Output        | uo_out[4]  | 42        |
-| 9           | Output        | uo_out[5]  | 43        |
-| 10          | Output        | uo_out[6]  | 44        |
-| 11          | Output        | uo_out[7]  | 45        |
-| 12          | Analog        | analogA[0] | 46        |
-| 13          | Analog        | analogA[1] | 48        |
-| 14          | Analog        | analogA[2] | 50        |
-| 15          | Bidirectional | uio[0]     | 51        |
-| 16          | Bidirectional | uio[1]     | 53        |
-| 17          | Bidirectional | uio[2]     | 54        |
-| 18          | Bidirectional | uio[3]     | 55        |
-| 19          | Bidirectional | uio[4]     | 57        |
-| 20          | Bidirectional | uio[5]     | 58        |
-| 21          | Bidirectional | uio[6]     | 59        |
-| 22          | Bidirectional | uio[7]     | 60        |
-| 23          | Analog        | analogA[3] | 61        |
-| 24          | Analog        | analogA[4] | 62        |
-| 25          | Analog        | analogA[5] | 2         |
-| 26          | Input         | clk        | 3         |
-| 27          | Input         | rst_n      | 4         |
-| 28          | Input         | ui_in[0] † | 5         |
-| 29          | Input         | ui_in[1]   | 6         |
-| 30          | Input         | ui_in[2]   | 7         |
-| 31          | Input         | ui_in[3]   | 8         |
-| 32          | Input         | ui_in[4]   | 11        |
-| 33          | Input         | ui_in[5]   | 12        |
-| 34          | Input         | ui_in[6]   | 13        |
-| 35          | Input         | ui_in[7]   | 14        |
-| 36          | Analog        | analogB[4] | 15        |
-| 37          | Analog        | analogB[5] | 16        |
-| 38          | Mux Control   | TBD        | 22        |
-| 39          | Mux Control   | TBD        | 24        |
-| 40          | Mux Control   | TBD        | 25        |
-| 41          | Mux Control   | TBD        | 26        |
-| 42          | Mux Control   | TBD        | 27        |
-| 43          | Mux Control   | TBD        | 28        |
+| mprj_io pin | Function      | Signal         | QFN64 pin |
+|-------------|---------------|----------------|-----------|
+| 0           | Input         | ui_in[0]       | 31        |
+| 1           | Input         | ui_in[1]       | 32        |
+| 2           | Input         | ui_in[2]       | 33        |
+| 3           | Input         | ui_in[3]       | 34        |
+| 4           | Input         | ui_in[4]       | 35        |
+| 5           | Input         | ui_in[5]       | 36        |
+| 6           | Input         | ui_in[6]       | 37        |
+| 7           | Analog        | analog[0]      | 41        |
+| 8           | Analog        | analog[1]      | 42        |
+| 9           | Analog        | analog[2]      | 43        |
+| 10          | Analog        | analog[3]      | 44        |
+| 11          | Analog        | analog[4]      | 45        |
+| 12          | Analog        | analog[5]      | 46        |
+| 13          | Input         | ui_in[7]       | 48        |
+| 14          | Input         | clk †          | 50        |
+| 15          | Input         | rst_n †        | 51        |
+| 16          | Bidirectional | uio[0]         | 53        |
+| 17          | Bidirectional | uio[1]         | 54        |
+| 18          | Bidirectional | uio[2]         | 55        |
+| 19          | Bidirectional | uio[3]         | 57        |
+| 20          | Bidirectional | uio[4]         | 58        |
+| 21          | Bidirectional | uio[5]         | 59        |
+| 22          | Bidirectional | uio[6]         | 60        |
+| 23          | Bidirectional | uio[7]         | 61        |
+| 24          | Output        | uo_out[0]      | 62        |
+| 25          | Output        | uo_out[1]      | 2         |
+| 26          | Output        | uo_out[2]      | 3         |
+| 27          | Output        | uo_out[3]      | 4         |
+| 28          | Output        | uo_out[4]      | 5         |
+| 29          | Output        | uo_out[5]      | 6         |
+| 30          | Output        | uo_out[6]      | 7         |
+| 31          | Output        | uo_out[7]      | 8         |
+| 32          | Analog        | analog[6]      | 11        |
+| 33          | Analog        | analog[7]      | 12        |
+| 34          | Analog        | analog[8]      | 13        |
+| 35          | Analog        | analog[9]      | 14        |
+| 36          | Analog        | analog[10]     | 15        |
+| 37          | Analog        | analog[11]     | 16        |
+| 38          | Mux Control   | ctrl_ena       | 22        |
+| 39          | Mux Control   | ctrl_sel_inc   | 24        |
+| 40          | Mux Control   | ctrl_sel_rst_n | 25        |
+| 41          | Reserved      | (none)         | 26        |
+| 42          | Reserved      | (none)         | 27        |
+| 43          | Reserved      | (none)         | 28        |
 
 † Internally, there's no difference between `clk`, `rst_n`, and `ui_in` pins. They are all just bits in the `pad_ui_in` bus. However, we use different names to make it easier to understand the purpose of each signal.
