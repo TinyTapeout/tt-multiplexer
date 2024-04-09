@@ -132,8 +132,9 @@ if __name__ == '__main__':
 		"GRT_ALLOW_CONGESTION" : True,
 		"RT_MAX_LAYER"         : "met4",
 
-		# Workaround LEF/GDS pin naming issue
-		"MAGIC_LEF_WRITE_USE_GDS" : False,
+		# LEF generation option
+		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
+		"MAGIC_WRITE_LEF_PINONLY" : True,
 	}
 
 	flow = MuxFlow(
