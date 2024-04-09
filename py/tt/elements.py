@@ -397,7 +397,7 @@ class Branch(LayoutElement):
 				blk_y = self.height - layout.glb.block.height
 
 			# Name prefix
-			name_pfx = f'block\\[{blk_id:d}\\].um_I.block_{mux_id:d}_{blk_id:d}.'
+			name_pfx = f'block[{blk_id:d}].um_I.block_{mux_id:d}_{blk_id:d}.'
 
 			# Analog ?
 			if mp.analog:
@@ -541,7 +541,7 @@ class Top(LayoutElement):
 			branch = Branch(layout, placer, mux_id)
 			self.branches.append(branch)
 
-			self.add_child(branch, Point(b_x, b_y), ori, name=f'branch\\[{mux_id:d}\\].check_mask')
+			self.add_child(branch, Point(b_x, b_y), ori, name=f'branch[{mux_id:d}].check_mask')
 
 		# Create Controller
 		self.ctrl = ctrl = Controller(layout)
