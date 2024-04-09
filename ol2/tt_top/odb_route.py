@@ -969,25 +969,6 @@ class AnalogRouter:
 			lr.setWidth(900)
 			lr.setSpacing(2700)
 
-	def _asw_group(self, lst):
-		grp = []
-		for c_ymin, c_ymax in lst:
-			# Mid position
-			c_ymid  = (c_ymax + c_ymin) // 2
-			c_yspan = (c_ymax - c_ymin)
-
-			# Scan existing group
-			for i, (g_ymin, g_ymax) in enumerate(grp):
-				g_ymid = (g_ymax + g_ymin) // 2
-				if abs(g_ymid - c_ymid) < (2 * c_yspan):
-					grp[i] = ( min([g_ymin, c_ymin]), max([g_ymax, c_ymax]) )
-					break
-
-			else:
-				grp.append( (c_ymin, c_ymax) )
-
-		return grp
-
 	def _asw_power_solo(self, asw):
 		# Process each power pin
 		via = None
