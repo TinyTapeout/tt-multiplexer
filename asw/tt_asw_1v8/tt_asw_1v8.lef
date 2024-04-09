@@ -26,7 +26,7 @@ MACRO tt_asw_1v8
   PIN mod
     DIRECTION INOUT ;
     USE ANALOG ;
-    ANTENNADIFFAREA 6.090000 ;
+    ANTENNADIFFAREA 19.574999 ;
     PORT
       LAYER met4 ;
         RECT 8.750 19.760 9.650 21.760 ;
@@ -35,7 +35,7 @@ MACRO tt_asw_1v8
   PIN bus
     DIRECTION INOUT ;
     USE ANALOG ;
-    ANTENNADIFFAREA 5.220000 ;
+    ANTENNADIFFAREA 19.574999 ;
     PORT
       LAYER met4 ;
         RECT 8.750 11.760 9.650 13.760 ;
@@ -54,15 +54,15 @@ MACRO tt_asw_1v8
       LAYER nwell ;
         RECT 0.170 12.970 4.900 16.660 ;
       LAYER li1 ;
-        RECT 0.350 11.760 17.800 21.760 ;
+        RECT 0.350 5.180 17.800 21.760 ;
       LAYER met1 ;
-        RECT 0.430 11.760 17.800 21.760 ;
+        RECT 0.430 5.660 17.800 21.760 ;
       LAYER met2 ;
-        RECT 0.600 11.760 17.800 21.760 ;
+        RECT 0.600 4.430 17.800 21.760 ;
       LAYER met3 ;
         RECT 0.600 20.460 4.050 21.760 ;
         RECT 5.150 20.460 17.800 21.760 ;
-        RECT 0.600 11.760 17.800 20.460 ;
+        RECT 0.600 9.540 17.800 20.460 ;
   END
 END tt_asw_1v8
 END LIBRARY
