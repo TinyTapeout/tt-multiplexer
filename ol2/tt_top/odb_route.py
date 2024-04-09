@@ -923,6 +923,9 @@ class AnalogRouter:
 				if inst.getMaster().getName().startswith('tt_asw')
 		]
 
+		# Load route data file
+		self.route_data = yaml.load(open('route_data.yaml'), yaml.FullLoader)['analog']
+
 	def prepare_tech(self):
 		# Find tech and layers
 		tech = self.reader.db.getTech()
@@ -1157,9 +1160,6 @@ class AnalogRouter:
 		# Offset
 		OFFSET = 1350
 
-		# Load data file
-		data = yaml.load(open('route_data.yaml'), yaml.FullLoader)['analog']
-
 		# Look at all analog switches to find extent
 		#  First scan to group per block
 		abi  = {}
@@ -1193,7 +1193,7 @@ class AnalogRouter:
 			net = self.reader.block.findNet(net_name)
 			bterm = net.getBTerms()[0]
 			bbox  = bterm.getBBox()
-			ri = data[bterm.getName()]
+			ri = self.route_data[bterm.getName()]
 
 			# Actual IO position
 			_, xp_bterm, yp_bterm = bterm.getFirstPinLocation()
@@ -1312,10 +1312,95 @@ class AnalogRouter:
 			# Done routing
 			encoder.end()
 
+	def _asw_obs_hor(self, lst, y_min, y_max):
+		# Init
+		x_min = None
+		x_max = None
+
+		# Scan each
+		for net_name in lst:
+			net = self.reader.block.findNet(net_name)
+			for it in net.getITerms():
+				_, x, y = it.getAvgXY()
+
+				x_min = min(x_min, x) if (x_min is not None) else x
+				x_max = max(x_max, x) if (x_max is not None) else x
+				y_min = min(y_min, y)
+				y_max = max(y_max, y)
+
+		# Create obstructions
+		odb.dbObstruction_create(self.reader.block,
+			self.layer_bot,
+			x_min, y_min,
+			x_max, y_max,
+		)
+
+		odb.dbObstruction_create(self.reader.block,
+			self.layer_top,
+			x_min, y_min,
+			x_max, y_max,
+		)
+
+	def _asw_obs_ver(self, lst):
+		# Init
+		x_min = None
+		x_max = None
+		y_min = None
+		y_max = None
+
+		# Scan each
+		for net_name in lst:
+			net = self.reader.block.findNet(net_name)
+			bt = net.get1stBTerm()
+			_, x, y = bt.getFirstPinLocation()
+
+			x_min = min(x_min, x) if (x_min is not None) else x
+			x_max = max(x_max, x) if (x_max is not None) else x
+			y_min = min(y_min, y) if (y_min is not None) else y
+			y_max = max(y_max, y) if (y_max is not None) else y
+
+			yr = self.route_data[net_name][0]
+			y_min = min(y_min, yr)
+			y_max = max(y_max, yr)
+
+		# Create obstruction
+		odb.dbObstruction_create(self.reader.block,
+			self.layer_bot,
+			x_min, y_min,
+			x_max, y_max,
+		)
+
+	def asw_obs(self):
+		# Scan and groups the bus
+		grp = []
+
+		for net_name, net_rd in self.route_data.items():
+			# Scan existing groups
+			for i, (g_min, g_max, g_lst) in enumerate(grp):
+				# Close ?
+				if (abs(g_min - net_rd[0]) < 20000) or (abs(g_max - net_rd[0]) < 20000):
+					g_lst.append(net_name)
+					grp[i] = (
+						min([g_min, net_rd[0]]),
+						max([g_max, net_rd[0]]),
+						g_lst
+					)
+					break
+
+			else:
+				# New group
+				grp.append( (net_rd[0], net_rd[0], [net_name]) )
+
+		# For each group, create horizontal and vertical obstructions
+		for g_min, g_max, g_lst in grp:
+			self._asw_obs_hor(g_lst, g_min, g_max)
+			self._asw_obs_ver(g_lst)
+
 	def run(self):
 		self.asw_power()
 		self.asw_bus()
 		self.asw_mod()
+		self.asw_obs()
 
 
 @click.command()
