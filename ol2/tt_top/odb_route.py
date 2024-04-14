@@ -994,6 +994,7 @@ class AnalogRouter:
 		self.layer_bot = tech.findLayer('met3')
 		self.layer_cut = tech.findLayer('via3')
 		self.layer_top = tech.findLayer('met4')
+		self.via_sig   = tech.findVia('M3M4_PR')
 
 		# Create via
 		via_rule  = tech.findViaGenerateRule('M3M4_PR')
@@ -1439,11 +1440,113 @@ class AnalogRouter:
 			self._asw_obs_hor(g_lst, g_min, g_max)
 			self._asw_obs_ver(g_lst)
 
+	def asw_ena(self):
+		# Scan all the user modules
+		for um_inst in self.reader.instances:
+			# Is this a user module ?
+			if not um_inst.getName().endswith('.tt_um_I'):
+				continue
+
+			# Find matching power gate
+			it = um_inst.findITerm('VPWR')
+			for it in it.getNet().getITerms():
+				if it.getInst().getMaster().getName().startswith('tt_pg_'):
+					pg_inst = it.getInst()
+					break
+			else:
+				continue
+
+			# Find matching mux
+			ena_net = um_inst.findITerm('ena').getNet()
+
+			mux_inst = None
+			asw_insts = []
+
+			for it in ena_net.getITerms():
+				# Get info about attached block
+				inst = it.getInst()
+				master_name = inst.getMaster().getName()
+
+				# Keep mux and analog switch
+				if inst.getMaster().getName() == 'tt_mux':
+					mux_inst = inst
+					mux_it = it
+				elif inst.getMaster().getName().startswith('tt_asw'):
+					asw_insts.append(inst)
+
+			if (mux_inst is None) or len(asw_insts) == 0:
+				continue
+
+			# X position of the mux (same as module)
+			_, xp0, _ = mux_it.getAvgXY()
+
+			# X position on the side of module away from PG
+			if pg_inst.getBBox().xMin() > um_inst.getBBox().xMax():
+				xp1 = um_inst.getBBox().xMin() - self.tti.layout.glb.margin.x // 2
+			else:
+				xp1 = um_inst.getBBox().xMax() + self.tti.layout.glb.margin.x // 2
+
+			# Y postition between module and mux
+			yl0 = sorted([
+				mux_inst.getBBox().yMin(),
+				mux_inst.getBBox().yMax(),
+				um_inst.getBBox().yMin(),
+				um_inst.getBBox().yMax(),
+			])[1:3]
+
+			yl0 = [ yl0[0], sum(yl0) // 2, yl0[1] ]
+
+			# Y position between module and analog switch
+			yp1 = sum(sorted([
+				asw_insts[0].getBBox().yMin(),
+				asw_insts[0].getBBox().yMax(),
+				um_inst.getBBox().yMin(),
+				um_inst.getBBox().yMax(),
+			])[1:3]) // 2
+
+			# X,Y positions of ASW terminal
+			xl2 = []
+			for inst in asw_insts:
+				_, x, y = inst.findITerm('ctrl').getAvgXY()
+				xl2.append(x)
+				yp2 = y
+
+			# Find which X position is "farthest" from xp0
+			if xp0 > max(xl2):
+				xp2 = min(xl2)
+			else:
+				xp2 = max(xl2)
+
+			# Create routing
+			wire = odb.dbWire.create(ena_net)
+
+			encoder = odb.dbWireEncoder()
+			encoder.begin(wire)
+
+			encoder.newPath(self.layer_top, 'FIXED')
+			encoder.addPoint(xp0, yl0[0])
+			encoder.addPoint(xp0, yl0[2])
+
+			encoder.newPath(self.layer_top, 'FIXED')
+			encoder.addPoint(xp0, yl0[1])
+			encoder.addTechVia(self.via_sig)
+			encoder.addPoint(xp1, yl0[1])
+			encoder.addPoint(xp1, yp1)
+			encoder.addPoint(xp2, yp1)
+
+			for x in xl2:
+				encoder.newPath(self.layer_bot, 'FIXED')
+				encoder.addPoint(x, yp1)
+				encoder.addPoint(x, yp2)
+
+			encoder.end()
+
 	def run(self):
 		self.asw_power()
 		self.asw_bus()
 		self.asw_mod()
 		self.asw_obs()
+		self.asw_ena()
 
 
 @click.command()
