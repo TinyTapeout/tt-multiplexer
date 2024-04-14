@@ -309,6 +309,68 @@ class Router:
 				# End routing
 				encoder.end()
 
+	def route_um_signals(self):
+		# Scan all the user modules
+		for um_inst in self.reader.instances:
+			# Is this a user module ?
+			if not um_inst.getName().endswith('.tt_um_I'):
+				continue
+
+			# Find matching mux
+			ena_net = um_inst.findITerm('ena').getNet()
+			for it in ena_net.getITerms():
+				if it.getInst().getMaster().getName() == 'tt_mux':
+					mux_inst = it.getInst()
+					break
+			else:
+				# WTF couln't find mux ...
+				continue
+
+			# Get Y coordinates we need to connect to/from
+			y_bot, y_top = sorted([
+				um_inst.getBBox().yMin(),
+				um_inst.getBBox().yMax(),
+				mux_inst.getBBox().yMin(),
+				mux_inst.getBBox().yMax(),
+			])[1:3]
+
+			# Scan every connection
+			for um_it in um_inst.getITerms():
+				# Get the net
+				net = um_it.getNet()
+
+				# We only care about signals going between user module and
+				# the mux and nowhere else
+				net_it_lst = net.getITerms()
+
+				if len(net_it_lst) != 2:
+					continue
+
+				for it in net_it_lst:
+					if it.getInst().getMaster().getName() == 'tt_mux':
+						mux_it = it
+						break
+				else:
+					continue
+
+				# We get the x coordinate from the mux since it's the only
+				# we can trust
+				_, x, _ = mux_it.getAvgXY()
+
+				# Get layer too
+				layer = mux_it.getMTerm().getMPins()[0].getGeometry()[0].getTechLayer()
+
+				# Route the wire
+				wire = odb.dbWire.create(net)
+
+				encoder = odb.dbWireEncoder()
+				encoder.begin(wire)
+				encoder.newPath(layer, 'FIXED')
+				encoder.addPoint(x, y_top)
+				encoder.addPoint(x, y_bot)
+				encoder.end()
+
+
 	def k01_get_track(self, side, idx):
 		# Get full die area
 		die = self.reader.block.getDieArea()
@@ -1403,6 +1465,7 @@ def route(
 	r.create_k01_obs()
 	r.route_pad()
 	r.route_um_tieoffs()
+	r.route_um_signals()
 
 	# Create the module power straps
 	p = ModulePowerStrapper(reader, tti)
