@@ -139,7 +139,7 @@ module openframe_project_wrapper (
 	localparam [15:0] TT_PAD_IN     = 16'b0_00_00_0_0_0_0_0_0_0_0_001;
 	localparam [15:0] TT_PAD_OUT    = 16'b0_11_00_1_0_0_0_0_0_0_0_110;
 	localparam [15:0] TT_PAD_INOUT  = 16'b0_10_00_0_0_0_0_0_0_0_0_110;
-	localparam [15:0] TT_PAD_ANALOG = 16'b0_00_00_1_0_0_0_0_0_0_0_000;
+	localparam [15:0] TT_PAD_ANALOG = 16'b1_00_00_1_0_0_0_0_0_0_0_000;
 	//                                    | |     | | | | | | | |  |
 	// [   15] Analog path select --------' |     | | | | | | | |  |
 	// [14:13] Output wiring mode ----------'     | | | | | | | |  |

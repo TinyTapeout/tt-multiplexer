@@ -74,17 +74,17 @@ ports:
 
 analog:
     # Center 3095.36
-    'analog_io[7]'  : [ 3088610, 3076240 ]
-    'analog_io[8]'  : [ 3091310, 3078940 ]
-    'analog_io[9]'  : [ 3094010, 3081640 ]
-    'analog_io[10]' : [ 3096710, 3081640 ]
-    'analog_io[11]' : [ 3099410, 3078940 ]
-    'analog_io[12]' : [ 3102110, 3076240 ]
+    'analog_noesd_io[7]'  : [ 3088610, 3076240 ]
+    'analog_noesd_io[8]'  : [ 3091310, 3078940 ]
+    'analog_noesd_io[9]'  : [ 3094010, 3081640 ]
+    'analog_noesd_io[10]' : [ 3096710, 3081640 ]
+    'analog_noesd_io[11]' : [ 3099410, 3078940 ]
+    'analog_noesd_io[12]' : [ 3102110, 3076240 ]
 
     # Center 1381.76
-    'analog_io[32]' : [ 1388510, 90400 ]
-    'analog_io[33]' : [ 1385810, 87700 ]
-    'analog_io[34]' : [ 1383110, 85000 ]
-    'analog_io[35]' : [ 1380410, 85000 ]
-    'analog_io[36]' : [ 1377710, 87700 ]
-    'analog_io[37]' : [ 1375010, 90400 ]
+    'analog_noesd_io[32]' : [ 1388510, 90400 ]
+    'analog_noesd_io[33]' : [ 1385810, 87700 ]
+    'analog_noesd_io[34]' : [ 1383110, 85000 ]
+    'analog_noesd_io[35]' : [ 1380410, 85000 ]
+    'analog_noesd_io[36]' : [ 1377710, 87700 ]
+    'analog_noesd_io[37]' : [ 1375010, 90400 ]
