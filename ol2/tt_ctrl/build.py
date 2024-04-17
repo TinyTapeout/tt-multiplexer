@@ -161,6 +161,9 @@ if __name__ == '__main__':
 		# LEF generation option
 		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
 		"MAGIC_WRITE_LEF_PINONLY" : True,
+
+		# LVS
+		"MAGIC_DEF_LABELS": False,			# Avoid exporting useless internal labels
 	}
 
 	flow = CtrlFlow(
