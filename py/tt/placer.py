@@ -500,7 +500,8 @@ class AnalogPlacer:
 		self.placer = placer
 
 		# Create the pin groups
-		self.groups = [AnalogPinGroup(placer, g) for g in placer.cfg.tt.analog]
+		if hasattr(placer.cfg.tt, 'analog'):
+			self.groups = [AnalogPinGroup(placer, g) for g in placer.cfg.tt.analog]
 
 	def place_modules(self, mods):
 		# Check modules with fixed position and marked those as occupied
