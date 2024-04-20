@@ -984,7 +984,7 @@ class AnalogRouter:
 		]
 
 		# Load route data file
-		self.route_data = yaml.load(open('route_data.yaml'), yaml.FullLoader)['analog']
+		self.route_data = yaml.load(open('route_data.yaml'), yaml.FullLoader).get('analog', {})
 
 	def prepare_tech(self):
 		# Find tech and layers
@@ -1369,6 +1369,9 @@ class AnalogRouter:
 				x_max = max(x_max, x) if (x_max is not None) else x
 				y_min = min(y_min, y)
 				y_max = max(y_max, y)
+
+		if (x_min is None) or (x_max is None):
+			return
 
 		# Create obstructions
 		odb.dbObstruction_create(self.reader.block,
