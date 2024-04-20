@@ -299,9 +299,10 @@ class ModulePlacer:
 			self._place_module(m)
 
 	def place_modules(self):
-		# Deal with analog modules first
-		ap = AnalogPlacer(self)
-		ap.place_modules(self.modules)
+		# Deal with analog modules first if we support analog
+		if self.mux_analog:
+			ap = AnalogPlacer(self)
+			ap.place_modules(self.modules)
 
 		# Sort modules into 3 sets
 		full_placed = []
