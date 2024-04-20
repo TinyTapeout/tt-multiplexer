@@ -90,7 +90,7 @@ formal/modules_connectivity.yaml:
 	./py/gen_formal.py --module formal > $@
 
 formal/tt_user_module_%.v: rtl/tt_user_module.v.mak formal/modules_%.yaml
-	./py/gen_tt_user_module.py $^ > $@
+	TT_CONFIG=sky130_no_analog.yaml ./py/gen_tt_user_module.py $^ > $@
 
 formal_%: formal/tt_user_module_%.v $(RTL_SRC) $(RTL_INC)
 	cd formal && sby -f tt_$*.sby
