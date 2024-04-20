@@ -392,6 +392,9 @@ class AnalogPinGroup:
 			# ?!?
 			raise RuntimeError("Can't have more than 2 mux per group !")
 
+		# Keep a copy of all positions in this group
+		self.pos_all = set(pos_free)
+
 		# Debug print
 		if False:
 			for amux_id, ablk_id, inv in pos_free:
@@ -480,17 +483,31 @@ class AnalogPinGroup:
 			pin.mods.append(mod)
 			mod.analog[k] = pin.num
 
-		# Find a position for it
-		mux_id, blk_id = self.pick_pos_for_module(mod)
+		# Does the module already have a position ?
+		if (mod.pos_x is not None) and (mod.pos_y is not None):
+			# Yes, use that
+			mux_id, blk_id = self.placer.la2ld(*self.placer.p2l(mod.pos_x, mod.pos_y))
 
-		# Assign it as constraint
-		x, y = self.placer.l2p(*self.placer.la2ld(mux_id, blk_id))
+		else:
+			# Nope, Find a position for it
+			mux_id, blk_id = self.pick_pos_for_module(mod)
 
-		mod.pos_x = x
-		mod.pos_y = y
+			# Assign it as constraint
+			x, y = self.placer.l2p(*self.placer.la2ld(mux_id, blk_id))
+
+			mod.pos_x = x
+			mod.pos_y = y
 
 		# Remove from free list
 		for i in range(mod.width):
+			self.pos_free.remove( (mux_id, blk_id - 2*i) )
+
+	def is_pos_in_group(self, mux_id, blk_id):
+		return (mux_id, blk_id) in self.pos_all
+
+	def mark_used(self, mux_id, blk_id, width=1):
+		# Remove from free list
+		for i in range(width):
 			self.pos_free.remove( (mux_id, blk_id - 2*i) )
 
 
@@ -504,8 +521,51 @@ class AnalogPlacer:
 		self.groups = [AnalogPinGroup(placer, g) for g in placer.cfg.tt.analog]
 
 	def place_modules(self, mods):
+		# List of modules attached to a group by constrain
+		# (either manual placement or manual pins)
+		mods_fixed = {}
+
 		# Check modules with fixed position and marked those as occupied
-			# FIXME
+		for m in mods:
+			# If not pre-placed, will be dealt with later, skip
+			if (m.pos_x is None) and (m.pos_y is None):
+				continue
+
+			# If it's semi-placed
+			if (m.pos_x is None) ^ (m.pos_y is None):
+				if m.analog:
+					# It's analog, we don't support semi placed
+					raise RuntimeError(f'Module {mod.name} is analog and partially placed, not supported')
+
+				else:
+					# Not analog module, will be dealt with later
+					continue
+
+			# Module has a fixed position, find analog pin groups
+			mux_id, blk_id = self.placer.ld2la(*self.placer.p2l(m.pos_x, m.pos_y))
+
+			for g in self.groups:
+				if g.is_pos_in_group(mux_id, blk_id):
+					grp = g
+					break
+
+			else:
+				# Position is not in any group
+				if m.analog:
+					# It's analog and fixed in a position not supporting analog
+					raise RuntimeError(f'Module {m.name} is analog and constrained to non-analog position')
+
+				else:
+					# Ok, fine, will be dealt with later
+					continue
+
+			# Is the module analog ?
+			if m.analog:
+				# Yes, Record the associated group
+				mods_fixed[m] = grp
+			else:
+				# No, we just need to prevent anything from being placed there
+				grp.mark_used(mux_id, blk_id, m.width)
 
 		# Collect all modules with analog pins
 		analog_mods = [m for m in mods if len(m.analog)]
@@ -514,11 +574,9 @@ class AnalogPlacer:
 		analog_mods.sort(key=lambda m: m.width * len(m.analog) * len(m.analog), reverse=True)
 
 		# Scan once to check for pre-assigned pins
-		mods_fixed = {}
-
 		for m in analog_mods:
-			# No group identified yet
-			grp = None
+			# No group identified yet ?
+			grp = mods_fixed.get(m)
 
 			# Scan pins
 			for v in m.analog.values():
@@ -532,7 +590,7 @@ class AnalogPlacer:
 						if grp is None:
 							grp = g
 						elif grp != g:
-							raise RuntimeError(f'Module {mod.name} has assigned analog pins in several groups')
+							raise RuntimeError(f'Module {mod.name} has assigned analog pins in several groups or in a group different than its forced position')
 
 						# Mark pin as used in the group
 						grp.pins[v].mods.append(m)
@@ -566,7 +624,7 @@ class AnalogPlacer:
 				l.append( (grp, pins, cost) )
 
 			if len(l) == 0:
-				raise RuntimeError(f"Module {m.name} couldn't be placed")
+				raise RuntimeError(f"Analog module {m.name} couldn't be placed")
 
 			grp, pins, cost = sorted(l, key=lambda gp: gp[2])[0]
 
