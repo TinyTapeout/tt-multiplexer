@@ -535,7 +535,7 @@ class AnalogPlacer:
 			if (m.pos_x is None) ^ (m.pos_y is None):
 				if m.analog:
 					# It's analog, we don't support semi placed
-					raise RuntimeError(f'Module {mod.name} is analog and partially placed, not supported')
+					raise RuntimeError(f'Module {m.name} is analog and partially placed, not supported')
 
 				else:
 					# Not analog module, will be dealt with later
@@ -590,7 +590,7 @@ class AnalogPlacer:
 						if grp is None:
 							grp = g
 						elif grp != g:
-							raise RuntimeError(f'Module {mod.name} has assigned analog pins in several groups or in a group different than its forced position')
+							raise RuntimeError(f'Module {m.name} has assigned analog pins in several groups or in a group different than its forced position')
 
 						# Mark pin as used in the group
 						grp.pins[v].mods.append(m)
