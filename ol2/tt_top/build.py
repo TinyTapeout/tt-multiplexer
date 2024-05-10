@@ -86,7 +86,6 @@ class TopFlow(SequentialFlow):
 		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
 		Magic.StreamOut,
-		Magic.WriteLEF,
 		KLayout.StreamOut,
 		KLayout.XOR,
 		Checker.XOR,
