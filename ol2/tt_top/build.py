@@ -183,14 +183,37 @@ if __name__ == '__main__':
 
 		# Synthesis
 		"SYNTH_ELABORATE_ONLY"      : True,
+		"SYNTH_USE_PG_PINS_DEFINES" : "USE_POWER_PINS",
+
 		"SYNTH_EXCLUSION_CELL_LIST" : "dir::no_synth_cells.txt",
 		"PNR_EXCLUSION_CELL_LIST"   : "dir::no_drc_cells.txt",
 		"DRC_EXCLUDE_CELL_LIST"     : "dir::no_drc_cells.txt",
 
+		"QUIT_ON_SYNTH_CHECKS"      : False,
+
+		# Floorplanning
+		"DIE_AREA"  : [  0.00,  0.00, 3166.63, 4766.63 ],
+		"CORE_AREA" : [ 47.50, 47.50, 3119.13, 4719.13 ],
+		"FP_SIZING" : "absolute",
+		"FP_DEF_TEMPLATE" : "dir::openframe_project_wrapper.def",
+		"FP_TEMPLATE_COPY_POWER_PINS" : True,
+
 		# PDN
-		"PDN_CONNECT_MACROS_TO_GRID": False,
-		"PDN_ENABLE_GLOBAL_CONNECTIONS": False,
+		"VDD_NETS": [ "vccd1" ],
+		"GND_NETS": [ "vssd1" ],
+
 		"PDN_CFG": "dir::pdn.tcl",
+
+		"PDN_CONNECT_MACROS_TO_GRID"    : False,
+		"PDN_ENABLE_GLOBAL_CONNECTIONS" : False,
+
+		"FP_PDN_CORE_RING"          : True,
+		"FP_PDN_CORE_RING_VWIDTH"   : 20,
+		"FP_PDN_CORE_RING_HWIDTH"   : 20,
+		"FP_PDN_CORE_RING_VOFFSET"  :  0,
+		"FP_PDN_CORE_RING_HOFFSET"  :  0,
+		"FP_PDN_CORE_RING_VSPACING" :  2.4,
+		"FP_PDN_CORE_RING_HSPACING" :  2.4,
 
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
@@ -198,16 +221,16 @@ if __name__ == '__main__':
 		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
 		"RT_MAX_LAYER"          : "met4",
 
+		# Magic stream
+		"MAGIC_ZEROIZE_ORIGIN" : False,
+
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
 
 		# LVS
-		"MAGIC_DEF_LABELS": False,
+		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
 	}
-
-	# Load fixed required config for UPW
-	flow_cfg.update(json.loads(open('config.json', 'r').read()))
 
 	# Update PDN config
 	pdn_width   = 6.2
