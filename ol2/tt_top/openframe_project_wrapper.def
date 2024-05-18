@@ -691,69 +691,69 @@ PINS 917 ;
         + LAYER met2 ( -140 -1140 ) ( 140 1140 )        + PLACED ( 2438690 -860 ) N ;
    - vccd1 + NET vccd1 + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -1150 -11655 ) ( 1150 11655 )        + PLACED ( 3167480 2125705 ) N 
+        + LAYER met3 ( -1150 -11655 ) ( 1150 11655 )        + FIXED ( 3167480 2125705 ) N
      + PORT
-        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + PLACED ( 3167480 4389810 ) N 
+        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( 3167480 4389810 ) N
      + PORT
-        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + PLACED ( 3167480 4339585 ) N ;
+        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( 3167480 4339585 ) N ;
    - vdda1 + NET vdda1 + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( 3167480 3943870 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 3943870 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( 3167480 2370870 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 2370870 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( 3167480 2320970 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 2320970 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( 3167480 3893980 ) N ;
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 3893980 ) N ;
    - vssa1 + NET vssa1 + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( 3167480 1929870 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 1929870 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 2679760 4767480 ) N 
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2679760 4767480 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( 3167480 1879980 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 1879980 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 2729660 4767480 ) N ;
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2729660 4767480 ) N ;
    - vssio + NET vssio + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 1468760 4767480 ) N 
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 1468760 4767480 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 2696870 -850 ) N 
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2696870 -850 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 1518660 4767480 ) N 
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 1518660 4767480 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 2646980 -850 ) N ;
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2646980 -850 ) N ;
    - vccd2 + NET vccd2 + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + PLACED ( -850 4412045 ) N 
+        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( -850 4412045 ) N
      + PORT
-        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + PLACED ( -850 4361820 ) N 
+        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( -850 4361820 ) N
      + PORT
-        + LAYER met3 ( -1150 -11630 ) ( 1150 11630 )        + PLACED ( -850 2030940 ) N ;
+        + LAYER met3 ( -1150 -11630 ) ( 1150 11630 )        + FIXED ( -850 2030940 ) N ;
    - vddio + NET vddio + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 4150760 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 4150760 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 352760 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 352760 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 4200660 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 4200660 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 402650 ) N ;
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 402650 ) N ;
    - vssa2 + NET vssa2 + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 3939760 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 3939760 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 3989660 ) N ;
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 3989660 ) N ;
    - vdda2 + NET vdda2 + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 2216760 ) N 
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 2216760 ) N
      + PORT
-        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + PLACED ( -850 2266650 ) N ;
+        + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 2266650 ) N ;
    - vdda + NET vdda + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 2965870 -850 ) N 
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2965870 -850 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 2915980 -850 ) N ;
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2915980 -850 ) N ;
    - analog_noesd_io[8] + NET analog_noesd_io[8]
      + PORT
         + LAYER met3 ( -1150 -535 ) ( 1150 535 )        + PLACED ( 3167480 2780710 ) N ;
@@ -1308,11 +1308,11 @@ PINS 917 ;
         + LAYER met3 ( -1150 -535 ) ( 1150 535 )        + PLACED ( -850 2468920 ) N ;
    - vssd1 + NET vssd1 + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + PLACED ( 3167480 2100585 ) N 
+        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( 3167480 2100585 ) N
      + PORT
-        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + PLACED ( 3167480 2150810 ) N 
+        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( 3167480 2150810 ) N
      + PORT
-        + LAYER met3 ( -1150 -11655 ) ( 1150 11655 )        + PLACED ( 3167480 4364705 ) N ;
+        + LAYER met3 ( -1150 -11655 ) ( 1150 11655 )        + FIXED ( 3167480 4364705 ) N ;
    - gpio_loopback_one[8] + NET gpio_loopback_one[8]
      + PORT
         + LAYER met3 ( -1150 -155 ) ( 1150 155 )        + PLACED ( 3167480 2840185 ) N ;
@@ -1336,11 +1336,11 @@ PINS 917 ;
         + LAYER met3 ( -1150 -155 ) ( 1150 155 )        + PLACED ( 3167480 4635185 ) N ;
    - vssd2 + NET vssd2 + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -1150 -11655 ) ( 1150 11655 )        + PLACED ( -850 4386925 ) N 
+        + LAYER met3 ( -1150 -11655 ) ( 1150 11655 )        + FIXED ( -850 4386925 ) N
      + PORT
-        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + PLACED ( -850 2056045 ) N 
+        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( -850 2056045 ) N
      + PORT
-        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + PLACED ( -850 2005810 ) N ;
+        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( -850 2005810 ) N ;
    - gpio_in[25] + NET gpio_in[25]
      + PORT
         + LAYER met3 ( -1150 -175 ) ( 1150 175 )        + PLACED ( -850 3786535 ) N ;
@@ -1928,19 +1928,19 @@ PINS 917 ;
         + LAYER met3 ( -1150 -175 ) ( 1150 175 )        + PLACED ( -850 3354535 ) N ;
    - vccd + NET vccd + SPECIAL + USE POWER
      + PORT
-        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + PLACED ( -850 192045 ) N 
+        + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( -850 192045 ) N
      + PORT
-        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + PLACED ( -850 141810 ) N ;
+        + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( -850 141810 ) N ;
    - vssa + NET vssa + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 195980 -850 ) N 
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 195980 -850 ) N
      + PORT
-        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + PLACED ( 245870 -850 ) N ;
+        + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 245870 -850 ) N ;
    - vssd + NET vssd + SPECIAL + USE GROUND
      + PORT
-        + LAYER met3 ( -11575 -1150 ) ( 11575 1150 )        + PLACED ( 1007995 -850 ) N 
+        + LAYER met3 ( -11575 -1150 ) ( 11575 1150 )        + FIXED ( 1007995 -850 ) N
      + PORT
-        + LAYER met3 ( -12000 -1150 ) ( 12000 1150 )        + PLACED ( 1057820 -850 ) N ;
+        + LAYER met3 ( -12000 -1150 ) ( 12000 1150 )        + FIXED ( 1057820 -850 ) N ;
    - gpio_loopback_zero[14] + NET gpio_loopback_zero[14]
      + PORT
         + LAYER met3 ( -1150 -155 ) ( 1150 155 )        + PLACED ( 3167480 4645185 ) N ;
