@@ -106,6 +106,11 @@ module openframe_project_wrapper (
 	// Signals
 	// -------
 
+`ifdef USE_POWER_PINS
+	wire vgnd;
+	wire vdpwr;
+`endif
+
 	wire k_zero;
 	wire k_one;
 
@@ -115,13 +120,27 @@ module openframe_project_wrapper (
 	wire [`OPENFRAME_IO_PADS-1:0] pad_ana;
 
 
+	// Power
+	// -----
+
+`ifdef USE_POWER_PINS
+	assign vgnd = vssd;
+	assign vgnd = vssd1;
+	assign vgnd = vssd2;
+
+	assign vdpwr = vccd;
+	assign vdpwr = vccd1;
+	assign vdpwr = vccd2;
+`endif
+
+
 	// Main core
 	// ---------
 
 	tt_top top_I (
 `ifdef USE_POWER_PINS
-		.VPWR        (vccd1),
-		.VGND        (vssd1),
+		.VPWR        (vdpwr),
+		.VGND        (vgnd),
 `endif
 		.io_ana      (pad_ana),
 		.io_in       (pad_in),

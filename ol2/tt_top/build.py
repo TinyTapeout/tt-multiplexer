@@ -68,7 +68,6 @@ class TopFlow(SequentialFlow):
 		Checker.YosysSynthChecks,
 		OpenROAD.Floorplan,
 		Odb.ApplyDEFTemplate,
-		Odb.SetPowerConnections,
 		Odb.ManualMacroPlacement,
 		CustomPower,
 		OpenROAD.GeneratePDN,
@@ -199,8 +198,8 @@ if __name__ == '__main__':
 		"FP_TEMPLATE_COPY_POWER_PINS" : True,
 
 		# PDN
-		"VDD_NETS": [ "vccd1" ],
-		"GND_NETS": [ "vssd1" ],
+		"VDD_NETS": [ "vdpwr" ],
+		"GND_NETS": [ "vgnd" ],
 
 		"PDN_CFG": "dir::pdn.tcl",
 
