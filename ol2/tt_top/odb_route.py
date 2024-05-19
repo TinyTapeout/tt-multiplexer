@@ -809,11 +809,10 @@ class RingPowerStrapper:
 		self.reader = reader
 
 		# Find useful data
-		tech = reader.db.getTech()
+		self.tech = tech = reader.db.getTech()
 
 		self.layer = tech.findLayer('met3')
-		self.tech = self.reader.db.getTech()
-		self.via_rule = self.tech.findViaGenerateRule('M3M4_PR')
+		self.via_rule = tech.findViaGenerateRule('M3M4_PR_C')
 		self.vias = {}
 
 	def find_ring_for_net(self, net):
@@ -825,26 +824,34 @@ class RingPowerStrapper:
 				if w.isVia():
 					continue
 
-				# Only met4/met5
-				if w.getTechLayer().getName() != 'met4':
+				# Only ring
+				if w.getWireShapeType() != 'RING':
 					continue
 
 				boxes.append(w)
 
-		# There should be none or 2
+		# There should be none or 4
 		if len(boxes) == 0:
 			return None
 
-		if len(boxes) != 2:
+		if len(boxes) != 4:
 			raise RuntimeError(f'Unexpected boxes for net {net.getName():s}')
 
 		# Sort and return
-		boxes = sorted(boxes, key=lambda x:x.xMin())
+		boxes_ver = sorted([b for b in boxes if b.getDX() < b.getDY()], key=lambda x:x.xMin())
+		boxes_hor = sorted([b for b in boxes if b.getDX() > b.getDY()], key=lambda x:x.yMin())
 
 		return {
-			'l': boxes[0],
-			'r': boxes[1],
+			'l': boxes_ver[0],
+			'r': boxes_ver[1],
+			'b': boxes_hor[0],
+			't': boxes_hor[1],
 		}
+
+	def complete_ring(self, net, ring):
+		sw = odb.dbSWire.create(net, "ROUTED")
+		for box in [ ring['b'], ring['t'] ]:
+			odb.createSBoxes(sw, self.tech.findLayer('met4'), [odb.Rect(box.xMin(), box.yMin(), box.xMax(), box.yMax())], "RING")
 
 	def gen_via(self, vw, vh):
 		# Find the rules for top/cut/bot
@@ -903,7 +910,7 @@ class RingPowerStrapper:
 			self.vias[k] = self.gen_via(vw, vh)
 		return self.vias[k]
 
-	def strap_draw(self, sw, sxl, sxr, rxl, rxr, yb, yt):
+	def strap_draw_lr(self, sw, sxl, sxr, rxl, rxr, yb, yt):
 		# Stripe
 		odb.createSBoxes(sw, self.layer, [odb.Rect(sxl, yb, sxr, yt)], "STRIPE")
 
@@ -914,52 +921,87 @@ class RingPowerStrapper:
 		ym  = ( yb +  yt) // 2
 		odb.createSBoxes(sw, via, [odb.Point(rxm, ym)], "STRIPE")
 
-	def strap_bterm(self, bterm):
+	def strap_draw_tb(self, sw, xl, xr, syb, syt, ryb, ryt):
+		# Stripe
+		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, syb, xr, syt)], "STRIPE")
+
+		# Connecting via
+		via = self.get_via(xr-xl, ryt-ryb)
+
+		xm  = ( xl +  xr) // 2
+		rym = (ryb + ryt) // 2
+		odb.createSBoxes(sw, via, [odb.Point(xm, rym)], "STRIPE")
+
+	def strap_bterm(self, net, ring, sw, bterm):
 		# Die area
 		die = self.reader.block.getDieArea()
-
-		# Find all the rings boxes
-		ring = self.find_ring_for_net(bterm.getNet())
-		if ring is None:
-			return
-
-		# Create new SWire for our straps
-		net = bterm.getNet()
-		sw = odb.dbSWire.create(net, "ROUTED")
 
 		# Scan all the boxes for that bterm and connect it
 		# to the appropriate rail
 		for bpin in  bterm.getBPins():
 			for bbox in bpin.getBoxes():
-				# Only process pins on side which should be met3
+				# All power pins are expected to be on met3
 				if bbox.getTechLayer().getName() != 'met3':
 					continue
 
-				# Is pin left or right ?
-				xl  = ring['r'].xMin()
-				xr  = ring['l'].xMax()
-				yb  = bbox.yMin()
-				yt  = bbox.yMax()
-
+				# Which side is the pin on ?
 				if bbox.xMin() < die.xMin():
-					side = 'l'
-					xl = bbox.xMin()
+					# Left
+					self.strap_draw_lr(sw,
+						bbox.xMin(),      ring['l'].xMax(),
+						ring['l'].xMin(), ring['l'].xMax(),
+						bbox.yMin(),      bbox.yMax()
+					)
 
 				elif bbox.xMax() > die.xMax():
-					side = 'r'
-					xr = bbox.xMax()
+					# Right
+					self.strap_draw_lr(sw,
+						ring['r'].xMin(), bbox.xMax(),
+						ring['r'].xMin(), ring['r'].xMax(),
+						bbox.yMin(),      bbox.yMax()
+					)
+
+				elif bbox.yMin() < die.yMin():
+					# Bottom
+					self.strap_draw_tb(sw,
+						bbox.xMin(),      bbox.xMax(),
+						bbox.yMin(),      ring['b'].yMax(),
+						ring['b'].yMin(), ring['b'].yMax(),
+					)
+
+				elif bbox.yMax() > die.yMax():
+					# Top
+					self.strap_draw_tb(sw,
+						bbox.xMin(),      bbox.xMax(),
+						ring['t'].yMin(), bbox.yMax(),
+						ring['t'].yMin(), ring['t'].yMax(),
+					)
 
 				else:
 					# ???
 					continue
 
-				self.strap_draw(sw, xl, xr, ring[side].xMin(), ring[side].xMax(), yb, yt)
+	def strap_net(self, net):
+		# Find all the rings boxes
+		ring = self.find_ring_for_net(net)
+		if ring is None:
+			return
+
+		# Complete the ring with met4 on top/bottom
+		self.complete_ring(net, ring)
+
+		# Create new SWire for our straps
+		sw = odb.dbSWire.create(net, "ROUTED")
+
+		# Find all the BTerms
+		for bterm in net.getBTerms():
+			self.strap_bterm(net, ring, sw, bterm)
 
 	def run(self):
-		# Scan all power rails
-		for bterm in self.reader.block.getBTerms():
-			if bterm.getSigType() in ['POWER', 'GROUND']:
-				self.strap_bterm(bterm)
+		# Scan all power nets and check if they need strapping
+		for net in self.reader.block.getNets():
+			if net.getSigType() in ['POWER', 'GROUND']:
+				self.strap_net(net)
 
 
 class AnalogRouter:
