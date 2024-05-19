@@ -1061,13 +1061,15 @@ class AnalogRouter:
 		# Find tech and layers
 		tech = self.reader.db.getTech()
 		self.layer_bot = tech.findLayer('met3')
-		self.layer_cut = tech.findLayer('via3')
 		self.layer_top = tech.findLayer('met4')
 		self.via_sig   = tech.findVia('M3M4_PR')
 
-		# Create via
+		# Create via for analog signal
 		viagen = ViaGenerator(self.reader, 'M3M4_PR')
 		self.via = viagen.create(3, 3, 'analog_via')
+
+		# Create via generator for power
+		self.pwr_vg = ViaGenerator(self.reader, 'M4M5_PR')
 
 		# Create non-default rule
 		self.ndr = ndr = odb.dbTechNonDefaultRule_create(self.reader.block, 'analog_track')
@@ -1077,105 +1079,86 @@ class AnalogRouter:
 			lr.setWidth(900)
 			lr.setSpacing(2700)
 
+	def _asw_find_pdn_stripe(self, net, y, above):
+		# Scan all special wires on that net
+		best_sb   = None
+		best_dist = None
+
+		for sw in net.getSWires():
+			for sb in sw.getWires():
+				# Must be horizontal non-via STRIPE
+				if sb.isVia() or (sb.getWireShapeType() != 'STRIPE') or (sb.getDY() > sb.getDX()):
+					continue
+
+				# Distance
+				d = ((sb.yMin() + sb.yMax()) // 2) - y
+
+				if above ^ (d > 0):
+					continue
+
+				if (best_dist is None) or (abs(d) < abs(best_dist)):
+					best_sb   = sb
+					best_dist = d
+
+		# Return result
+		center = (best_sb.yMin() + best_sb.yMax()) // 2
+		farend = best_sb.yMax() if above else best_sb.yMin()
+		width  = best_sb.getWidth()
+
+		return center, farend, width
+
 	def _asw_power_solo(self, asw):
 		# Process each power pin
-		via = None
-		to_connect = []
-
 		for it in asw.getITerms():
+			# Matching net
+			net = it.getNet()
+
 			# Only consider power/ground
 			if it.getSigType() not in ['POWER', 'GROUND']:
 				continue
 
-			# Check if there is a via inside the pin already
-			bbox  = it.getBBox()
-			net   = it.getNet()
-			found = False
+			# Orientation, should we connect above or below ?
+			orient = asw.getOrient()
 
-			for sw in net.getSWires():
-				for sb in sw.getWires():
-					if not sb.isVia():
-						continue
-
-					if not bbox.intersects(odb.Point(*sb.getViaXY())):
-						continue
-
-					via = sb.getBlockVia()
-					found = True
-					break
-				else:
-					continue
-
-				break
-
-			# If not, add to the list
+			if orient in [ 'R0', 'MY' ]:
+				above = False
+			elif orient in [ 'R180', 'MX' ]:
+				above = True
 			else:
-				to_connect.append(it)
+				raise RuntimeError('Unknown orientation of analog switch')
 
-		# If we found no via, we have no reference
-		if via is None:
-			raise RuntimeError('No via reference found')
+			# Bounding box of terminal
+			bbox = it.getBBox()
 
-		# Process the connections
-		for it in to_connect:
-			# Find the closest 'met5' stripe
-			it_bbox = it.getBBox()
-			net     = it.getNet()
+			xl = bbox.xMin()
+			xr = bbox.xMax()
+			xc = bbox.xCenter()
+			xw = bbox.dx()
 
-			m_sb   = None
-			m_dist = None
+			y  = bbox.yMin() if above else bbox.yMax()
 
-			for sw in net.getSWires():
-				for sb in sw.getWires():
-					# Don't consider via
-					if sb.isVia():
-						continue
-
-					# Don't consider anything else than met5
-					if sb.getTechLayer().getName() != 'met5':
-						continue
-
-					# Must be stripe
-					if sb.getWireShapeType() != 'STRIPE':
-						continue
-
-					# Check we're within in horizontally
-					if (sb.xMin() > it_bbox.xMin()) or (sb.xMax() < it_bbox.xMax()):
-						continue
-
-					# Distance
-					d = ((sb.yMin() + sb.yMax()) // 2) - it_bbox.yCenter()
-
-					if (m_dist is None) or (abs(d) < abs(m_dist)):
-						m_sb   = sb
-						m_dist = d
+			# Find PDN stripe
+			pdn_center, pdn_farend, pdn_width = self._asw_find_pdn_stripe(net, y, above)
 
 			# Prepare to add special routing
-			net = it.getNet()
 			sw = odb.dbSWire.create(net, "ROUTED")
 
-			# Extend the stripe to it
-			xl = it_bbox.xMin()
-			xv = it_bbox.xCenter()
-			xr = it_bbox.xMax()
-
-			yv = (m_sb.yMin() + m_sb.yMax()) // 2
-
-			if m_dist > 0:
-				yb = it_bbox.yMin()
-				yt = m_sb.yMax()
-			else:
-				yb = m_sb.yMin()
-				yt = it_bbox.yMax()
-
-			odb.createSBoxes(sw, via.getBottomLayer(), [odb.Rect(xl, yb, xr, yt)], "STRIPE")
-
 			# Add via
-			odb.createSBoxes(sw, via, [odb.Point(xv, yv)], "STRIPE")
+				# Current viagen is too pessimistic and doesn't work with small connections
+				# (doesn't know about preferred directions and such). So request a 1x5 via ...
+			# via = self.pwr_vg.get4sz(xw, pdn_width)
+			via = self.pwr_vg.get(1, 5)
+			odb.createSBoxes(sw, via, [odb.Point(xc, pdn_center)], "STRIPE")
+
+			# Extend the ITerm stripe to PDN
+			odb.createSBoxes(sw, via.getBottomLayer(), [odb.Rect(xl, y, xr, pdn_farend)], "STRIPE")
 
 	def _asw_power_pair(self, asw_bot, asw_top):
 		# Process each power pin
 		for it_bot in asw_bot.getITerms():
+			# Matching net
+			net = it_bot.getNet()
+
 			# Only consider power/ground
 			if it_bot.getSigType() not in ['POWER', 'GROUND']:
 				continue
@@ -1189,13 +1172,28 @@ class AnalogRouter:
 
 			xl = bbox_bot.xMin()
 			xr = bbox_bot.xMax()
+			xc = bbox_bot.xCenter()
+			xw = bbox_bot.dx()
+
 			yb = bbox_bot.yMin()
 			yt = bbox_top.yMax()
 
-			# Create strap
-			net = it_bot.getNet()
+			# Find PDN stripe
+			pdn_center, pdn_farend, pdn_width = self._asw_find_pdn_stripe(net, yb, True)
+
+			# Prepare to add special routing
 			sw = odb.dbSWire.create(net, "ROUTED")
-			odb.createSBoxes(sw, self.layer_top, [odb.Rect(xl, yb, xr, yt)], "STRIPE")
+
+			# Add via
+				# Current viagen is too pessimistic and doesn't work with small connections
+				# (doesn't know about preferred directions and such). So request a 1x5 via ...
+			# via = self.pwr_vg.get4sz(xw, pdn_width)
+			via = self.pwr_vg.get(1, 5)
+			odb.createSBoxes(sw, via, [odb.Point(xc, pdn_center)], "STRIPE")
+
+			# Create strap
+			odb.createSBoxes(sw, via.getBottomLayer(), [odb.Rect(xl, yb, xr, yt)], "STRIPE")
+
 
 	def asw_power(self):
 		# Group the analog switch per x coordinate
