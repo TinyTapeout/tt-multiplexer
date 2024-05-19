@@ -696,7 +696,7 @@ PINS 917 ;
         + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( 3167480 4389810 ) N
      + PORT
         + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( 3167480 4339585 ) N ;
-   - vdda1 + NET vdda1 + SPECIAL + USE POWER
+   - vdda1 + NET vapwr + SPECIAL + USE POWER
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 3943870 ) N
      + PORT
@@ -705,7 +705,7 @@ PINS 917 ;
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 2320970 ) N
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 3893980 ) N ;
-   - vssa1 + NET vssa1 + SPECIAL + USE GROUND
+   - vssa1 + NET vgnd + SPECIAL + USE GROUND
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( 3167480 1929870 ) N
      + PORT
@@ -739,17 +739,17 @@ PINS 917 ;
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 4200660 ) N
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 402650 ) N ;
-   - vssa2 + NET vssa2 + SPECIAL + USE GROUND
+   - vssa2 + NET vgnd + SPECIAL + USE GROUND
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 3939760 ) N
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 3989660 ) N ;
-   - vdda2 + NET vdda2 + SPECIAL + USE POWER
+   - vdda2 + NET vapwr + SPECIAL + USE POWER
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 2216760 ) N
      + PORT
         + LAYER met3 ( -1150 -11950 ) ( 1150 11950 )        + FIXED ( -850 2266650 ) N ;
-   - vdda + NET vdda + SPECIAL + USE POWER
+   - vdda + NET vapwr + SPECIAL + USE POWER
      + PORT
         + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 2965870 -850 ) N
      + PORT
@@ -1931,7 +1931,7 @@ PINS 917 ;
         + LAYER met3 ( -1150 -11975 ) ( 1150 11975 )        + FIXED ( -850 192045 ) N
      + PORT
         + LAYER met3 ( -1150 -12000 ) ( 1150 12000 )        + FIXED ( -850 141810 ) N ;
-   - vssa + NET vssa + SPECIAL + USE GROUND
+   - vssa + NET vgnd + SPECIAL + USE GROUND
      + PORT
         + LAYER met3 ( -11950 -1150 ) ( 11950 1150 )        + FIXED ( 195980 -850 ) N
      + PORT

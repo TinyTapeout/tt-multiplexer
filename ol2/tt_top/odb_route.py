@@ -766,11 +766,11 @@ class ModulePowerStrapper:
 
 	def _draw_stripe(self, sw, vias, y, xl, xr, xp, xv):
 		# Stripe
-		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, y-7000, xr, y+7000)], "STRIPE")
+		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, y-9000, xr, y+9000)], "STRIPE")
 
 		# Dual vias
 		for x, i in zip(xp, xv):
-			odb.createSBoxes(sw, vias[i], [odb.Point(x, y-3500), odb.Point(x, y+3500)], "STRIPE")
+			odb.createSBoxes(sw, vias[i], [odb.Point(x, y-4500), odb.Point(x, y+4500)], "STRIPE")
 
 	def run(self):
 		# Find all power switch instances

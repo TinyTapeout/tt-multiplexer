@@ -192,14 +192,14 @@ if __name__ == '__main__':
 
 		# Floorplanning
 		"DIE_AREA"  : [  0.00,  0.00, 3166.63, 4766.63 ],
-		"CORE_AREA" : [ 47.50, 47.50, 3119.13, 4719.13 ],
+		"CORE_AREA" : [ 85.00, 85.00, 3081.63, 4681.63 ],
 		"FP_SIZING" : "absolute",
 		"FP_DEF_TEMPLATE" : "dir::openframe_project_wrapper.def",
 		"FP_TEMPLATE_COPY_POWER_PINS" : True,
 
 		# PDN
-		"VDD_NETS": [ "vdpwr" ],
-		"GND_NETS": [ "vgnd" ],
+		"VDD_NETS": [ "vdpwr", "vapwr" ],
+		"GND_NETS": [ "vgnd",  "vgnd"  ],
 
 		"PDN_CFG": "dir::pdn.tcl",
 
@@ -207,12 +207,12 @@ if __name__ == '__main__':
 		"PDN_ENABLE_GLOBAL_CONNECTIONS" : False,
 
 		"FP_PDN_CORE_RING"          : True,
-		"FP_PDN_CORE_RING_VWIDTH"   : 20,
-		"FP_PDN_CORE_RING_HWIDTH"   : 20,
+		"FP_PDN_CORE_RING_VWIDTH"   : 25,
+		"FP_PDN_CORE_RING_HWIDTH"   : 25,
 		"FP_PDN_CORE_RING_VOFFSET"  :  0,
 		"FP_PDN_CORE_RING_HOFFSET"  :  0,
-		"FP_PDN_CORE_RING_VSPACING" :  2.4,
-		"FP_PDN_CORE_RING_HSPACING" :  2.4,
+		"FP_PDN_CORE_RING_VSPACING" :  2.0,
+		"FP_PDN_CORE_RING_HSPACING" :  2.0,
 
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
@@ -232,15 +232,15 @@ if __name__ == '__main__':
 	}
 
 	# Update PDN config
-	pdn_width   = 6.2
-	pdn_spacing = 2 * pdn_width		# Spacing border to border
+	pdn_width   =  8.75
+	pdn_spacing =  2.25
 	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +
 		tti.layout.glb.branch.pitch // 10 -
 		tti.layout.glb.margin.y // 2
 	) / 1000
-	pdn_offset -= (pdn_spacing + pdn_width) / 2
+	pdn_offset -= (pdn_spacing + pdn_width)
 
 	sh = tti.cfg.pdk.site.height / 1000
 	if 'CORE_AREA' in flow_cfg:

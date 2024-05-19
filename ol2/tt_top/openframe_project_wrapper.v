@@ -109,6 +109,7 @@ module openframe_project_wrapper (
 `ifdef USE_POWER_PINS
 	wire vgnd;
 	wire vdpwr;
+	wire vapwr;
 `endif
 
 	wire k_zero;
@@ -127,10 +128,17 @@ module openframe_project_wrapper (
 	assign vgnd = vssd;
 	assign vgnd = vssd1;
 	assign vgnd = vssd2;
+	assign vgnd = vssa;
+	assign vgnd = vssa1;
+	assign vgnd = vssa2;
 
 	assign vdpwr = vccd;
 	assign vdpwr = vccd1;
 	assign vdpwr = vccd2;
+
+	assign vapwr = vdda;
+	assign vapwr = vdda1;
+	assign vapwr = vdda2;
 `endif
 
 
