@@ -697,7 +697,6 @@ class ModulePowerStrapper:
 		tech = reader.db.getTech()
 
 		self.layer = tech.findLayer('met5')
-		self.via   = tech.findVia('M3M4_PR')
 
 	def _find_via(self, inst, port_name):
 		# Helper to check if point is within a bounding box
@@ -907,9 +906,6 @@ class RingPowerStrapper:
 	def strap_draw(self, sw, sxl, sxr, rxl, rxr, yb, yt):
 		# Stripe
 		odb.createSBoxes(sw, self.layer, [odb.Rect(sxl, yb, sxr, yt)], "STRIPE")
-
-		via = self.tech.findVia('M3M4_PR')
-
 
 		# Connecting via
 		via = self.get_via(rxr-rxl, yt-yb)
