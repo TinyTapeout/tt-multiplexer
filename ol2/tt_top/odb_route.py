@@ -686,6 +686,97 @@ class Router:
 
 
 
+class ViaGenerator:
+
+	def __init__(self, reader, via_rule_name):
+		# No known via
+		self.vias = {}
+
+		# Save interesting vars
+		self.reader = reader
+		self.tech = tech = reader.db.getTech()
+
+		# Find Via Rule
+		self.via_rule = tech.findViaGenerateRule(via_rule_name)
+
+		# Identify rules for top/cut/bot
+		met = []
+
+		for i in range(self.via_rule.getViaLayerRuleCount()):
+			ly_rule = self.via_rule.getViaLayerRule(i)
+			ly = ly_rule.getLayer()
+
+			# Is it the cut ?
+			if ly.getType() == 'CUT':
+				self.cut_ly  = ly
+				self.cut_sz  = [ ly_rule.getRect().dx(), ly_rule.getRect().dy() ]
+				self.cut_spc = ly_rule.getSpacing()
+
+				# The cut spacing in the rule is center to center
+				# but when creating the via we need it border to border ?!?!
+				self.cut_spc[0] -= self.cut_sz[0]
+				self.cut_spc[1] -= self.cut_sz[1]
+
+			# Or Metal ?
+			elif ly.getType() == 'ROUTING':
+				enc = ly_rule.getEnclosure()
+				met.append( (ly.getName(), ly, enc) )
+
+			# WTF ?
+			else:
+				raise RuntimeError('Unknown via rule')
+
+		met = sorted(met)
+
+		self.bot_ly  = met[0][1]
+		self.bot_enc = met[0][2]
+
+		self.top_ly  = met[1][1]
+		self.top_enc = met[1][2]
+
+	def create(self, ncols, nrows, name=None):
+		# Create via
+		if name is None:
+			name = f'vg_{(hash(self) & 0xffffffff):08x}_{ncols:d}x{nrows:d}'
+
+		v = odb.dbVia.create(self.reader.block, name)
+		v.setViaGenerateRule(self.via_rule)
+
+		# Configure params
+		vp = v.getViaParams()
+
+		vp.setBottomLayer(self.bot_ly)
+		vp.setCutLayer(self.cut_ly)
+		vp.setTopLayer(self.top_ly)
+		vp.setNumCutCols(ncols)
+		vp.setNumCutRows(nrows)
+		vp.setXCutSize(self.cut_sz[0])
+		vp.setYCutSize(self.cut_sz[1])
+		vp.setXCutSpacing(self.cut_spc[0])
+		vp.setYCutSpacing(self.cut_spc[1])
+		vp.setXBottomEnclosure(self.bot_enc[0])
+		vp.setYBottomEnclosure(self.bot_enc[1])
+		vp.setXTopEnclosure(self.top_enc[0])
+		vp.setYTopEnclosure(self.top_enc[1])
+
+		v.setViaParams(vp)
+
+		# Done
+		return v
+
+	def get(self, ncols, nrows):
+		k = (ncols, nrows)
+		if k not in self.vias:
+			self.vias[k] = self.create(ncols, nrows)
+		return self.vias[k]
+
+	def get4sz(self, vw, vh):
+		# Compute row / columns
+		ncols = (vw // (self.cut_sz[0] + self.cut_spc[0])) - 1
+		nrows = (vh // (self.cut_sz[1] + self.cut_spc[1])) - 1
+		return self.get(ncols, nrows)
+
+
 class ModulePowerStrapper:
 
 	def __init__(self, reader, tti):
@@ -812,8 +903,7 @@ class RingPowerStrapper:
 		self.tech = tech = reader.db.getTech()
 
 		self.layer = tech.findLayer('met3')
-		self.via_rule = tech.findViaGenerateRule('M3M4_PR_C')
-		self.vias = {}
+		self.viagen = ViaGenerator(reader, 'M3M4_PR_C')
 
 	def find_ring_for_net(self, net):
 		# Find all the boxes on met4
@@ -853,69 +943,12 @@ class RingPowerStrapper:
 		for box in [ ring['b'], ring['t'] ]:
 			odb.createSBoxes(sw, self.tech.findLayer('met4'), [odb.Rect(box.xMin(), box.yMin(), box.xMax(), box.yMax())], "RING")
 
-	def gen_via(self, vw, vh):
-		# Find the rules for top/cut/bot
-		met = []
-
-		for i in range(self.via_rule.getViaLayerRuleCount()):
-			# Get rule and associated layer
-			r = self.via_rule.getViaLayerRule(i)
-			ln = r.getLayer().getName()
-
-			# Is it the cut ?
-			if 'via' in ln.lower():
-				cut_ln = ln
-				cut = [ r.getRect().dx(), r.getRect().dy() ]
-				spacing = r.getSpacing()
-
-			# Metal
-			elif 'met' in ln.lower():
-				met.append(ln)
-
-			# WTF ?
-			else:
-				raise RuntimeError('Unknown via rule')
-
-		met = sorted(met)
-
-		# Compute row / columns
-		ncols = (vw // (cut[0] + spacing[0])) - 1
-		nrows = (vh // (cut[1] + spacing[1])) - 1
-
-		# Create via
-		v = odb.dbVia.create(self.reader.block, f'prs_{vw:d}x{vh:d}')
-		v.setViaGenerateRule(self.via_rule)
-
-		# Configure params
-		vp = v.getViaParams()
-
-		vp.setBottomLayer(self.tech.findLayer(met[0]))
-		vp.setCutLayer(self.tech.findLayer(cut_ln))
-		vp.setTopLayer(self.tech.findLayer(met[1]))
-		vp.setNumCutCols(ncols)
-		vp.setNumCutRows(nrows)
-		vp.setXCutSize(cut[0])
-		vp.setYCutSize(cut[1])
-		vp.setXCutSpacing(spacing[0])
-		vp.setYCutSpacing(spacing[1])
-
-		v.setViaParams(vp)
-
-		# Done
-		return v
-
-	def get_via(self, vw, vh):
-		k = (vw, vh)
-		if k not in self.vias:
-			self.vias[k] = self.gen_via(vw, vh)
-		return self.vias[k]
-
 	def strap_draw_lr(self, sw, sxl, sxr, rxl, rxr, yb, yt):
 		# Stripe
 		odb.createSBoxes(sw, self.layer, [odb.Rect(sxl, yb, sxr, yt)], "STRIPE")
 
 		# Connecting via
-		via = self.get_via(rxr-rxl, yt-yb)
+		via = self.viagen.get4sz(rxr-rxl, yt-yb)
 
 		rxm = (rxl + rxr) // 2
 		ym  = ( yb +  yt) // 2
@@ -926,7 +959,7 @@ class RingPowerStrapper:
 		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, syb, xr, syt)], "STRIPE")
 
 		# Connecting via
-		via = self.get_via(xr-xl, ryt-ryb)
+		via = self.viagen.get4sz(xr-xl, ryt-ryb)
 
 		xm  = ( xl +  xr) // 2
 		rym = (ryb + ryt) // 2
@@ -1033,32 +1066,8 @@ class AnalogRouter:
 		self.via_sig   = tech.findVia('M3M4_PR')
 
 		# Create via
-		via_rule  = tech.findViaGenerateRule('M3M4_PR')
-
-		v = odb.dbVia.create(self.reader.block, f'analog_via')
-		v.setViaGenerateRule(via_rule)
-
-		# Configure via params
-		vp = v.getViaParams()
-
-		vp.setBottomLayer(self.layer_bot)
-		vp.setCutLayer(self.layer_cut)
-		vp.setTopLayer(self.layer_top)
-
-		vp.setNumCutCols(3)
-		vp.setNumCutRows(3)
-		vp.setXCutSize(200)
-		vp.setYCutSize(200)
-		vp.setXCutSpacing(200)
-		vp.setYCutSpacing(200)
-		vp.setXBottomEnclosure(90)
-		vp.setYBottomEnclosure(60)
-		vp.setXTopEnclosure(65)
-		vp.setYTopEnclosure(65)
-
-		v.setViaParams(vp)
-
-		self.via = v
+		viagen = ViaGenerator(self.reader, 'M3M4_PR')
+		self.via = viagen.create(3, 3, 'analog_via')
 
 		# Create non-default rule
 		self.ndr = ndr = odb.dbTechNonDefaultRule_create(self.reader.block, 'analog_track')
