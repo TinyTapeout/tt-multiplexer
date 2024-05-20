@@ -6,6 +6,7 @@
 #
 
 import os
+import re
 import sys
 import yaml
 
@@ -26,48 +27,101 @@ def power(
 	reader,
 ):
 
+	# Config
+	PDN = {
+		'vgnd' : {
+			'type' :  'GROUND',
+			'pins' : [ 'VGND' ],
+		},
+		'vdpwr' : {
+			'type' : 'POWER',
+			'pins' : [ 'VPWR', 'VDPWR' ],
+			'pg' : ( 'tt_pg_vdd_I', 'VPWR', 'GPWR' ),
+		},
+		'vapwr' : {
+			'type' : 'POWER',
+			'pins' : [ 'VAPWR' ],
+			'pg' : ( 'tt_pg_vaa_I', 'VAPWR', 'GAPWR' ),
+		},
+	}
+
 	# Load TinyTapeout
 	tti = tt.TinyTapeout(modules=False)
 
 	# Create ground / power nets
-	net_gnd = reader.block.findNet('vgnd')
-	if net_gnd is None:
-		net_gnd = odb.dbNet.create(reader.block, 'vgnd')
-	net_gnd.setSpecial()
-	net_gnd.setSigType('GROUND')
+	pin2net = {}
+	pgs = {}
 
-	net_pwr = reader.block.findNet('vdpwr')
-	if net_pwr is None:
-		net_pwr = odb.dbNet.create(reader.block, 'vdpwr')
-	net_pwr.setSpecial()
-	net_pwr.setSigType('POWER')
+	for net_name, net_desc in PDN.items():
+		net = reader.block.findNet(net_name)
+		if net is None:
+			# Create net
+			net = odb.dbNet.create(reader.block, net_name)
+			net.setSpecial()
+			net.setSigType(net_desc['type'])
+
+		# Record data
+		for pin_name in net_desc['pins']:
+			pin2net[pin_name] = (net, net_desc)
+
+		if 'pg' in net_desc:
+			pgs[net_desc['pg'][0]] = net_desc['pg'][1:]
 
 	# Scan all blocks
 	for blk_inst in reader.block.getInsts():
-		# Defaults
-		vgnd = net_gnd
-		vpwr = net_pwr
+		# Check if it's a power gate ?
+		is_pg = re.match(r'.*\.tt_pg_[\w_]*_I$', blk_inst.getName()) is not None
 
-		# Is it a user block ?
-		if blk_inst.getName().endswith('tt_um_I'):
-			# Try to find a matching power switch
-			pg_name = '.'.join(blk_inst.getName().split('.')[:-1] + ['tt_pg_vdd_I'])
-			pg_inst = reader.block.findInst(pg_name)
+		# Check if it's a user block
+		is_um = blk_inst.getName().endswith('tt_um_I')
 
-			# If there is one, we have some wiring to do
-			if pg_inst is not None:
-				# Create switched power net
-				vpwr_name = '.'.join(blk_inst.getName().split('.')[:-1] + ['vpwr'])
-				vpwr = odb.dbNet.create(reader.block, vpwr_name)
-				vpwr.setSpecial()
-				vpwr.setSigType('POWER')
+		# Scan all ITerms
+		for iterm in blk_inst.getITerms():
+			# If it's not a known power one, skip
+			pin_name = iterm.getMTerm().getName()
+			if pin_name not in pin2net:
+				continue
 
-				# Connect it to the PG output
-				pg_inst.findITerm('GPWR').connect(vpwr)
+			# Get data
+			net, net_desc = pin2net[pin_name]
+			net_name = net.getName()
 
-		# Wire up power/ground to the selected nets
-		blk_inst.findITerm('VGND').connect(vgnd)
-		blk_inst.findITerm('VPWR').connect(vpwr)
+			# If we're a power gate and this is one of the switched net,
+			# skip it, those will be handled when wiring the corresponding block
+			if is_pg:
+				pg_name = blk_inst.getName().split('.')[-1]
+				pg_desc = pgs[pg_name]
+				if pin_name in pg_desc:
+					continue
+
+			# If we're user block, does net have a potential power gate ?
+			if is_um and ('pg' in net_desc):
+				# Get power gate description
+				pg_desc = net_desc['pg']
+
+				# Build full name and look for it
+				pg_name = '.'.join(blk_inst.getName().split('.')[:-1] + [pg_desc[0]])
+				pg_inst = reader.block.findInst(pg_name)
+
+				# If there is one, we have some wiring to do
+				if pg_inst is not None:
+					# Connect source power to PG input
+					pg_inst.findITerm(pg_desc[1]).connect(net)
+
+					# Create switched power net
+					vpwr_name = '.'.join(blk_inst.getName().split('.')[:-1] + [net_name])
+					vpwr = odb.dbNet.create(reader.block, vpwr_name)
+					vpwr.setSpecial()
+					vpwr.setSigType(net_desc['type'])
+
+					# Connect it to the PG output
+					pg_inst.findITerm(pg_desc[2]).connect(vpwr)
+
+					# And use that instead
+					net = vpwr
+
+			# Connect
+			iterm.connect(net)
 
 
 if __name__ == "__main__":
