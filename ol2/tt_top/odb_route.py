@@ -271,12 +271,6 @@ class Router:
 				else:
 					sy = track_align(inst_bbox.yMin())
 
-					# FIXME: Workaround OpenROAD#3753
-				if sy > inst_y_mid:
-					sy = inst_bbox.yMax() + track_cfg.width // 2
-				else:
-					sy = inst_bbox.yMin() - track_cfg.width // 2
-
 				# Start custom routing
 				wire = odb.dbWire.create(k0_net)
 
@@ -290,7 +284,6 @@ class Router:
 				encoder.newPath(layer, 'FIXED')
 
 				for n, (px, py) in enumerate(it_pos):
-					break	# FIXME: Workaround OpenROAD #3753
 					if n == 0:
 						encoder.addPoint(px, py)
 						encoder.addPoint(px, sy)
@@ -299,10 +292,6 @@ class Router:
 						encoder.newPath(j)
 					j = encoder.addPoint(px, sy)
 					encoder.addPoint(px, py)
-
-					# FIXME: Workaround OpenROAD #3753
-				encoder.addPoint(it_pos[ 0][0], sy)
-				encoder.addPoint(it_pos[-1][0], sy)
 
 				# End routing
 				encoder.end()

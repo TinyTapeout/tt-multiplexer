@@ -46,14 +46,5 @@ def io_place(
 	for pn, pp in tti.layout.ply_mux_port.items():
 		tt_odb.place_pin(die_area, layer_we, bterm_map.pop(pn), pp, 'E')
 
-	# Create exclusion zone in met4 within 0.3u from the top/bottom border
-	# ( This is to allow workaround OpenROAD#3753 in tt_top )
-	import odb
-
-	odb.dbObstruction_create(reader.block,
-		layer_ns, 0, 0, die_area.xMax(), 300)
-	odb.dbObstruction_create(reader.block,
-		layer_ns, 0, die_area.yMax()-300, die_area.xMax(), die_area.yMax())
-
 if __name__ == "__main__":
 	io_place()
