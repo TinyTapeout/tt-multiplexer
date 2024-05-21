@@ -1,0 +1,79 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_asw_3v3
+  CLASS BLOCK ;
+  FOREIGN tt_asw_3v3 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 18.400 BY 21.760 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 1.700 0.000 2.900 21.760 ;
+    END
+  END VGND
+  PIN VDPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 0.100 0.000 1.300 21.760 ;
+    END
+  END VDPWR
+  PIN VAPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 3.300 0.000 4.500 21.760 ;
+    END
+  END VAPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.423000 ;
+    PORT
+      LAYER met3 ;
+        RECT 4.450 20.860 4.750 21.760 ;
+    END
+  END ctrl
+  PIN mod
+    DIRECTION INOUT ;
+    USE ANALOG ;
+    ANTENNADIFFAREA 39.149998 ;
+    PORT
+      LAYER met4 ;
+        RECT 8.750 19.760 9.650 21.760 ;
+    END
+  END mod
+  PIN bus
+    DIRECTION INOUT ;
+    USE ANALOG ;
+    ANTENNADIFFAREA 34.799999 ;
+    PORT
+      LAYER met4 ;
+        RECT 8.750 11.760 9.650 13.760 ;
+    END
+  END bus
+  OBS
+      LAYER nwell ;
+        RECT 0.190 0.250 17.460 21.550 ;
+      LAYER li1 ;
+        RECT 0.410 0.640 17.220 21.310 ;
+      LAYER met1 ;
+        RECT 0.240 0.610 17.280 21.700 ;
+      LAYER met2 ;
+        RECT 0.000 1.730 18.060 21.710 ;
+      LAYER met3 ;
+        RECT 0.000 20.460 4.050 21.760 ;
+        RECT 5.150 20.460 18.060 21.760 ;
+        RECT 0.000 9.070 18.060 20.460 ;
+      LAYER met4 ;
+        RECT 8.750 18.260 9.650 19.360 ;
+  END
+END tt_asw_3v3
+END LIBRARY
+
