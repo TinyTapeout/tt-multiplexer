@@ -15,6 +15,7 @@ label VGND
 port make
 port class input
 port use ground
+port index 1
 
 box position 60 1176
 box height 1000
@@ -34,6 +35,7 @@ label VPWR
 port make
 port class input
 port use power
+port index 2
 
 box position 1660 1176
 box height 1000
@@ -53,6 +55,7 @@ label mod
 port make
 port class inout
 port use analog
+port index 4
 paint met3
 
 box height 194
@@ -69,6 +72,7 @@ label bus
 port make
 port class inout
 port use analog
+port index 5
 paint met3
 
 box height 194
@@ -85,6 +89,7 @@ label ctrl
 port make
 port class input
 port use signal
+port index 3
 
 # Write
 lef write tt_asw_1v8.lef -hide -pinonly

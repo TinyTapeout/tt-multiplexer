@@ -23,6 +23,15 @@ MACRO tt_asw_1v8
         RECT 16.600 0.000 17.800 21.760 ;
     END
   END VPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.675000 ;
+    PORT
+      LAYER met3 ;
+        RECT 4.450 20.860 4.750 21.760 ;
+    END
+  END ctrl
   PIN mod
     DIRECTION INOUT ;
     USE ANALOG ;
@@ -41,18 +50,9 @@ MACRO tt_asw_1v8
         RECT 8.750 11.760 9.650 13.760 ;
     END
   END bus
-  PIN ctrl
-    DIRECTION INPUT ;
-    USE SIGNAL ;
-    ANTENNAGATEAREA 0.675000 ;
-    PORT
-      LAYER met3 ;
-        RECT 4.450 20.860 4.750 21.760 ;
-    END
-  END ctrl
   OBS
       LAYER nwell ;
-        RECT 0.170 12.970 4.900 16.660 ;
+        RECT 0.170 5.000 16.220 20.460 ;
       LAYER li1 ;
         RECT 0.350 5.180 17.800 21.760 ;
       LAYER met1 ;
