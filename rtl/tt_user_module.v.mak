@@ -78,7 +78,7 @@ module tt_user_module #(
 			);
 %  if mod.analog:
 %   for (pin_int, pin_ext) in mod.analog.items():
-			tt_asw_1v8 tt_asw_${pin_int}_I (
+			tt_asw_3v3 tt_asw_${pin_int}_I (
 `ifdef USE_POWER_PINS
 				.VPWR    (VPWR),
 				.VGND    (VGND),

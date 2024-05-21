@@ -229,7 +229,7 @@ class AnalogSwitch(LayoutElement):
 		height = 21760
 
 		# Set mod_name
-		self.mod_name = f'tt_asw_1v8'
+		self.mod_name = f'tt_asw_3v3'
 
 		# Super
 		super().__init__(
