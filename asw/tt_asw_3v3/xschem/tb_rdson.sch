@@ -43,6 +43,28 @@ N 160 -280 320 -280 {
 lab=mod}
 N 320 -280 320 -240 {
 lab=mod}
+N 160 -10 230 -10 {
+lab=bus_pex}
+N 160 -50 170 -50 {
+lab=vdd}
+N -150 -70 -140 -70 {
+lab=ctrl}
+N 240 70 240 90 {
+lab=GND}
+N 160 -70 170 -70 {
+lab=vcc}
+N 160 10 180 10 {
+lab=GND}
+N 180 10 180 30 {
+lab=GND}
+N 180 30 180 90 {
+lab=GND}
+N 230 -10 240 -10 {
+lab=bus_pex}
+N 240 -10 240 10 {
+lab=bus_pex}
+N 160 -30 320 -30 {
+lab=mod}
 C {tt_asw_3v3.sym} 10 -280 0 0 {name=x1}
 C {devices/code.sym} 350 -560 0 0 {name=TT_MODELS
 only_toplevel=true
@@ -63,7 +85,7 @@ value="
 tran 10p 100n
 plot ctrl x1.tgon x1.tgon_n
 dc Vcm 0 3.3 0.01
-plot (v(mod) - v(bus)) / 100u
+plot ((v(mod) - v(bus)) / 100u) ((v(mod) - v(bus_pex)) / 100u)
 write tb_rdson.raw
 *quit 0
 .endc
@@ -94,3 +116,18 @@ C {devices/gnd.sym} -190 -480 0 0 {name=l5 lab=GND}
 C {devices/lab_pin.sym} -190 -560 2 1 {name=p8 sig_type=std_logic lab=vdd
 }
 C {devices/lab_wire.sym} 320 -280 0 1 {name=p1 sig_type=std_logic lab=mod}
+C {tt_asw_3v3.sym} 10 -30 0 0 {name=x2
+schematic=tt_asw_3v3_pex.sim
+spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_3v3.pex.spice])"
+tclcommand="textwindow [file normalize ../mag/tt_asw_3v3.pex.spice]"}
+C {devices/lab_pin.sym} 170 -50 2 0 {name=p9 sig_type=std_logic lab=vdd
+}
+C {devices/gnd.sym} 180 90 0 0 {name=l6 lab=GND}
+C {devices/isource.sym} 240 40 0 0 {name=I1 value=100u savecurrent=true}
+C {devices/gnd.sym} 240 90 0 0 {name=l8 lab=GND}
+C {devices/lab_pin.sym} -150 -70 2 1 {name=p10 sig_type=std_logic lab=ctrl
+}
+C {devices/lab_wire.sym} 240 -10 0 1 {name=p11 sig_type=std_logic lab=bus_pex}
+C {devices/lab_pin.sym} 170 -70 2 0 {name=p12 sig_type=std_logic lab=vcc
+}
+C {devices/lab_wire.sym} 320 -30 0 1 {name=p13 sig_type=std_logic lab=mod}
