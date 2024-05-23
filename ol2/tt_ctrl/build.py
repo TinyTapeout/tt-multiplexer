@@ -64,7 +64,7 @@ class CtrlFlow(SequentialFlow):
 		Checker.WireLength,
 		OpenROAD.FillInsertion,
 		OpenROAD.RCX,
-		OpenROAD.STAPostPNR,
+#		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
 		Magic.StreamOut,
 		Magic.WriteLEF,
