@@ -1,12 +1,12 @@
-cellname rename (UNNAMED) tt_pg_vdd_1
+cellname rename (UNNAMED) tt_pg_vdd_2
 
 box position 0 0
-box height 11152
+box height 22576
 box width 920
 property FIXED_BBOX [box values]
 
 box position 0 0
-box heigh 11000
+box heigh 22424
 box width 120
 paint met4
 label VGND
@@ -38,13 +38,13 @@ port use power
 
 box height 50
 box width 920
-box position 0 11102
+box position 0 22526
 paint met4
 label ctrl
 port make
 port class input
 port use signal
 
-lef write tt_pg_vdd_1.lef -hide -pinonly
-gds write tt_pg_vdd_1.gds
-save tt_pg_vdd_1.mag
+lef write ../lef/tt_pg_vdd_2.lef -hide -pinonly
+gds write ../gds/tt_pg_vdd_2.gds
+save tt_pg_vdd_2.mag
