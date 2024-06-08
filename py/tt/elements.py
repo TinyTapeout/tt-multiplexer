@@ -209,7 +209,7 @@ class PowerSwitch(LayoutElement):
 		)
 
 		# Set mod_name
-		self.mod_name = f'tt_pg_vdd_{mh:d}'
+		self.mod_name = f'tt_pg_1v8_{mh:d}'
 
 		# Super
 		super().__init__(

@@ -92,7 +92,7 @@ module tt_user_module #(
 %   endfor
 %  endif
 %  if mod.pg_vdd:
-			tt_pg_vdd_${mod.height} tt_pg_vdd_I (
+			tt_pg_1v8_${mod.height} tt_pg_vdd_I (
 `ifdef USE_POWER_PINS
 				.GPWR    (l_vdpwr),
 				.VPWR    (VDPWR),
