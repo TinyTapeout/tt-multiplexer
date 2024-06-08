@@ -49,12 +49,12 @@ class BlockTemplateFlow(SequentialFlow):
 	]
 
 
-def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, analog=False):
+def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=False):
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
 
 	# Create directory
-	design_dir = f"{h_mult:d}x{v_mult:d}{'_pg' if pg_vdd else ''}{'_ana' if analog else ''}"
+	design_dir = f"{h_mult:d}x{v_mult:d}{'_pgvdd' if pg_vdd else ''}{'_pgvaa' if pg_vaa else ''}{'_ana' if analog else ''}"
 	if not os.path.exists(design_dir):
 		os.mkdir(design_dir)
 
@@ -72,6 +72,9 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, analog=False):
 	# If we're power gated the block width is reduced
 	if pg_vdd:
 		block_width -= tti.layout.glb.pg_vdd.offset
+
+	if pg_vaa:
+		block_width -= tti.layout.glb.pg_vaa.offset
 
 	# Options
 	defines = []
@@ -124,11 +127,15 @@ if __name__ == '__main__':
 	if not os.path.exists("def"):
 		os.mkdir("def")
 
-	# Generate block templates for all supported sizes
-	for v_mult in [ 1, 2 ]:
-		for h_mult in [ 1, 2, 3, 4, 6, 8 ]:
-			for pg_vdd in [ False, True ]:
-				for analog in [ False, True ]:
-					if analog and (not pg_vdd or (v_mult != 2)):
-						continue
-					gen_block_template(tti, h_mult, v_mult, pg_vdd, analog)
+	# Generate block templates for all allowed combinations
+	GEN = [
+		# Width,                Height,    pg_vdd, pg_vaa, analog
+		( [ 1, 2, 3, 4, 6, 8 ], [ 1, 2 ],  True,   False,  False ),
+		( [ 1, 2, 3, 4, 6, 8 ], [    2 ],  True,   False,  True  ),
+		( [ 1, 2, 3, 4, 6, 8 ], [    2 ],  True,   True ,  True  ),
+	]
+
+	for h_list, v_list, pg_vdd, pg_vaa, analog in GEN:
+		for v_mult in v_list:
+			for h_mult in h_list:
+				gen_block_template(tti, h_mult, v_mult, pg_vdd, pg_vaa, analog)
