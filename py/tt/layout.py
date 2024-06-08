@@ -267,7 +267,7 @@ class Layout:
 
 		# Pin Layouts
 		block_ply = [
-			(None,      2),	# pg_vdd, k_zero not mapped
+			(None,      2),	# pg_ena, k_zero not mapped
 			('uio_oe',  self.cfg.tt.uio.io),
 			('uio_out', self.cfg.tt.uio.io),
 			('uo_out',  self.cfg.tt.uio.o),
@@ -279,7 +279,7 @@ class Layout:
 		]
 
 		mux_ply = lambda n: [
-			('um_pg_vdd', (n, 1)),
+			('um_pg_ena', (n, 1)),
 			('um_k_zero', (n, 1)),
 			('um_ow',     (n * self.user.ow, self.user.ow)),
 			('um_iw',     (n * self.user.iw, self.user.iw)),

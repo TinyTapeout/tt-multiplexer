@@ -37,7 +37,7 @@ module tt_user_module #(
 	input  wire  [N_IW-1:0] iw,
 	input  wire             ena,
 	input  wire             k_zero,
-	input  wire             pg_vdd
+	input  wire             pg_ena
 );
 
 	wire [N_AU-1:0] ua;
@@ -96,7 +96,7 @@ module tt_user_module #(
 				.VPWR    (VPWR),
 				.VGND    (VGND),
 `endif
-				.ctrl    (pg_vdd)
+				.ctrl    (pg_ena)
 			);
 %  else:
 `ifdef USE_POWER_PINS

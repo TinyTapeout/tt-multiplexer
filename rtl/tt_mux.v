@@ -28,7 +28,7 @@ module tt_mux #(
 	output wire [(U_IW*N_UM)-1:0] um_iw,
 	output wire [      N_UM -1:0] um_ena,
 	output wire [      N_UM -1:0] um_k_zero,
-	output wire [      N_UM -1:0] um_pg_vdd,
+	output wire [      N_UM -1:0] um_pg_ena,
 
 	// Vertical spine connection
 	output wire [S_OW-1:0] spine_ow,
@@ -305,11 +305,11 @@ module tt_mux #(
 				.z  (um_ena[i])
 			);
 
-			tt_prim_inv #(
+			tt_prim_buf #(
 				.HIGH_DRIVE(1)
-			) zbuf_pg_vdd_I (
+			) zbuf_pg_ena_I (
 				.a  (l_ena),
-				.z  (um_pg_vdd[i])
+				.z  (um_pg_ena[i])
 			);
 
 			tt_prim_diode diode_I[U_OW-1:0] (

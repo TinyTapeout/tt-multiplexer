@@ -198,7 +198,7 @@ module tt_top #(
 			wire [(U_IW*G_X)-1:0] l_um_iw;
 			wire [      G_X -1:0] l_um_ena;
 			wire [      G_X -1:0] l_um_k_zero;
-			wire [      G_X -1:0] l_um_pg_vdd;
+			wire [      G_X -1:0] l_um_pg_ena;
 
 			wire [3:0] l_addr;
 			wire       l_k_one;
@@ -233,7 +233,7 @@ module tt_top #(
 				.um_iw     (l_um_iw),
 				.um_ena    (l_um_ena),
 				.um_k_zero (l_um_k_zero),
-				.um_pg_vdd (l_um_pg_vdd),
+				.um_pg_ena (l_um_pg_ena),
 				.spine_ow  (l_spine_ow),
 				.spine_iw  (l_spine_iw),
 				.addr      (l_addr),
@@ -269,7 +269,7 @@ module tt_top #(
 					.iw     (l_um_iw[j*U_IW+:U_IW]),
 					.ena    (l_um_ena[j]),
 					.k_zero (l_um_k_zero[j]),
-					.pg_vdd (l_um_pg_vdd[j])
+					.pg_ena (l_um_pg_ena[j])
 				);
 			end
 		end
