@@ -274,7 +274,7 @@ class Layout:
 
 		# Pin Layouts
 		block_ply = [
-			(None,      2),	# pg_ena, k_zero not mapped
+			(None,      3),	# pg_ena, pg_cscd, k_zero not mapped
 			('uio_oe',  self.cfg.tt.uio.io),
 			('uio_out', self.cfg.tt.uio.io),
 			('uo_out',  self.cfg.tt.uio.o),
@@ -287,6 +287,7 @@ class Layout:
 
 		mux_ply = lambda n: [
 			('um_pg_ena', (n, 1)),
+			(None,        1), # Future pg_cscd reserved
 			('um_k_zero', (n, 1)),
 			('um_ow',     (n * self.user.ow, self.user.ow)),
 			('um_iw',     (n * self.user.iw, self.user.iw)),
@@ -302,16 +303,16 @@ class Layout:
 
 		# Get tracks
 		tracks_pg = self._ply_distribute(
-			n_pins = 1,
-			start  = 0,
-			end    = self.glb.pg_vdd.width,
+			n_pins = 2,
+			start  = self.glb.margin.x,
+			end    = self.glb.pg_vdd.width - self.glb.margin.x,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
 			axis   = 'x',
 		)
 
 		tracks_um = self._ply_distribute(
-			n_pins = len(block_ply_e) - 1,
+			n_pins = len(block_ply_e) - 2,
 			start  = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset,
 			end    = self.glb.block.width,
 			step   = 0,
