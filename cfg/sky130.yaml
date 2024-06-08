@@ -13,6 +13,8 @@ pdk:
   pwrgate:
     vdd:
       width: 9200
+    vaa:
+      width: 13800
   tracks:
     li1:
       x:

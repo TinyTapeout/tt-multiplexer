@@ -73,6 +73,7 @@ class Layout:
 		glb.mux    = ConfigNode()
 		glb.ctrl   = ConfigNode()
 		glb.pg_vdd = ConfigNode()
+		glb.pg_vaa = ConfigNode()
 
 		# Size of the various busses
 		self.vspine = ConfigNode({
@@ -159,6 +160,9 @@ class Layout:
 		# Power gates
 		glb.pg_vdd.width  = self.cfg.pdk.pwrgate.vdd.width
 		glb.pg_vdd.offset = self._align_x(glb.pg_vdd.width, ceil=True) + glb.margin.x
+
+		glb.pg_vaa.width  = self.cfg.pdk.pwrgate.vaa.width
+		glb.pg_vaa.offset = self._align_x(glb.pg_vaa.width, ceil=True) + glb.margin.x
 
 	def _ply_len(self, ply):
 		return sum([x[1] or 1 for x in block_ply])
@@ -253,7 +257,7 @@ class Layout:
 		# Get tracks
 		tracks = self._ply_distribute(
 			n_pins = len(ply_e),
-			start  = self.glb.pg_vdd.offset + self.glb.margin.x,
+			start  = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset + self.glb.margin.x,
 			end    = self.glb.block.width   - self.glb.margin.x,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
@@ -305,7 +309,7 @@ class Layout:
 
 		tracks_um = self._ply_distribute(
 			n_pins = len(block_ply_e) - 1,
-			start  = self.glb.pg_vdd.offset,
+			start  = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset,
 			end    = self.glb.block.width,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,

@@ -199,23 +199,43 @@ class PowerSwitch(LayoutElement):
 
 	color = 'mediumvioletred'
 
-	def __init__(self, layout, mh):
-		# Width / Height
-		width = layout.glb.pg_vdd.width
-
+	def __init__(self, layout, mh, width, mod_name):
+		# Height
 		height = (
 			mh * layout.glb.block.height +
 			(mh - 1) * layout.glb.margin.y
 		)
 
 		# Set mod_name
-		self.mod_name = f'tt_pg_1v8_{mh:d}'
+		self.mod_name = mod_name
 
 		# Super
 		super().__init__(
 			layout,
 			width,
 			height,
+		)
+
+
+class VddPowerSwitch(PowerSwitch):
+
+	def __init__(self, layout, mh):
+		super().__init__(
+			layout,
+			mh,
+			layout.glb.pg_vdd.width,
+			f'tt_pg_1v8_{mh:d}'
+		)
+
+
+class VaaPowerSwitch(PowerSwitch):
+
+	def __init__(self, layout, mh):
+		super().__init__(
+			layout,
+			mh,
+			layout.glb.pg_vaa.width,
+			f'tt_pg_3v3_{mh:d}'
 		)
 
 
@@ -241,10 +261,11 @@ class AnalogSwitch(LayoutElement):
 
 class Block(LayoutElement):
 
-	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False, analog=False):
+	def __init__(self, layout, mod_name=None, mw=1, mh=1, pg_vdd=False, pg_vaa=False, analog=False):
 
 		# Save options
 		self.pg_vdd = pg_vdd
+		self.pg_vaa = pg_vaa
 		self.analog = analog
 
 		# Compute module actual width / height
@@ -262,6 +283,9 @@ class Block(LayoutElement):
 		if pg_vdd:
 			width -= layout.glb.pg_vdd.offset
 
+		if pg_vaa:
+			width -= layout.glb.pg_vaa.offset
+
 		# Set module name
 		self.mod_name = mod_name
 
@@ -277,7 +301,11 @@ class Block(LayoutElement):
 		super()._render(dwg)
 
 		# Power gating offset
-		pin_ofs = self.layout.glb.pg_vdd.offset if self.pg_vdd else 0
+		pin_ofs = 0
+		if self.pg_vdd:
+			pin_ofs += self.layout.glb.pg_vdd.offset
+		if self.pg_vaa:
+			pin_ofs += self.layout.glb.pg_vaa.offset
 
 		# Render pins
 		for pn, pp in self.layout.ply_block.items():
@@ -385,6 +413,7 @@ class Branch(LayoutElement):
 				mw = mp.width,
 				mh = mp.height,
 				pg_vdd = mp.pg_vdd,
+				pg_vaa = mp.pg_vaa,
 				analog = mp.analog,
 			)
 
@@ -421,13 +450,23 @@ class Branch(LayoutElement):
 			# Power gating
 			if mp.pg_vdd:
 				# Power Switch instance
-				vdd_sw = PowerSwitch(layout, mh=mp.height)
+				vdd_sw = VddPowerSwitch(layout, mh=mp.height)
 
 				# Add Power Switch as child
 				self.add_child(vdd_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vdd_I')
 
 				# Shift the block
 				blk_x += layout.glb.pg_vdd.offset
+
+			if mp.pg_vaa:
+				# Power Switch instance
+				vaa_sw = VaaPowerSwitch(layout, mh=mp.height)
+
+				# Add Power Switch as child
+				self.add_child(vaa_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vaa_I')
+
+				# Shift the block
+				blk_x += layout.glb.pg_vaa.offset
 
 			# Add Block as child
 			self.add_child(block, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_um_I')

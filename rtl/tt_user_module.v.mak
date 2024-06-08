@@ -59,10 +59,12 @@ module tt_user_module #(
 		begin : block_${mux_id}_${blk_id}
 `ifdef USE_POWER_PINS
 			wire l_vdpwr;
+			wire l_vapwr;
 `endif
 			tt_um_${mod.name} tt_um_I (
 `ifdef USE_POWER_PINS
 				.VDPWR   (l_vdpwr),
+				.VAPWR   (l_vapwr),
 				.VGND    (VGND),
 `endif
 %  if mod.analog:
@@ -103,6 +105,20 @@ module tt_user_module #(
 %  else:
 `ifdef USE_POWER_PINS
 			assign l_vdpwr = VDPWR;
+`endif
+%  endif
+%  if mod.pg_vaa:
+			tt_pg_3v3_${mod.height} tt_pg_vaa_I (
+`ifdef USE_POWER_PINS
+				.GPWR    (l_vapwr),
+				.VPWR    (VAPWR),
+				.VGND    (VGND),
+`endif
+				.ctrl    (pg_ena)
+			);
+%  else:
+`ifdef USE_POWER_PINS
+			assign l_vapwr = VAPWR;
 `endif
 %  endif
 		end
