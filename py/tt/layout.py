@@ -217,6 +217,9 @@ class Layout:
 
 		# Generate tracks in the interval
 		p = (((start - t_offset) // t_pitch) * t_pitch) + t_offset
+		if p < 0:
+			p = t_offset
+
 		tracks = []
 		while p < end:
 			tracks.append(p)
