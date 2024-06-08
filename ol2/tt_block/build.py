@@ -65,8 +65,9 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=F
 	)
 
 	block_height = (
-		 v_mult      * tti.layout.glb.block.height +
-		(v_mult - 1) * tti.layout.glb.margin.y
+		 v_mult       *  tti.layout.glb.block.height +
+		(v_mult // 4) * (tti.layout.glb.mux.height + tti.layout.glb.margin.y) +
+		(v_mult - 1)  *  tti.layout.glb.margin.y
 	)
 
 	# If we're power gated the block width is reduced
@@ -131,6 +132,7 @@ if __name__ == '__main__':
 	GEN = [
 		# Width,                Height,    pg_vdd, pg_vaa, analog
 		( [ 1, 2, 3, 4, 6, 8 ], [ 1, 2 ],  True,   False,  False ),
+		( [          4,    8 ], [    4 ],  True,   False,  False ),
 		( [ 1, 2, 3, 4, 6, 8 ], [    2 ],  True,   False,  True  ),
 		( [ 1, 2, 3, 4, 6, 8 ], [    2 ],  True,   True ,  True  ),
 	]
