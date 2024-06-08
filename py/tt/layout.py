@@ -258,10 +258,18 @@ class Layout:
 		ply_e = self._ply_expand(ply)
 
 		# Get tracks
+			# Available zone
+		h_start = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset + self.glb.margin.x
+		h_end   = self.glb.block.width + self.glb.margin.x
+
+			# Half-Step
+		h_hs = (h_end - h_start) // (2 * len(ply_e) - 1)
+
+			# Find aligned tracks
 		tracks = self._ply_distribute(
 			n_pins = len(ply_e),
-			start  = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset + self.glb.margin.x,
-			end    = self.glb.block.width   - self.glb.margin.x,
+			start  = h_start,
+			end    = h_end - h_hs,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
 			axis   = 'x',
