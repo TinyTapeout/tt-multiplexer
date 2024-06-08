@@ -23,7 +23,8 @@ module tt_top #(
 )(
 	// Power
 `ifdef USE_POWER_PINS
-	input wire VPWR,
+	input wire VDPWR,
+	input wire VAPWR,
 	input wire VGND,
 `endif
 
@@ -161,7 +162,7 @@ module tt_top #(
 `endif
 	ctrl_I (
 `ifdef USE_POWER_PINS
-		.VPWR           (VPWR),
+		.VPWR           (VDPWR),
 		.VGND           (VGND),
 `endif
 		.pad_uio_in     (pad_uio_in),
@@ -226,7 +227,7 @@ module tt_top #(
 `endif
 			mux_I (
 `ifdef USE_POWER_PINS
-				.VPWR      (VPWR),
+				.VPWR      (VDPWR),
 				.VGND      (VGND),
 `endif
 				.um_ow     (l_um_ow),
@@ -261,7 +262,8 @@ module tt_top #(
 					.N_IO  (N_IO)
 				) um_I (
 `ifdef USE_POWER_PINS
-					.VPWR   (VPWR),
+					.VDPWR  (VDPWR),
+					.VAPWR  (VAPWR),
 					.VGND   (VGND),
 `endif
 					.ana    (pad_ana_analog),

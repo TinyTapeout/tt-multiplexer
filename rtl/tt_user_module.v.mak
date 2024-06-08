@@ -29,7 +29,8 @@ module tt_user_module #(
 	parameter integer N_IW = N_I + N_IO
 )(
 `ifdef USE_POWER_PINS
-	input  wire VPWR,
+	input  wire VDPWR,
+	input  wire VAPWR,
 	input  wire VGND,
 `endif
 	inout  wire  [N_AE-1:0] ana,
@@ -57,11 +58,11 @@ module tt_user_module #(
 		if ((MUX_ID == ${mux_id}) && (BLK_ID == ${blk_id}))
 		begin : block_${mux_id}_${blk_id}
 `ifdef USE_POWER_PINS
-			wire l_vpwr;
+			wire l_vdpwr;
 `endif
 			tt_um_${mod.name} tt_um_I (
 `ifdef USE_POWER_PINS
-				.VPWR    (l_vpwr),
+				.VDPWR   (l_vdpwr),
 				.VGND    (VGND),
 `endif
 %  if mod.analog:
@@ -80,7 +81,8 @@ module tt_user_module #(
 %   for (pin_int, pin_ext) in mod.analog.items():
 			tt_asw_3v3 tt_asw_${pin_int}_I (
 `ifdef USE_POWER_PINS
-				.VPWR    (VPWR),
+				.VDPWR   (VDPWR),
+				.VAPWR   (VAPWR),
 				.VGND    (VGND),
 `endif
 				.mod     (ua[${pin_int}]),
@@ -92,15 +94,15 @@ module tt_user_module #(
 %  if mod.pg_vdd:
 			tt_pg_vdd_${mod.height} tt_pg_vdd_I (
 `ifdef USE_POWER_PINS
-				.GPWR    (l_vpwr),
-				.VPWR    (VPWR),
+				.GPWR    (l_vdpwr),
+				.VPWR    (VDPWR),
 				.VGND    (VGND),
 `endif
 				.ctrl    (pg_ena)
 			);
 %  else:
 `ifdef USE_POWER_PINS
-			assign l_vpwr = VPWR;
+			assign l_vdpwr = VDPWR;
 `endif
 %  endif
 		end

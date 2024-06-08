@@ -147,7 +147,8 @@ module openframe_project_wrapper (
 
 	tt_top top_I (
 `ifdef USE_POWER_PINS
-		.VPWR        (vdpwr),
+		.VDPWR       (vdpwr),
+		.VAPWR       (vapwr),
 		.VGND        (vgnd),
 `endif
 		.io_ana      (pad_ana),
