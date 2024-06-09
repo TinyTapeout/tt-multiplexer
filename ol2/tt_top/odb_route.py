@@ -20,6 +20,10 @@ import click
 from reader import click_odb
 
 
+def getOtherITermsOnNet(it):
+	return [x for x in it.getNet().getITerms() if x.this != it.this]
+
+
 class Router:
 
 	def __init__(self, reader, tti):
