@@ -11,7 +11,8 @@
 module tt_asw_3v3 (
 `ifdef USE_POWER_PINS
 	input  wire VGND,
-	input  wire VPWR,
+	input  wire VDPWR,
+	input  wire VAPWR,
 `endif
 	inout  wire mod,
 	inout  wire bus,
