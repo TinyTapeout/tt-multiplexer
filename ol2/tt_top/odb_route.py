@@ -804,27 +804,30 @@ class ModulePowerStrapper:
 		# Find useful data
 		tech = reader.db.getTech()
 
+		self.vg = ViaGenerator(self.reader, 'M4M5_PR')
 		self.layer = tech.findLayer('met5')
 
-	def _find_via(self, inst, port_name):
-		# Helper to check if point is within a bounding box
-		def in_bbox(bbox, pt):
-			return (
-				(bbox.xMin() <= pt[0] <= bbox.xMax()) and
-				(bbox.yMin() <= pt[1] <= bbox.yMax())
+		self.stripe_space, self.stripe_width = self._find_stripe_space_width()
+		self.space = 2250
+
+	def _find_stripe_space_width(self):
+		# Get all `met5` stripes for VGND
+		net = self.reader.block.findNet('vgnd')
+		sw = net.getSWires()[0]
+		stripes = [
+			w for w in sw.getWires() if (
+				not w.isVia() and
+				w.getTechLayer().getName() == 'met5' and
+				w.getWireShapeType() == 'STRIPE'
 			)
+		]
 
-		# Block bounding box
-		bbox = inst.getBBox()
+		# Get spacing and width
+		yl = sorted([x.yMin() for x in stripes])
 
-		# Scan all geometry from special VGND wire
-		for x in inst.findITerm(port_name).getNet().getSWires()[0].getWires():
-			if  x.isVia() and in_bbox(bbox, x.getViaXY()):
-				return x.getBlockVia()
+		return (yl[1] - yl[0]), stripes[0].getWidth()
 
-		return None
-
-	def _get_y_pos(self, pg_inst):
+	def _get_y_pos_width(self, pg_inst, pg_idx, pg_cnt):
 		# Is it single or double height ?
 		h = int(pg_inst.getMaster().getName()[-1])
 
@@ -833,81 +836,132 @@ class ModulePowerStrapper:
 
 		y_min = bbox.yMin()
 		y_max = bbox.yMax()
+		y_mid = (y_min + y_max) // 2
 
-		# Split depending if we want 1 or 3 straps
-		if h == 1:
-			return [ (y_min + y_max) // 2 ]
+		# If we only have one power strap, allocate all to it
+		if pg_cnt == 1:
+			# Wide strip
+			w = 2 * self.stripe_width + self.space
 
-		elif h == 2:
-			step = (y_max - y_min) // 4
-			return [
-				y_min + step,
-				(y_min + y_max) // 2,
-				y_max - step,
-			]
+			# Select depending on height
+			if h == 1:
+				return [ ( y_mid, w ) ]
 
+			elif h == 2:
+				return [
+					( y_mid + self.stripe_space, w ),
+					( y_mid,                     w ),
+					( y_mid - self.stripe_space, w ),
+				]
+
+			else:
+				raise RuntimeError('Unsupported heigh Power Gate')
+
+		# If we have two, then the center one is split
+		elif pg_cnt == 2:
+			# Wide and narrow stripes + offset
+			ww = 2 * self.stripe_width + self.space
+			wn = self.stripe_width
+
+			ofs1 = (1 - 2*pg_idx) * ((self.stripe_width + self.space) // 2)
+			ofs2 = (2*pg_idx - 1) * self.stripe_space
+
+			# Select depending on height
+			if h == 1:
+				return [ ( y_mid + ofs1, wn ) ]
+
+			elif h == 2:
+				return [
+					( y_mid + ofs1, wn ),
+					( y_mid + ofs2, ww ),
+				]
+
+			else:
+				raise RuntimeError('Unsupported heigh Power Gate')
+
+		# Huh ?
 		else:
-			raise RuntimeError('Unsupported heigh Power Switch')
+			raise RuntimeError('Unsupported number of Power Gates')
 
-	def _get_x_data(self, pg_inst, blk_inst):
-		# Get terminals
-		it_pg  = pg_inst.findITerm('GPWR')
-		it_blk = blk_inst.findITerm('VPWR')
 
-		# Find geometry for thos terminals
-		geom_pg  = it_pg.getGeometries()
-		geom_blk = it_blk.getGeometries()
-		geom = geom_pg + geom_blk
+	def _get_x_data(self, um_it, pg_it):
+		# Find geometry for those terminals
+		geom_um = pg_it.getGeometries()
+		geom_pg = um_it.getGeometries()
+		geom = geom_um + geom_pg
 
 		# Extent
 		xl = min([x.xMin() for x in geom])
 		xr = max([x.xMax() for x in geom])
 
-		# Center positions
+		# Center positions and width
 		xp = [(x.xMin() + x.xMax()) // 2 for x in geom]
-
-		# Via type index
-		xv = [ 0 ] * len(geom_pg) + [ 1 ] * len(geom_blk)
+		xw = [(x.xMax() - x.xMin())      for x in geom]
 
 		# Return result
-		return xl, xr, xp, xv
+		return xl, xr, xp, xw
 
-	def _draw_stripe(self, sw, vias, y, xl, xr, xp, xv):
+	def _draw_stripe(self, sw, yp, yw, xl, xr, xp, xw):
 		# Stripe
-		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, y-9000, xr, y+9000)], "STRIPE")
+		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, yp-yw//2, xr, yp+yw//2)], "STRIPE")
 
 		# Dual vias
-		for x, i in zip(xp, xv):
-			odb.createSBoxes(sw, vias[i], [odb.Point(x, y-4500), odb.Point(x, y+4500)], "STRIPE")
+		for x, w in zip(xp, xw):
+			# Area of via
+			vw = w
+			vh = yw
+
+			# Get matching via
+			via = self.vg.get4sz_ext(vw, vh, top_fit='y', bot_fit='x')
+
+			# Add it
+			odb.createSBoxes(sw, via, [odb.Point(x, yp)], "STRIPE")
 
 	def run(self):
-		# Find all power switch instances
-		for pg_inst in self.reader.block.getInsts():
-			# Is it a power switch ?
-			if not pg_inst.getName().endswith('tt_pg_vdd_I'):
+
+		# Find all user modules
+		for um_inst in self.reader.block.getInsts():
+			# Is it a user module ?
+			if not um_inst.getName().endswith('.tt_um_I'):
 				continue
 
-			# Get the matching block
-			blk_name = '.'.join(pg_inst.getName().split('.')[:-1] + ['tt_um_I'])
-			blk_inst = self.reader.block.findInst(blk_name)
+			# Find power ITerms with power gate
+			pg_list = []
 
-			# Find the vias types
-			via_pg  = self._find_via(pg_inst,  'VPWR')
-			via_blk = self._find_via(blk_inst, 'VGND')
+			for um_it in um_inst.getITerms():
+				# Power ?
+				if not um_it.getSigType() == 'POWER':
+					continue
 
-			# Select the y positions
-			yp = self._get_y_pos(pg_inst)
+				# Check if it's on a power gate
+				if um_it.getNet().getITermCount() != 2:
+					continue
 
-			# Get the X data (extent + via pos)
-			xl, xr, xp, xv = self._get_x_data(pg_inst, blk_inst)
+				pg_it = getOtherITermsOnNet(um_it)[0]
 
-			# Find net and create the matching special wire
-			net = blk_inst.findITerm('VPWR').getNet()
-			sw = odb.dbSWire.create(net, "ROUTED")
+				# Record
+				pg_list.append( (um_it, pg_it) )
 
-			# Draw for each y position
-			for y in yp:
-				self._draw_stripe(sw, [ via_pg, via_blk ], y, xl, xr, xp, xv)
+			# Connect each
+			pg_cnt = len(pg_list)
+
+			for pg_idx, (um_it, pg_it) in enumerate(pg_list):
+				# Power gate instance
+				pg_inst = pg_it.getInst()
+
+				# Pick appropriate Y positions for straps
+				ypw = self._get_y_pos_width(pg_inst, pg_idx, pg_cnt)
+
+				# Get the X data (extent + via pos)
+				xl, xr, xp, xw = self._get_x_data(um_it, pg_it)
+
+				# Find net and create the matching special wire
+				net = um_it.getNet()
+				sw = odb.dbSWire.create(net, "ROUTED")
+
+				# Draw for each y position
+				for yp, yw in ypw:
+					self._draw_stripe(sw, yp, yw, xl, xr, xp, xw)
 
 
 class RingPowerStrapper:
