@@ -1482,15 +1482,6 @@ class AnalogRouter:
 			if not um_inst.getName().endswith('.tt_um_I'):
 				continue
 
-			# Find matching power gate
-			it = um_inst.findITerm('VPWR')
-			for it in it.getNet().getITerms():
-				if it.getInst().getMaster().getName().startswith('tt_pg_'):
-					pg_inst = it.getInst()
-					break
-			else:
-				continue
-
 			# Find matching mux
 			ena_net = um_inst.findITerm('ena').getNet()
 
@@ -1516,7 +1507,7 @@ class AnalogRouter:
 			_, xp0, _ = mux_it.getAvgXY()
 
 			# X position on the side of module away from PG
-			if pg_inst.getBBox().xMin() > um_inst.getBBox().xMax():
+			if um_inst.getOrient() in ['R180', 'MY']:
 				xp1 = um_inst.getBBox().xMin() - self.tti.layout.glb.margin.x // 2
 			else:
 				xp1 = um_inst.getBBox().xMax() + self.tti.layout.glb.margin.x // 2
