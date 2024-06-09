@@ -11,7 +11,8 @@
 
 module {mod_name} (
 	input  wire VGND,
-    input  wire VPWR,
+	input  wire VDPWR,
+	input  wire VAPWR,
 	inout  wire [7:0] ua,
 	input  wire [7:0] ui_in,
 	output wire [7:0] uo_out,
@@ -26,8 +27,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_0 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[0]),
 		.X    ()
 	);
@@ -35,8 +36,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_1 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[1]),
 		.X    ()
 	);
@@ -44,8 +45,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_2 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[2]),
 		.X    ()
 	);
@@ -53,8 +54,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_3 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[3]),
 		.X    ()
 	);
@@ -62,8 +63,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_4 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[4]),
 		.X    ()
 	);
@@ -71,8 +72,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_5 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[5]),
 		.X    ()
 	);
@@ -80,8 +81,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_6 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[6]),
 		.X    ()
 	);
@@ -89,8 +90,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_7 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ui_in[7]),
 		.X    ()
 	);
@@ -98,8 +99,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_0 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[0]),
 		.X    ()
 	);
@@ -107,8 +108,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_1 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[1]),
 		.X    ()
 	);
@@ -116,8 +117,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_2 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[2]),
 		.X    ()
 	);
@@ -125,8 +126,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_3 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[3]),
 		.X    ()
 	);
@@ -134,8 +135,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_4 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[4]),
 		.X    ()
 	);
@@ -143,8 +144,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_5 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[5]),
 		.X    ()
 	);
@@ -152,8 +153,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_6 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[6]),
 		.X    ()
 	);
@@ -161,8 +162,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_7 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (uio_in[7]),
 		.X    ()
 	);
@@ -170,8 +171,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_ctl_ena (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (ena),
 		.X    ()
 	);
@@ -179,8 +180,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_clk (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (clk),
 		.X    ()
 	);
@@ -188,8 +189,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_in_rst_n (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (rst_n),
 		.X    ()
 	);
@@ -197,8 +198,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_0 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[0])
 	);
@@ -206,8 +207,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_1 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[1])
 	);
@@ -215,8 +216,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_2 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[2])
 	);
@@ -224,8 +225,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_3 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[3])
 	);
@@ -233,8 +234,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_4 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[4])
 	);
@@ -242,8 +243,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_5 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[5])
 	);
@@ -251,8 +252,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_6 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[6])
 	);
@@ -260,8 +261,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_7 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uo_out[7])
 	);
@@ -269,8 +270,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_0 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[0])
 	);
@@ -278,8 +279,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_1 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[1])
 	);
@@ -287,8 +288,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_2 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[2])
 	);
@@ -296,8 +297,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_3 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[3])
 	);
@@ -305,8 +306,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_4 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[4])
 	);
@@ -314,8 +315,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_5 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[5])
 	);
@@ -323,8 +324,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_6 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[6])
 	);
@@ -332,8 +333,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_7 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_out[7])
 	);
@@ -341,8 +342,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_0 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[0])
 	);
@@ -350,8 +351,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_1 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[1])
 	);
@@ -359,8 +360,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_2 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[2])
 	);
@@ -368,8 +369,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_3 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[3])
 	);
@@ -377,8 +378,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_4 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[4])
 	);
@@ -386,8 +387,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_5 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[5])
 	);
@@ -395,8 +396,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_6 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[6])
 	);
@@ -404,8 +405,8 @@ module {mod_name} (
 	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_7 (
 		.VGND (VGND),
 		.VNB  (VGND),
-		.VPB  (VPWR),
-		.VPWR (VPWR),
+		.VPB  (VDPWR),
+		.VPWR (VDPWR),
 		.A    (),
 		.X    (uio_oe[7])
 	);
