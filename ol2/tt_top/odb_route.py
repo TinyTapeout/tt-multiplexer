@@ -769,6 +769,30 @@ class ViaGenerator:
 		nrows = (vh // (self.cut_sz[1] + self.cut_spc[1])) - 1
 		return self.get(ncols, nrows)
 
+	def get4sz_ext(self, vw, vh, bot_fit='xy', top_fit='xy'):
+		# Constraints
+		ncols = []
+		nrows = []
+
+		if 'x' in bot_fit:
+			ncols.append( (vw - 2 * self.bot_enc[0] + self.cut_spc[0]) // (self.cut_sz[0] + self.cut_spc[0]) )
+
+		if 'x' in top_fit:
+			ncols.append( (vw - 2 * self.top_enc[0] + self.cut_spc[0]) // (self.cut_sz[0] + self.cut_spc[0]) )
+
+		if 'y' in bot_fit:
+			nrows.append( (vh - 2 * self.bot_enc[1] + self.cut_spc[1]) // (self.cut_sz[1] + self.cut_spc[1]) )
+
+		if 'y' in top_fit:
+			nrows.append( (vh - 2 * self.top_enc[1] + self.cut_spc[1]) // (self.cut_sz[1] + self.cut_spc[1]) )
+
+		ncols = min(ncols)
+		nrows = min(nrows)
+
+		# Get final via
+		return self.get(ncols, nrows)
+
+
 
 class ModulePowerStrapper:
 
