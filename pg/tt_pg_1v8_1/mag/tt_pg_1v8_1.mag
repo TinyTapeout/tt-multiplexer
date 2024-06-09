@@ -1,0 +1,20 @@
+magic
+tech sky130A
+timestamp 1717968078
+<< metal4 >>
+rect 0 11102 920 11152
+rect 0 0 120 11000
+rect 170 0 520 11000
+rect 570 0 920 11000
+<< labels >>
+flabel metal4 s 0 0 120 11000 0 FreeSans 160 0 0 0 VGND
+port 1 nsew ground input
+flabel metal4 s 170 0 520 11000 0 FreeSans 160 0 0 0 VPWR
+port 2 nsew power input
+flabel metal4 s 570 0 920 11000 0 FreeSans 160 0 0 0 GPWR
+port 3 nsew power output
+flabel metal4 s 0 11102 920 11152 0 FreeSans 160 0 0 0 ctrl
+port 4 nsew signal input
+<< properties >>
+string FIXED_BBOX 0 0 920 11152
+<< end >>

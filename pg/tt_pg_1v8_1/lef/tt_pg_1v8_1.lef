@@ -1,0 +1,44 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_pg_1v8_1
+  CLASS BLOCK ;
+  FOREIGN tt_pg_1v8_1 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 9.200 BY 111.520 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 0.000 1.200 110.000 ;
+    END
+  END VGND
+  PIN VPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 1.700 0.000 5.200 110.000 ;
+    END
+  END VPWR
+  PIN GPWR
+    DIRECTION OUTPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 5.700 0.000 9.200 110.000 ;
+    END
+  END GPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 111.020 9.200 111.520 ;
+    END
+  END ctrl
+END tt_pg_1v8_1
+END LIBRARY
+

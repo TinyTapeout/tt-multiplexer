@@ -1,0 +1,52 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_pg_3v3_2
+  CLASS BLOCK ;
+  FOREIGN tt_pg_3v3_2 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 13.800 BY 225.760 ;
+  PIN VDPWR
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 0.000 1.200 224.240 ;
+    END
+  END VDPWR
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 1.700 0.000 2.900 224.240 ;
+    END
+  END VGND
+  PIN VAPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 3.400 0.000 8.350 224.240 ;
+    END
+  END VAPWR
+  PIN GAPWR
+    DIRECTION OUTPUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 8.850 0.000 13.800 224.240 ;
+    END
+  END GAPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 225.260 13.800 225.760 ;
+    END
+  END ctrl
+END tt_pg_3v3_2
+END LIBRARY
+
