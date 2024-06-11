@@ -27,7 +27,7 @@ logx=0
 logy=0
 color="6 10 6"
 node="bus_out
-bus_out_parax
+bus_out_pex
 ctrl"}
 B 2 570 130 1370 530 {flags=graph,unlocked
 y1=50
@@ -122,9 +122,9 @@ lab=mod}
 N -150 -310 -140 -310 {
 lab=ctrl}
 N 290 -100 310 -100 {
-lab=bus_out_parax}
+lab=bus_out_pex}
 N 310 -100 330 -100 {
-lab=bus_out_parax}
+lab=bus_out_pex}
 N 160 -100 230 -100 {
 lab=#net2}
 N 310 -40 310 -30 {
@@ -261,10 +261,10 @@ C {devices/lab_pin.sym} -150 -310 0 0 {name=p3 sig_type=std_logic lab=ctrl
 C {devices/lab_pin.sym} 310 -200 0 1 {name=p4 sig_type=std_logic lab=vss
 }
 C {tt_asw_1v8.sym} 10 -110 0 0 {name=x2
-schematic=tt_asw_1v8_parax.sim
-spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_1v8.sim.spice])"
-tclcommand="textwindow [file normalize ../mag/tt_asw_1v8.sim.spice]"}
-C {devices/lab_pin.sym} 330 -100 0 1 {name=p9 sig_type=std_logic lab=bus_out_parax
+schematic=tt_asw_1v8_pex.sim
+spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_1v8.pex.spice])"
+tclcommand="textwindow [file normalize ../mag/tt_asw_1v8.pex.spice]"}
+C {devices/lab_pin.sym} 330 -100 0 1 {name=p9 sig_type=std_logic lab=bus_out_pex
 }
 C {devices/res.sym} 260 -100 1 0 {name=R1
 value=500
@@ -290,9 +290,9 @@ C {devices/lab_pin.sym} -150 -140 0 0 {name=p13 sig_type=std_logic lab=ctrl
 C {devices/lab_pin.sym} 310 -30 0 1 {name=p14 sig_type=std_logic lab=vss
 }
 C {tt_asw_1v8.sym} -80 340 0 0 {name=x3
-schematic=tt_asw_1v8_parax.sim
-spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_1v8.sim.spice])"
-tclcommand="textwindow [file normalize ../mag/tt_asw_1v8.sim.spice]"}
+schematic=tt_asw_1v8_pex.sim
+spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_1v8.pex.spice])"
+tclcommand="textwindow [file normalize ../mag/tt_asw_1v8.pex.spice]"}
 C {devices/lab_pin.sym} 80 310 2 0 {name=p15 sig_type=std_logic lab=vdd
 }
 C {devices/gnd.sym} 90 390 0 0 {name=l1 lab=GND}
@@ -318,7 +318,7 @@ C {devices/lab_pin.sym} 170 580 0 0 {name=p27 sig_type=std_logic lab=mod_ac}
 C {devices/lab_pin.sym} -220 710 0 0 {name=p26 sig_type=std_logic lab=vdd
 }
 C {tt_asw_1v8.sym} -60 740 0 0 {name=x4
-schematic=tt_asw_1v8_parax.sim
-spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_1v8.sim.spice])"
-tclcommand="textwindow [file normalize ../mag/tt_asw_1v8.sim.spice]"}
+schematic=tt_asw_1v8_pex.sim
+spice_sym_def="tcleval(.include [file normalize ../mag/tt_asw_1v8.pex.spice])"
+tclcommand="textwindow [file normalize ../mag/tt_asw_1v8.pex.spice]"}
 C {devices/iopin.sym} 160 750 0 0 {name=p28 lab=out_ac}
