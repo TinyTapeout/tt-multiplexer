@@ -1,0 +1,73 @@
+** sch_path: /home/tnt/consult/tinytapeout/tt-multiplexer/pg/tt_pg_1v8_2/xschem/tb_rdson.sch
+**.subckt tb_rdson
+x1 GND vdd vdd vdd_dut tt_pg_1v8_2
+I0 vdd_dut GND 1m
+V1 vdd GND 1.8
+x2 GND vdd vdd_dut_pex vdd tt_pg_1v8_2_pex
+I1 vdd_dut_pex GND 1m
+**** begin user architecture code
+
+** opencircuitdesign pdks install
+.lib /home/tnt/projects/asic/pdk//sky130A/libs.tech/combined/sky130.lib.spice tt
+.include /home/tnt/projects/asic/pdk//sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice
+
+
+
+
+
+.param mc_mm_switch=0
+.control
+save all
+dc V1 1.6 2.0 0.01
+plot ((v(vdd) - v(vdd_dut)) / 1m) ((v(vdd) - v(vdd_dut_pex)) / 1m)
+write tb_rdson.raw
+*quit 0
+.endc
+.end
+
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  tt_pg_1v8_2.sym # of pins=4
+** sym_path: /home/tnt/consult/tinytapeout/tt-multiplexer/pg/tt_pg_1v8_2/xschem/tt_pg_1v8_2.sym
+** sch_path: /home/tnt/consult/tinytapeout/tt-multiplexer/pg/tt_pg_1v8_2/xschem/tt_pg_1v8_2.sch
+.subckt tt_pg_1v8_2 VGND VPWR ctrl GPWR
+*.ipin ctrl
+*.iopin VGND
+*.iopin VPWR
+*.iopin GPWR
+XM2 ctrl_n ctrl VGND VGND sky130_fd_pr__nfet_01v8 L=0.15 W=3.5 nf=2 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM1 ctrl_n ctrl VPWR VPWR sky130_fd_pr__pfet_01v8_hvt L=0.15 W=10.5 nf=2 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM3 GPWR ctrl_n VPWR VPWR sky130_fd_pr__pfet_01v8 L=0.15 W=3683 nf=508 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM4 net7 ctrl_n net1 VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+Vdischg GPWR net7 0
+.save i(vdischg)
+XM5 net1 ctrl_n net2 VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM6 net2 ctrl_n net3 VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM7 net3 ctrl_n VGND VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM8 net7 ctrl_n net4 VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM9 net4 ctrl_n net5 VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM10 net5 ctrl_n net6 VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XM11 net6 ctrl_n VGND VGND sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 ad='int((nf+1)/2) * W/nf * 0.29' as='int((nf+2)/2) * W/nf * 0.29'
++ pd='2*int((nf+1)/2) * (W/nf + 0.29)' ps='2*int((nf+2)/2) * (W/nf + 0.29)' nrd='0.29 / W' nrs='0.29 / W' sa=0 sb=0 sd=0 mult=1 m=1
+XC1 VPWR VGND sky130_fd_pr__cap_mim_m3_1 W=6.9 L=19.4 MF=2 m=2
+XC2 GPWR VGND sky130_fd_pr__cap_mim_m3_1 W=6.9 L=19.4 MF=4 m=4
+.ends
+
+
+* expanding   symbol:  tt_pg_1v8_2_pex.sym # of pins=4
+** sym_path: /home/tnt/consult/tinytapeout/tt-multiplexer/pg/tt_pg_1v8_2/xschem/tt_pg_1v8_2.sym
+.include /home/tnt/consult/tinytapeout/tt-multiplexer/pg/tt_pg_1v8_2/mag/tt_pg_1v8_2.pex.spice
+.GLOBAL GND
+.end
