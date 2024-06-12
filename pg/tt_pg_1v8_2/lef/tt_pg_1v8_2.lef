@@ -34,11 +34,26 @@ MACRO tt_pg_1v8_2
   PIN ctrl
     DIRECTION INPUT ;
     USE SIGNAL ;
+    ANTENNAGATEAREA 2.100000 ;
     PORT
       LAYER met4 ;
         RECT 0.000 225.260 9.200 225.760 ;
     END
   END ctrl
+  OBS
+      LAYER nwell ;
+        RECT 0.060 0.340 9.140 225.640 ;
+      LAYER li1 ;
+        RECT 0.190 0.520 9.010 225.460 ;
+      LAYER met1 ;
+        RECT 0.160 0.490 9.040 225.490 ;
+      LAYER met2 ;
+        RECT 0.160 0.490 9.040 225.640 ;
+      LAYER met3 ;
+        RECT 0.500 3.040 9.200 225.760 ;
+      LAYER met4 ;
+        RECT 2.675 224.740 3.025 224.860 ;
+  END
 END tt_pg_1v8_2
 END LIBRARY
 
