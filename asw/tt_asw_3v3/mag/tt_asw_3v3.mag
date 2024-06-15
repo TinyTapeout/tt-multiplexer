@@ -1,7 +1,7 @@
 magic
 tech sky130A
 magscale 1 2
-timestamp 1716279736
+timestamp 1718440162
 << viali >>
 rect 1246 4228 3444 4262
 rect 3410 2876 3444 4228
@@ -12,7 +12,11 @@ rect 268 128 3414 162
 << metal1 >>
 rect 888 4334 894 4340
 rect 322 4300 894 4334
-rect 322 4262 356 4300
+rect 82 4224 266 4230
+rect 322 4208 356 4300
+rect 402 4224 470 4230
+rect 82 4164 266 4170
+rect 402 4164 470 4170
 rect 48 2860 82 4090
 rect 520 3910 554 4300
 rect 888 4288 894 4300
@@ -476,9 +480,9 @@ timestamp 1716279736
 transform -1 0 880 0 -1 3322
 box -2 -532 804 532
 use tt_small_inv  tt_small_inv_0
-timestamp 1716288850
+timestamp 1718391895
 transform 0 1 -4806 -1 0 4940
-box 642 4844 940 5368
+box 668 4844 940 5328
 << labels >>
 rlabel metal4 20 0 260 4352 1 VDPWR
 port 2 n power input
