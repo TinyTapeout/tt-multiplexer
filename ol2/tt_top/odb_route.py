@@ -1619,8 +1619,8 @@ class AnalogRouter:
 				xl2.append(x)
 				yp2 = y
 
-			# Find which X position is "farthest" from xp0
-			if xp0 > max(xl2):
+			# Find which X position is "farthest" from xp1
+			if xp1 > max(xl2):
 				xp2 = min(xl2)
 			else:
 				xp2 = max(xl2)
