@@ -41,7 +41,7 @@ class TinyTapeout:
 
 	@classmethod
 	def get_config_file(kls, config=None):
-		return kls._get_data_file(config, 'TT_CONFIG', 'sky130.yaml')
+		return kls._get_data_file(config, 'TT_CONFIG', 'ihp-sg13g2.yaml')
 
 	@classmethod
 	def get_modules_file(kls, modules=None):
