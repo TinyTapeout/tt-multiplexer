@@ -422,24 +422,22 @@ class Layout:
 
 	def ctrl_layout(self):
 		# Config for up/down mapping of IO pads
-		# FIXME: Part of this should be from config and is sky130 specific
+		# FIXME: Part of this should be from config and hacked for iHP
 
 		# Classify and order them up / down
 		bot_pads  = [
-			( 'o', 7, None ),
+			( 'k_one',          None, None ),
+			( 'k_zero',         None, None ),
 			( 'ctrl_ena',       None, None ),
 			( 'ctrl_sel_inc',   None, None ),
 			( 'ctrl_sel_rst_n', None, None ),
-			( 'k_one',          None, None ),
-			( 'k_zero',         None, None ),
-			( 'i', 2, 8 ),
+			( 'o', 7, 0 ),
 		]
 
 		top_pads = [
-			(  'o', 6, 0 ),
-			( 'io', 7, 0 ),
-			(  'i', 1, 0 ),
-			(  'i', 9, None ),
+			( 'i',  0, 1 ),
+			( 'i',  9, 2 ),
+			( 'io', 7, 0 )
 		]
 
 		# Create expanded pins for each
@@ -465,8 +463,8 @@ class Layout:
 						rv.append(f'pad_uo_out[{ti:d}]')
 
 					elif t == 'io':
-						rv.append(f'pad_uio_oe_n[{ti:d}]')
 						rv.append(f'pad_uio_out[{ti:d}]')
+						rv.append(f'pad_uio_oex[{ti:d}]')
 						rv.append(f'pad_uio_in[{ti:d}]')
 			return rv
 
