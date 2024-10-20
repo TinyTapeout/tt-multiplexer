@@ -22,7 +22,7 @@ module tt_ctrl #(
 	// User pads connections
 	input  wire  [N_IO-1:0] pad_uio_in,
 	output wire  [N_IO-1:0] pad_uio_out,
-	output wire  [N_IO-1:0] pad_uio_oe_n,
+	output wire  [N_IO-1:0] pad_uio_oex,
 
 	output wire   [N_O-1:0] pad_uo_out,
 
@@ -81,11 +81,11 @@ module tt_ctrl #(
 	// ---------------
 
 	// Signals
-	wire  [N_IO-1:0] ibuf_uio_oe    [0:1];
+	wire  [N_IO-1:0] ibuf_uio_oex_n [0:1];
 	wire  [N_IO-1:0] ibuf_uio_out_n [0:1];
 	wire   [N_O-1:0] ibuf_uo_out_n  [0:1];
 
-	wire  [N_IO-1:0] mux_uio_oe;
+	wire  [N_IO-1:0] mux_uio_oex_n;
 	wire  [N_IO-1:0] mux_uio_out_n;
 	wire   [N_O-1:0] mux_uo_out_n;
 
@@ -99,12 +99,21 @@ module tt_ctrl #(
 	);
 
 	// Input buffers
+`ifdef TECH_SKY130
 	tt_prim_buf #(
 		.HIGH_DRIVE(0)
-	) uio_oe_ibuf_I[2*N_IO-1:0] (
-		.a ({   so_uio_oe[1],   so_uio_oe[0] }),
-		.z ({ ibuf_uio_oe[1], ibuf_uio_oe[0] })
+	) uio_oex_ibuf_I[2*N_IO-1:0] (
+		.a ({      so_uio_oe[1],      so_uio_oe[0] }),
+		.z ({ ibuf_uio_oex_n[1], ibuf_uio_oex_n[0] })
 	);
+`else
+	tt_prim_inv #(
+		.HIGH_DRIVE(0)
+	) uio_oex_ibuf_I[2*N_IO-1:0] (
+		.a ({      so_uio_oe[1],      so_uio_oe[0] }),
+		.z ({ ibuf_uio_oex_n[1], ibuf_uio_oex_n[0] })
+	);
+`endif
 
 	tt_prim_inv #(
 		.HIGH_DRIVE(0)
@@ -121,10 +130,10 @@ module tt_ctrl #(
 	);
 
 	// Muxing
-	tt_prim_mux2 uio_oe_mux_I[N_IO-1:0](
-		.a (ibuf_uio_oe[0]),
-		.b (ibuf_uio_oe[1]),
-		.x (mux_uio_oe),
+	tt_prim_mux2 uio_oex_mux_I[N_IO-1:0](
+		.a (ibuf_uio_oex_n[0]),
+		.b (ibuf_uio_oex_n[1]),
+		.x (mux_uio_oex_n),
 		.s (side_sel)
 	);
 
@@ -146,8 +155,8 @@ module tt_ctrl #(
 	tt_prim_inv #(
 		.HIGH_DRIVE(1)
 	) uio_oe_obuf_I[N_IO-1:0] (
-		.a (mux_uio_oe),
-		.z (pad_uio_oe_n)
+		.a (mux_uio_oex_n),
+		.z (pad_uio_oex)
 	);
 
 	tt_prim_inv #(
