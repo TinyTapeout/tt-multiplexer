@@ -14,11 +14,16 @@ import math
 import os
 import sys
 
-from typing import List, Type
+from os.path import abspath
+from typing import List, Tuple, Type
 
+from openlane.common import Path
 from openlane.flows.misc import OpenInKLayout
 from openlane.flows.sequential import SequentialFlow
+from openlane.state import DesignFormat, State
 from openlane.steps.odb import OdbpyStep
+from openlane.steps.openroad import OpenROADStep
+from openlane.steps.step import ViewsUpdate, MetricsUpdate
 from openlane.steps import (
 	Step,
 	Yosys,
@@ -35,6 +40,7 @@ sys.path.append('../../py')
 import tt
 
 
+@Step.factory.register()
 class CustomPower(OdbpyStep):
 
 	id = "TT.Top.CustomPower"
@@ -47,6 +53,7 @@ class CustomPower(OdbpyStep):
 		)
 
 
+@Step.factory.register()
 class CustomRoute(OdbpyStep):
 
 	id = "TT.Top.CustomRoute"
@@ -59,6 +66,55 @@ class CustomRoute(OdbpyStep):
 		)
 
 
+@Step.factory.register()
+class PadRing(OpenROADStep):
+
+	id = "TT.Top.PadRing"
+	name = "Creates Pad Ring"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"padring.tcl"
+		)
+
+
+@Step.factory.register()
+class IHPExtractSpice(Step):
+
+	id = "TT.IHP.ExtractSpice"
+	name = "Extracts SPICE netlist from GDS using metal only"
+
+	inputs = [DesignFormat.GDS]
+	outputs = [DesignFormat.SPICE]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_gds = state_in[DesignFormat.GDS]
+		output_spice = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.SPICE.value.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/ihp_extract_spice.py"
+		)
+
+		self.run_subprocess(
+			[
+				script,
+				abspath(input_gds),
+				abspath(output_spice),
+			],
+		)
+
+		views_updates[DesignFormat.SPICE] = Path(output_spice)
+
+		return views_updates, {}
+
+
 class TopFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -67,9 +123,9 @@ class TopFlow(SequentialFlow):
 		Checker.YosysUnmappedCells,
 		Checker.YosysSynthChecks,
 		OpenROAD.Floorplan,
-		Odb.ApplyDEFTemplate,
-		Odb.ManualMacroPlacement,
 		CustomPower,
+		PadRing,
+		Odb.ManualMacroPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
 		OpenROAD.DetailedPlacement,
@@ -84,14 +140,10 @@ class TopFlow(SequentialFlow):
 		OpenROAD.RCX,
 		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
-		Magic.StreamOut,
 		KLayout.StreamOut,
-		KLayout.XOR,
-		Checker.XOR,
-		Magic.DRC,
-		Checker.MagicDRC,
-		Magic.SpiceExtraction,
-		Checker.IllegalOverlap,
+#		KLayout.DRC,
+#		Checker.KLayoutDRC,
+		IHPExtractSpice,
 		Netgen.LVS,
 		Checker.LVS,
 	]
@@ -101,17 +153,13 @@ if __name__ == '__main__':
 	# Argument processing
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("--open-in-klayout", action="store_true", help="Open last run in KLayout")
-	parser.add_argument("--skip-xor-checks", action="store_true", help="Skips XOR checks")
 
 	args = parser.parse_args()
 	config = vars(args)
 
-	if config['skip_xor_checks']:
-		TopFlow.Steps.remove(KLayout.XOR)
-		TopFlow.Steps.remove(Checker.XOR)
-
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
+	PDK      = os.getenv('PDK')
 
 	# Load TinyTapeout
 	tti = tt.TinyTapeout()
@@ -137,9 +185,9 @@ if __name__ == '__main__':
 				macros[m.mod_name].update({
 					'nl':   f'dir::verilog/{m.mod_name:s}.v',
 					'spef': {
-						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
+#						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
 						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom.spef' ],
-						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
+#						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
 					},
 				})
 
@@ -158,14 +206,14 @@ if __name__ == '__main__':
 	# Custom config
 	flow_cfg = {
 		# Main design properties
-		"DESIGN_NAME"    : "openframe_project_wrapper",
+		"DESIGN_NAME"    : "tt_ihp_wrapper",
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES": [
-			"dir::openframe_project_wrapper.v",
+			"dir::tt_ihp_wrapper.v",
 			"dir::../../rtl/tt_top.v",
-			"dir::../../rtl/tt_gpio.v",
+			"dir::../../rtl/tt_ihp_gpio.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
 
@@ -175,6 +223,17 @@ if __name__ == '__main__':
 		"MACROS": macros,
 		"EXTRA_VERILOG_MODELS": [
 			"dir::verilog/tt_um_all.v",
+		],
+		"EXTRA_LIBS": [
+			"pdk_dir::libs.ref/sg13g2_io/lib/sg13g2_io_dummy.lib",
+		],
+		"EXTRA_LEFS": [
+			"pdk_dir::libs.ref/sg13g2_io/lef/sg13g2_io.lef",
+			"dir::lef/bondpad_70x70.lef",
+		],
+		"EXTRA_GDS_FILES": [
+			"pdk_dir::libs.ref/sg13g2_io/gds/sg13g2_io.gds",
+			"dir::gds/bondpad_70x70.gds",
 		],
 
 		# Constraints
@@ -191,11 +250,9 @@ if __name__ == '__main__':
 		"QUIT_ON_SYNTH_CHECKS"      : False,
 
 		# Floorplanning
-		"DIE_AREA"  : [  0.00,  0.00, 3166.63, 4766.63 ],
-		"CORE_AREA" : [ 85.00, 85.00, 3081.63, 4681.63 ],
+		"DIE_AREA"  : [   0.00,   0.00, 3600.00, 5000.00 ],
+		"CORE_AREA" : [ 425.00, 425.00, 3175.00, 4575.00 ],
 		"FP_SIZING" : "absolute",
-		"FP_DEF_TEMPLATE" : "dir::openframe_project_wrapper.def",
-		"FP_TEMPLATE_COPY_POWER_PINS" : True,
 
 		# PDN
 		"VDD_NETS": [ "vdpwr", "vapwr" ],
@@ -217,8 +274,7 @@ if __name__ == '__main__':
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
-		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
-		"RT_MAX_LAYER"          : "met4",
+		"RT_MAX_LAYER"          : "Metal5",
 
 		# Magic stream
 		"MAGIC_ZEROIZE_ORIGIN" : False,
@@ -233,8 +289,8 @@ if __name__ == '__main__':
 	}
 
 	# Update PDN config
-	pdn_width   =  8.75
-	pdn_spacing =  2.25
+	pdn_width   =  11.0
+	pdn_spacing =  3.0
 	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +
@@ -269,7 +325,7 @@ if __name__ == '__main__':
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = PDK,
 	)
 
 	flow.start(last_run = args.open_in_klayout)
