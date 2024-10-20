@@ -7,11 +7,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+import argparse
 import os
 import sys
 
+from os.path import abspath
+
 from typing import List, Type
 
+from openlane.flows.misc import OpenInKLayout
 from openlane.flows.sequential import SequentialFlow
 from openlane.steps.odb import OdbpyStep
 from openlane.steps import (
@@ -30,6 +34,7 @@ sys.path.append('../../py')
 import tt
 
 
+@Step.factory.register()
 class IOPlacement(OdbpyStep):
 
 	id = "TT.Ctrl.IOPlacement"
@@ -50,7 +55,6 @@ class CtrlFlow(SequentialFlow):
 #		Checker.YosysSynthChecks,	# FIXME: Doesn't support tristate
 		OpenROAD.CheckSDCFiles,
 		OpenROAD.Floorplan,
-		OpenROAD.TapEndcapInsertion,
 		IOPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
@@ -64,25 +68,28 @@ class CtrlFlow(SequentialFlow):
 		Checker.WireLength,
 		OpenROAD.FillInsertion,
 		OpenROAD.RCX,
-#		OpenROAD.STAPostPNR,
+		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
-		Magic.StreamOut,
-		Magic.WriteLEF,
+		OpenROAD.WriteAbstractLEF,
+		OpenROAD.WriteCDL,
 		KLayout.StreamOut,
-		KLayout.XOR,
-		Checker.XOR,
-		Magic.DRC,
-		Checker.MagicDRC,
-		Magic.SpiceExtraction,
-		Checker.IllegalOverlap,
-		Netgen.LVS,
+		KLayout.DRC,
+		Checker.KLayoutDRC,
+		KLayout.LVS,
 		Checker.LVS,
 	]
 
 
 if __name__ == '__main__':
+	# Argument processing
+	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument("--open-in-klayout", action="store_true", help="Open last run in KLayout")
+
+	args = parser.parse_args()
+
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
+	PDK      = os.getenv('PDK')
 
 	# Load TinyTapeout
 	tti = tt.TinyTapeout(modules=False)
@@ -107,16 +114,16 @@ if __name__ == '__main__':
 	# Create and run custom flow
 	verilog_files = [
 		"../../rtl/tt_ctrl.v",
-		"../../rtl/prim_sky130/tt_prim_buf.v",
-		"../../rtl/prim_sky130/tt_prim_dfrbp.v",
-		"../../rtl/prim_sky130/tt_prim_diode.v",
-		"../../rtl/prim_sky130/tt_prim_inv.v",
-		"../../rtl/prim_sky130/tt_prim_mux2.v",
-		"../../rtl/prim_sky130/tt_prim_mux4.v",
-		"../../rtl/prim_sky130/tt_prim_tbuf.v",
-		"../../rtl/prim_sky130/tt_prim_tie.v",
-		"../../rtl/prim_sky130/tt_prim_tbuf_pol.v",
-		"../../rtl/prim_sky130/tt_prim_zbuf.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_buf.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_dfrbp.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_diode.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_inv.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_mux2.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_mux4.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_tbuf.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_tie.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_tbuf_pol.v",
+		"../../rtl/prim_ihp-sg13g2/tt_prim_zbuf.v",
 	]
 
 	flow_cfg = {
@@ -152,25 +159,19 @@ if __name__ == '__main__':
 		"FP_PDN_VWIDTH"   : pdn_vwidth   / 1000,
 
 		# Placement
-		"PL_TARGET_DENSITY_PCT" : 40,
+		"PL_TARGET_DENSITY_PCT" : 50,
 
 		# Routing
 		"DIODE_PADDING" : 0,
-		"RT_MAX_LAYER"  : "met4",
-
-		# LEF generation option
-		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
-		"MAGIC_WRITE_LEF_PINONLY" : True,
-
-		# LVS
-		"MAGIC_DEF_LABELS": False,			# Avoid exporting useless internal labels
+		"RT_MAX_LAYER"  : "Metal5",
 	}
 
-	flow = CtrlFlow(
+	flow_kls = OpenInKLayout if args.open_in_klayout else CtrlFlow
+	flow = flow_kls(
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = PDK,
 	)
 
-	flow.start()
+	flow.start(last_run = args.open_in_klayout)
