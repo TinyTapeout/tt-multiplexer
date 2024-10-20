@@ -31,8 +31,8 @@ def io_place(
 
 	# Find die & layers
 	die_area = reader.block.getDieArea()
-	layer_ns = reader.tech.findLayer("met4")
-	layer_we = reader.tech.findLayer("met3")
+	layer_ns = reader.tech.findLayer("Metal5")
+	layer_we = reader.tech.findLayer("Metal4")
 
 	# User block bottom
 	for pn, pp in tti.layout.ply_mux_bot.items():
