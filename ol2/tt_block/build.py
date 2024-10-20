@@ -52,6 +52,7 @@ class BlockTemplateFlow(SequentialFlow):
 def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=False):
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
+	PDK      = os.getenv('PDK')
 
 	# Create directory
 	design_dir = f"{h_mult:d}x{v_mult:d}{'_pgvdd' if pg_vdd else ''}{'_pgvaa' if pg_vaa else ''}{'_ana' if analog else ''}"
@@ -109,7 +110,7 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=F
 		flow_cfg,
 		design_dir = design_dir,
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = PDK,
 	)
 
 	flow.start()
@@ -131,10 +132,7 @@ if __name__ == '__main__':
 	# Generate block templates for all allowed combinations
 	GEN = [
 		# Width,                Height,    pg_vdd, pg_vaa, analog
-		( [ 1, 2, 3, 4, 6, 8 ], [ 1, 2 ],  True,   False,  False ),
-		( [          4,    8 ], [    4 ],  True,   False,  False ),
-		( [ 1, 2, 3, 4, 6, 8 ], [    2 ],  True,   False,  True  ),
-		( [ 1, 2, 3, 4, 6, 8 ], [    2 ],  True,   True ,  True  ),
+		( [ 1, 2, 3, 4, 6    ], [ 1, 2 ],  False,  False,  False ),
 	]
 
 	for h_list, v_list, pg_vdd, pg_vaa, analog in GEN:
