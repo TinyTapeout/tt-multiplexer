@@ -18,7 +18,14 @@ import tt_odb
 
 import click
 
-from reader import click_odb
+try:
+	from reader import click_odb
+	interactive = False
+except:
+	sys.path.insert(0, os.path.join("/mnt/pdk/OL2/openlane2/openlane", "scripts", "odbpy"))
+	interactive = True
+	from reader import click_odb
+
 
 
 @click.command()
@@ -31,17 +38,25 @@ def power(
 	PDN = {
 		'vgnd' : {
 			'type' :  'GROUND',
-			'pins' : [ 'VGND' ],
+			'pins' : [ 'VGND', 'vss' ],
 		},
 		'vdpwr' : {
 			'type' : 'POWER',
-			'pins' : [ 'VPWR', 'VDPWR' ],
+			'pins' : [ 'VPWR', 'VDPWR', 'vdd' ],
 			'pg' : ( 'tt_pg_vdd_I', 'VPWR', 'GPWR' ),
 		},
 		'vapwr' : {
 			'type' : 'POWER',
 			'pins' : [ 'VAPWR' ],
 			'pg' : ( 'tt_pg_vaa_I', 'VAPWR', 'GAPWR' ),
+		},
+		'iovss' : {
+			'type' : 'GROUND',
+			'pins' : [ 'iovss' ],
+		},
+		'iovdd' : {
+			'type' : 'POWER',
+			'pins' : [ 'iovdd' ],
 		},
 	}
 
@@ -73,7 +88,7 @@ def power(
 		is_pg = re.match(r'.*\.tt_pg_[\w_]*_I$', blk_inst.getName()) is not None
 
 		# Check if it's a user block
-		is_um = blk_inst.getName().endswith('tt_um_I')
+		is_um = blk_inst.getName().endswith('.tt_um_I')
 
 		# Scan all ITerms
 		for iterm in blk_inst.getITerms():

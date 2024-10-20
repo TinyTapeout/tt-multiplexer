@@ -17,7 +17,13 @@ import tt_odb
 
 import click
 
-from reader import click_odb
+try:
+	from reader import click_odb
+	interactive = False
+except:
+	sys.path.insert(0, os.path.join("/mnt/pdk/OL2/openlane2.ihp/openlane", "scripts", "odbpy"))
+	interactive = True
+	from reader import click_odb
 
 
 def getOtherITermsOnNet(it):
@@ -34,9 +40,9 @@ class Router:
 		# Find useful data
 		tech = reader.db.getTech()
 
-		self.layer_h = tech.findLayer('met3')
-		self.layer_v = tech.findLayer('met4')
-		self.via     = tech.findVia('M3M4_PR')
+		self.layer_h = tech.findLayer('Metal4')
+		self.layer_v = tech.findLayer('Metal5')
+		self.via     = tech.findVia('Via4_YX_so')
 
 		self.x_spine = []
 		self.y_muxes = {}
@@ -237,8 +243,8 @@ class Router:
 
 	def route_um_tieoffs(self):
 		# Get track info
-		# We route horizontally on met4, non-preferred direction ...
-		track_cfg = self.tti.cfg.pdk.tracks.met4.y
+		# We route horizontally on Metal5, non-preferred direction ...
+		track_cfg = self.tti.cfg.pdk.tracks.Metal5.y
 
 		def track_align(v):
 			return track_cfg.offset + ((v - track_cfg.offset) // track_cfg.pitch) * track_cfg.pitch
@@ -1666,29 +1672,46 @@ def route(
 	# Load TinyTapeout
 	tti = tt.TinyTapeout(modules=False)
 
+	global interactive
+	if interactive:
+		import IPython
+		IPython.embed()
+
 	# Create router
 	r = Router(reader, tti)
 	r.route_vspine()
 	r.create_spine_obs()
 	r.create_macro_obs()
-	r.route_k01_global()
-	r.route_k01_gpio()
-	r.create_k01_obs()
-	r.route_pad()
+	#r.route_k01_global()
+	#r.route_k01_gpio()
+	#r.create_k01_obs()
+	#r.route_pad()
 	r.route_um_tieoffs()
 	r.route_um_signals()
 
-	# Create the module power straps
-	p = ModulePowerStrapper(reader, tti)
-	p.run()
+	## Create the module power straps
+	#p = ModulePowerStrapper(reader, tti)
+	#p.run()
 
-	# Create the ring power straps
-	p = RingPowerStrapper(reader)
-	p.run()
+	## Create the ring power straps
+	#p = RingPowerStrapper(reader)
+	#p.run()
 
-	# Analog router
-	a = AnalogRouter(reader, tti)
-	a.run()
+	## Analog router
+	#a = AnalogRouter(reader, tti)
+	#a.run()
+
+	# Remove all BTerms that have no connections
+	bt_to_del = []
+
+	for bt in reader.block.getBTerms():
+		n = bt.getNet()
+		if (n.getITermCount() == 0) and (n.getBTermCount() == 1):
+			bt_to_del.append(bt)
+
+	for bt in bt_to_del:
+		odb.dbBTerm.destroy(bt)
+
 
 if __name__ == "__main__":
 	route()
