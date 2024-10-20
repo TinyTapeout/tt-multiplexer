@@ -11,7 +11,7 @@
 `include "tt_defs.vh"
 
 module tt_top #(
-	parameter integer N_PADS = 44,
+	parameter integer N_PADS = 48,
 	parameter integer G_X  = `TT_G_X,
 	parameter integer G_Y  = `TT_G_Y,
 	parameter integer N_AE = `TT_N_AE,
@@ -32,7 +32,7 @@ module tt_top #(
 	inout  wire [N_PADS-1:0] io_ana,
 	input  wire [N_PADS-1:0] io_in,
 	output wire [N_PADS-1:0] io_out,
-	output wire [N_PADS-1:0] io_oeb,
+	output wire [N_PADS-1:0] io_oex,	/* Polarity is tech dependent */
 
 	// Convenient constants for top-level tie-offs
 	output wire k_zero,
@@ -52,23 +52,23 @@ module tt_top #(
 	// Pads
 	wire      [5:0] pad_ctl_in;
 	wire      [5:0] pad_ctl_out;
-	wire      [5:0] pad_ctl_oe_n;
+	wire      [5:0] pad_ctl_oex;
 
 	wire [N_IO-1:0] pad_uio_in;
 	wire [N_IO-1:0] pad_uio_out;
-	wire [N_IO-1:0] pad_uio_oe_n;
+	wire [N_IO-1:0] pad_uio_oex;
 
 	wire  [N_O-1:0] pad_uo_in;
 	wire  [N_O-1:0] pad_uo_out;
-	wire  [N_O-1:0] pad_uo_oe_n;
+	wire  [N_O-1:0] pad_uo_oex;
 
 	wire  [N_I-1:0] pad_ui_in;
 	wire  [N_I-1:0] pad_ui_out;
-	wire  [N_I-1:0] pad_ui_oe_n;
+	wire  [N_I-1:0] pad_ui_oex;
 
 	wire [N_AE-1:0] pad_ana_in;
 	wire [N_AE-1:0] pad_ana_out;
-	wire [N_AE-1:0] pad_ana_oe_n;
+	wire [N_AE-1:0] pad_ana_oex;
 	wire [N_AE-1:0] pad_ana_analog;
 
 	// Vertical spine
@@ -89,49 +89,34 @@ module tt_top #(
 
 	// Split in groups
 	assign {
-		pad_ctl_in,
-		pad_ana_in[11:6],
+		pad_ana_in,
 		pad_uo_in,
 		pad_uio_in,
-		pad_ui_in[1],	// u_rst
-		pad_ui_in[0],	// u_clk
-		pad_ui_in[9],
-		pad_ana_in[5:0],
-		pad_ui_in[8:2]
+		pad_ui_in,
+		pad_ctl_in
 	} = io_in;
 
 	assign io_out = {
-		pad_ctl_out,
-		pad_ana_out[11:6],
+		pad_ana_out,
 		pad_uo_out,
 		pad_uio_out,
-		pad_ui_out[1],	// u_rst
-		pad_ui_out[0],	// u_clk
-		pad_ui_out[9],
-		pad_ana_out[5:0],
-		pad_ui_out[8:2]
+		pad_ui_out,
+		pad_ctl_out
 	};
 
-	assign io_oeb = {
-		pad_ctl_oe_n,
-		pad_ana_oe_n[11:6],
-		pad_uo_oe_n,
-		pad_uio_oe_n,
-		pad_ui_oe_n[1],	// u_rst
-		pad_ui_oe_n[0],	// u_clk
-		pad_ui_oe_n[9],
-		pad_ana_oe_n[5:0],
-		pad_ui_oe_n[8:2]
+	assign io_oex = {
+		pad_ana_oex,
+		pad_uo_oex,
+		pad_uio_oex,
+		pad_ui_oex,
+		pad_ctl_oex
 	};
 
-	assign pad_ana_analog = {
-		io_ana[37:32],
-		io_ana[12:7]
-	};
+	assign pad_ana_analog = io_ana[N_PADS-1:N_PADS-N_AE];
 
 	// Tie-offs
 		// Control
-	assign pad_ctl_oe_n   = { 6{k_one} };
+	assign pad_ctl_oex    = { 6{k_one} };
 	assign pad_ctl_out    = { 6{k_one} };
 
 	assign ctrl_sel_rst_n = pad_ctl_in[2];
@@ -139,9 +124,15 @@ module tt_top #(
 	assign ctrl_ena       = pad_ctl_in[0];
 
 		// Output enables
-	assign pad_uo_oe_n  = { N_O{k_zero} };
-	assign pad_ui_oe_n  = { N_I{k_one} };
-	assign pad_ana_oe_n = { N_AE{k_one} };
+`ifdef TECH_SKY130
+	assign pad_uo_oex  = { N_O  {k_zero} };
+	assign pad_ui_oex  = { N_I  {k_one} };
+	assign pad_ana_oex = { N_AE {k_one} };
+`else
+	assign pad_uo_oex  = { N_O  {k_one} };
+	assign pad_ui_oex  = { N_I  {k_zero} };
+	assign pad_ana_oex = { N_AE {k_zero} };
+`endif
 
 		// Output signal
 	assign pad_ui_out  = { N_I{k_one} };
@@ -167,7 +158,7 @@ module tt_top #(
 `endif
 		.pad_uio_in     (pad_uio_in),
 		.pad_uio_out    (pad_uio_out),
-		.pad_uio_oe_n   (pad_uio_oe_n),
+		.pad_uio_oex    (pad_uio_oex),
 		.pad_uo_out     (pad_uo_out),
 		.pad_ui_in      (pad_ui_in),
 		.spine_top_ow   (spine_top_ow),
