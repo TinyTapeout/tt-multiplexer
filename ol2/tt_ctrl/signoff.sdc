@@ -57,9 +57,9 @@ set_load 0.75 $all_spine_inward
 # -----
 
 create_clock -name ctrl_inc -period 10 [ get_ports ctrl_sel_inc ]
-for {set i 0} {$i < 10} {incr i} {
-	create_generated_clock -source [ get_pins "sel_cnt_gen\[$i\].cnt_bit_I.cell0_I/CLK" ] -divide_by 2 [ get_pins "sel_cnt_gen\[$i\].cnt_bit_I.cell0_I/Q_N" ]
-}
+#for {set i 0} {$i < 10} {incr i} {
+#	create_generated_clock -source [ get_pins "sel_cnt_gen\[$i\].cnt_bit_I.cell0_I/CLK" ] -divide_by 2 [ get_pins "sel_cnt_gen\[$i\].cnt_bit_I.cell0_I/Q_N" ]
+#}
 
 
 # Max delays
