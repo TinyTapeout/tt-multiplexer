@@ -7,11 +7,13 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+import argparse
 import os
 import sys
 
 from typing import List, Type
 
+from openlane.flows.misc import OpenInKLayout
 from openlane.flows.sequential import SequentialFlow
 from openlane.steps.odb import OdbpyStep
 from openlane.steps import (
@@ -30,6 +32,7 @@ sys.path.append('../../py')
 import tt
 
 
+@Step.factory.register()
 class IOPlacement(OdbpyStep):
 
 	id = "TT.Mux.IOPlacement"
@@ -50,7 +53,6 @@ class MuxFlow(SequentialFlow):
 #		Checker.YosysSynthChecks,	# FIXME: Doesn't support tristate
 		OpenROAD.CheckSDCFiles,
 		OpenROAD.Floorplan,
-		OpenROAD.TapEndcapInsertion,
 		IOPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
@@ -66,23 +68,26 @@ class MuxFlow(SequentialFlow):
 		OpenROAD.RCX,
 		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
-		Magic.StreamOut,
-		Magic.WriteLEF,
+		OpenROAD.WriteAbstractLEF,
+		OpenROAD.WriteCDL,
 		KLayout.StreamOut,
-		KLayout.XOR,
-		Checker.XOR,
-		Magic.DRC,
-		Checker.MagicDRC,
-		Magic.SpiceExtraction,
-		Checker.IllegalOverlap,
-		Netgen.LVS,
+		KLayout.DRC,
+		Checker.KLayoutDRC,
+		KLayout.LVS,
 		Checker.LVS,
 	]
 
 
 if __name__ == '__main__':
+	# Argument processing
+	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument("--open-in-klayout", action="store_true", help="Open last run in KLayout")
+
+	args = parser.parse_args()
+
 	# Get PDK root out of environment
 	PDK_ROOT = os.getenv('PDK_ROOT')
+	PDK      = os.getenv('PDK')
 
 	# Load TinyTapeout
 	tti = tt.TinyTapeout(modules=False)
@@ -90,16 +95,16 @@ if __name__ == '__main__':
 	# Create and run custom flow
 	verilog_files = [
 		"dir::../../rtl/tt_mux.v",
-		"dir::../../rtl/prim_sky130/tt_prim_buf.v",
-		"dir::../../rtl/prim_sky130/tt_prim_dfrbp.v",
-		"dir::../../rtl/prim_sky130/tt_prim_diode.v",
-		"dir::../../rtl/prim_sky130/tt_prim_inv.v",
-		"dir::../../rtl/prim_sky130/tt_prim_mux2.v",
-		"dir::../../rtl/prim_sky130/tt_prim_mux4.v",
-		"dir::../../rtl/prim_sky130/tt_prim_tbuf.v",
-		"dir::../../rtl/prim_sky130/tt_prim_tie.v",
-		"dir::../../rtl/prim_sky130/tt_prim_tbuf_pol.v",
-		"dir::../../rtl/prim_sky130/tt_prim_zbuf.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_buf.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_dfrbp.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_diode.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_inv.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_mux2.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_mux4.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_tbuf.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_tie.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_tbuf_pol.v",
+		"dir::../../rtl/prim_ihp-sg13g2/tt_prim_zbuf.v",
 	]
 
 	flow_cfg = {
@@ -130,21 +135,15 @@ if __name__ == '__main__':
 		# Routing
 		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
-		"RT_MAX_LAYER"         : "met4",
-
-		# LEF generation option
-		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
-		"MAGIC_WRITE_LEF_PINONLY" : True,
-
-		# LVS
-		"MAGIC_DEF_LABELS": False,			# Avoid exporting useless internal labels
+		"RT_MAX_LAYER"         : "Metal5",
 	}
 
-	flow = MuxFlow(
+	flow_kls = OpenInKLayout if args.open_in_klayout else MuxFlow
+	flow = flow_kls(
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = PDK,
 	)
 
-	flow.start()
+	flow.start(last_run = args.open_in_klayout)
