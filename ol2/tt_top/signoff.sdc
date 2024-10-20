@@ -9,8 +9,8 @@
 # Port: Control inputs
 set all_ctl [list]
 for {set i 0} {$i < 6} {incr i} {
-	set j [expr $i+38]
-	lappend all_ctl [ get_ports "gpio_in[$j]" ]
+	set j [expr $i+0]
+	lappend all_ctl [ get_ports "pad_raw[$j]" ]
 }
 
 # Port: User IO
@@ -19,26 +19,21 @@ set all_pads_out [list]
 
 	# UIO
 for {set i 0} {$i < 8} {incr i} {
-	set j [expr $i+16]
-	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
-	lappend all_pads_out [ get_ports "gpio_out[$j]" ]
-	lappend all_pads_out [ get_ports "gpio_oeb[$j]" ]
+	set j [expr $i+32]
+	lappend all_pads_in  [ get_ports "pad_raw[$j]" ]
+	lappend all_pads_out [ get_ports "pad_raw[$j]" ]
 }
 
 	# UO
 for {set i 0} {$i < 8} {incr i} {
-	set j [expr $i+24]
-	lappend all_pads_out [ get_ports "gpio_out[$j]" ]
+	set j [expr $i+8]
+	lappend all_pads_out [ get_ports "pad_raw[$j]" ]
 }
 
 	# UI
-for {set i 0} {$i < 7} {incr i} {
-	set j [expr $i+0]
-	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
-}
-for {set i 0} {$i < 3} {incr i} {
-	set j [expr $i+13]
-	lappend all_pads_in  [ get_ports "gpio_in[$j]" ]
+for {set i 0} {$i < 10} {incr i} {
+	set j [expr $i+40]
+	lappend all_pads_in  [ get_ports "pad_raw[$j]" ]
 }
 
 # Pins: User modules
@@ -50,8 +45,8 @@ set all_pins_um_ow  [ get_pins "*.tt_um_I/buf_out*/X" ]
 # Inputs
 # ------
 
-# All `io_in` come from strong buffer in the gpio_control_block
-set_driving_cell -lib_cell sky130_fd_sc_hd__buf_16 -pin X [all_inputs]
+# xxx
+set_driving_cell -lib_cell sg13g2_buf_4 -pin X [all_inputs]
 
 
 # Loads
@@ -77,7 +72,7 @@ set_case_analysis one [get_pins *.ctrl_I/*tbuf_spine_ow_I*/TE_B]
 # Only clock is the ctrl_sel_inc
 # The internal sub-divided clocks are checked internally when
 # hardening tt_ctrl itself so don't bother here
-create_clock -name ctrl_inc -period 10 [ get_ports "gpio_in[39]" ]
+create_clock -name ctrl_inc -period 10 [ get_ports "pad_raw[1]" ]
 
 
 # Max delays

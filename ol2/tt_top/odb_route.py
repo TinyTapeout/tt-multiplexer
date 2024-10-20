@@ -17,7 +17,13 @@ import tt_odb
 
 import click
 
-from reader import click_odb
+try:
+	from reader import click_odb
+	interactive = False
+except:
+	sys.path.insert(0, os.path.join("/mnt/pdk/OL2/openlane2.ihp/openlane", "scripts", "odbpy"))
+	interactive = True
+	from reader import click_odb
 
 
 def getOtherITermsOnNet(it):
@@ -34,9 +40,9 @@ class Router:
 		# Find useful data
 		tech = reader.db.getTech()
 
-		self.layer_h = tech.findLayer('met3')
-		self.layer_v = tech.findLayer('met4')
-		self.via     = tech.findVia('M3M4_PR')
+		self.layer_h = tech.findLayer('Metal4')
+		self.layer_v = tech.findLayer('Metal5')
+		self.via     = tech.findVia('Via4_YX_so')
 
 		self.x_spine = []
 		self.y_muxes = {}
@@ -237,8 +243,8 @@ class Router:
 
 	def route_um_tieoffs(self):
 		# Get track info
-		# We route horizontally on met4, non-preferred direction ...
-		track_cfg = self.tti.cfg.pdk.tracks.met4.y
+		# We route horizontally on Metal5, non-preferred direction ...
+		track_cfg = self.tti.cfg.pdk.tracks.Metal5.y
 
 		def track_align(v):
 			return track_cfg.offset + ((v - track_cfg.offset) // track_cfg.pitch) * track_cfg.pitch
@@ -271,9 +277,9 @@ class Router:
 				sy = k0_it.getAvgXY()[2]
 
 				if sy > inst_y_mid:
-					sy = track_align(inst_bbox.yMax() + track_cfg.pitch - 1)
+					sy = track_align(inst_bbox.yMax() + track_cfg.width + track_cfg.pitch - 1)
 				else:
-					sy = track_align(inst_bbox.yMin())
+					sy = track_align(inst_bbox.yMin() - track_cfg.width)
 
 				# Start custom routing
 				wire = odb.dbWire.create(k0_net)
@@ -1657,6 +1663,153 @@ class AnalogRouter:
 		self.asw_ena()
 
 
+class PadRingPowerStrapper:
+
+	def __init__(self, reader):
+		# Save vars
+		self.reader = reader
+
+		# Find useful data
+		self.tech = tech = reader.db.getTech()
+
+		self.layer = tech.findLayer('TopMetal2')
+		self.viagen = ViaGenerator(reader, 'viagen67')
+
+
+	def find_padring_obstruction(self):
+		# sg13g2_IOPadVdd instances have TopMetal2 in the way, don't create
+		# straps if there is an instance there
+		blacklist = { 'sg13g2_IOPadVdd' }
+
+		bad_insts = [
+			inst for inst in self.reader.block.getInsts()
+				if (inst.getMaster().getName() in blacklist) and
+					(inst.getOrient() in {'R90', 'MXR90'})
+		]
+
+		self.obs_left  = []
+		self.obs_right = []
+
+		for inst in bad_insts:
+			bbox = inst.getBBox()
+			if inst.getOrient() == "R90":
+				self.obs_right.append( (bbox.yMin(), bbox.yMax()) )
+			else:
+				self.obs_left.append( (bbox.yMin(), bbox.yMax()) )
+
+
+	def find_padring_fill(self):
+		# Find a filler instance on right side and left side
+		self.fill_left  = None
+		self.fill_right = None
+
+		for inst in self.reader.block.getInsts():
+			if not inst.getMaster().getName().startswith('sg13g2_Filler'):
+				continue
+
+			if inst.getOrient() == "R90":
+				self.fill_right = inst
+			elif inst.getOrient() == "MXR90":
+				self.fill_left = inst
+
+			if (self.fill_right is not None) and (self.fill_left is not None):
+				break
+
+		else:
+			raise RuntimeError("Unable to find fillers on both sides of the padring")
+
+
+	def find_padring_rails(self, net):
+		# For each find the limits
+		rails = []
+
+		for inst in [self.fill_left, self.fill_right]:
+			# Find the matching ITerm on the net
+			for it in net.getITerms():
+				if it.getInst().this == inst.this:
+					break
+			else:
+				raise RuntimeError("Trying to connect net that's not on the pad ring")
+
+			# Find
+			rects = [ r for (l,r) in it.getGeometries() if l.getName() == "TopMetal1" ]
+			if len(rects) != 1:
+				raise RuntimeError("More than one rectangle found")
+
+			rails.append( ( rects[0].xMin(), rects[0].xMax() ) )
+
+		return rails
+
+
+	def connect_net(self, net):
+		# Get the rails
+		rail_left, rail_right = self.find_padring_rails(net)
+
+		# Create new SWire
+		sw_new = odb.dbSWire.create(net, "ROUTED")
+
+		# Scan all stripes
+		for sw in net.getSWires():
+			for w in sw.getWires():
+				# Only stripes
+				if w.isVia():
+					continue
+
+				if w.getWireShapeType() != 'STRIPE':
+					continue
+
+				# Process each rails
+				y = (w.yMin() + w.yMax()) // 2
+				h = w.getDY()
+
+				h_reduce = 1000		# Height reduction for DRC rule TM2.bR
+				h -= h_reduce * 2
+
+				w_left  = rail_left[1]  - rail_left[0]
+				w_right = rail_right[1] - rail_right[0]
+
+				data = [
+					( rail_left[0], rail_left[1], w.xMin(), w.xMin() + w_left, self.obs_left ),
+					( w.xMax() - w_right, w.xMax(), rail_right[0], rail_right[1], self.obs_right )
+				]
+
+				for x0, x1, x2, x3, obs in data:
+					# Check for obstructions
+					if any([ (obs_y1 >= w.yMin()) and (obs_y0 <= w.yMax()) for obs_y0, obs_y1 in obs]):
+						continue
+
+					# Add via
+					via = self.viagen.get4sz_ext(x1 - x0, h, bot_fit='xy', top_fit='y')
+					via_pos = [
+						odb.Point( (x0 + x1) // 2, y ),
+						odb.Point( (x2 + x3) // 2, y ),
+					]
+					odb.createSBoxes(sw_new, via, via_pos, "STRIPE")
+
+					# Add stripe
+					stripe_rect = odb.Rect(x0, w.yMin() + h_reduce, x3, w.yMax() - h_reduce)
+					odb.createSBoxes(sw_new, self.layer, [stripe_rect], "STRIPE")
+
+
+	def run(self):
+		# Find filler cells to use as reference for rail position
+		self.find_padring_fill()
+
+		# Find zones to avoid
+		self.find_padring_obstruction()
+
+		# Process power nets
+		pwr_nets = [
+			net for net in self.reader.block.getNets()
+				if net.getSigType() in ['POWER', 'GROUND']
+		]
+
+		for net in pwr_nets:
+			if net.getName() not in ['vgnd', 'vdpwr']:
+				continue
+			self.connect_net(net)
+
+
 @click.command()
 @click_odb
 def route(
@@ -1666,29 +1819,50 @@ def route(
 	# Load TinyTapeout
 	tti = tt.TinyTapeout(modules=False)
 
+	global interactive
+	if interactive:
+		import IPython
+		IPython.embed()
+
 	# Create router
 	r = Router(reader, tti)
 	r.route_vspine()
 	r.create_spine_obs()
 	r.create_macro_obs()
-	r.route_k01_global()
-	r.route_k01_gpio()
-	r.create_k01_obs()
-	r.route_pad()
+	#r.route_k01_global()
+	#r.route_k01_gpio()
+	#r.create_k01_obs()
+	#r.route_pad()
 	r.route_um_tieoffs()
 	r.route_um_signals()
 
-	# Create the module power straps
-	p = ModulePowerStrapper(reader, tti)
+	## Create the module power straps
+	#p = ModulePowerStrapper(reader, tti)
+	#p.run()
+
+	## Create the ring power straps
+	#p = RingPowerStrapper(reader)
+	#p.run()
+
+	# Create the padring power straps
+	p = PadRingPowerStrapper(reader)
 	p.run()
 
-	# Create the ring power straps
-	p = RingPowerStrapper(reader)
-	p.run()
+	## Analog router
+	#a = AnalogRouter(reader, tti)
+	#a.run()
 
-	# Analog router
-	a = AnalogRouter(reader, tti)
-	a.run()
+	# Remove all BTerms that have no connections
+	bt_to_del = []
+
+	for bt in reader.block.getBTerms():
+		n = bt.getNet()
+		if (n.getITermCount() == 0) and (n.getBTermCount() == 1):
+			bt_to_del.append(bt)
+
+	for bt in bt_to_del:
+		odb.dbBTerm.destroy(bt)
+
 
 if __name__ == "__main__":
 	route()
