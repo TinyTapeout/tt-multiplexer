@@ -3,7 +3,7 @@
 #
 
 # Configs
-TECH ?= generic
+TECH ?= ihp-sg13g2
 SIM_DEFS += -DSIM
 
 # Binaries
@@ -54,6 +54,12 @@ SIM_SRC += $(addprefix sim/sky130/, \
 	primitives.v \
 )
 SIM_DEFS += -DWITH_POWER=1 -DUSE_POWER_PINS=1 -DFUNCTIONAL=1 -DUNIT_DELAY=\#1
+endif
+
+ifeq ($(TECH),ihp-sg13g2)
+SIM_SRC += $(addprefix sim/ihp-sg13g2/, \
+	sg13g2_stdcell.v \
+)
 endif
 
 all: sim
