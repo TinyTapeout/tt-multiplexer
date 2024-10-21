@@ -118,7 +118,7 @@ def copy_macros(cfg):
 		(dst_base / dst_subdir).mkdir(exist_ok=True)
 
 	# Scan each type
-	for mtype in [ 'logo', 'pg', 'asw' ]:
+	for mtype in [ 'blocks', 'logo', 'pg', 'asw' ]:
 		# Build path
 		p = src_base / mtype / cfg.pdk.tech
 
