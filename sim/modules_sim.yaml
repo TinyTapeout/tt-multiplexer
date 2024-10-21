@@ -2,3 +2,4 @@ modules:
   - name: test
     x: 7
     y: 5
+    pg_vdd: false

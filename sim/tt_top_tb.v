@@ -22,7 +22,7 @@ module tt_top_tb;
 	// DUT signals
 	wire [43:0] io_in;
 	wire [43:0] io_out;
-	wire [43:0] io_oeb;
+	wire [43:0] io_oex;
 	wire        k_zero;
 	wire        k_one;
 
@@ -54,7 +54,7 @@ module tt_top_tb;
 	) dut_I (
 		.io_in       (io_in),
 		.io_out      (io_out),
-		.io_oeb      (io_oeb),
+		.io_oex      (io_oex),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
