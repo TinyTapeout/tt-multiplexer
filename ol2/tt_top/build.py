@@ -21,6 +21,7 @@ from openlane.common import Path
 from openlane.flows.misc import OpenInKLayout
 from openlane.flows.sequential import SequentialFlow
 from openlane.state import DesignFormat, State
+from openlane.steps.klayout import KLayoutStep
 from openlane.steps.odb import OdbpyStep
 from openlane.steps.openroad import OpenROADStep
 from openlane.steps.step import ViewsUpdate, MetricsUpdate
@@ -115,6 +116,48 @@ class IHPExtractSpice(Step):
 		return views_updates, {}
 
 
+@Step.factory.register()
+class IHPSealRing(KLayoutStep):
+
+	id = "TT.IHP.SealRing"
+	name = "Adds Seal Ring to the GDS"
+
+	inputs = [DesignFormat.GDS]
+	outputs = [DesignFormat.GDS]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_gds = state_in[DesignFormat.GDS]
+		output_gds = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.GDS.value.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/ihp_seal_ring.py"
+		)
+
+		self.run_pya_script(
+			[
+				script,
+				"--input-gds",
+				abspath(input_gds),
+				"--output-gds",
+				abspath(output_gds),
+				"--die-width",
+				f"{self.config['DIE_AREA'][2]:f}",
+				"--die-height",
+				f"{self.config['DIE_AREA'][3]:f}",
+			],
+		)
+
+		views_updates[DesignFormat.GDS] = Path(output_gds)
+
+		return views_updates, {}
+
+
 class TopFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -146,6 +189,7 @@ class TopFlow(SequentialFlow):
 		IHPExtractSpice,
 		Netgen.LVS,
 		Checker.LVS,
+		IHPSealRing,
 	]
 
 
