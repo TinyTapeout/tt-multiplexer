@@ -26,7 +26,7 @@ module tt_prim_tbuf #(
 				.Z    (z)
 			);
 		end else begin
-			sg13g2_ebufn_2 cell0_I (
+			sg13g2_ebufn_4 cell0_I (
 				.A    (a),
 				.TE_B (tx),
 				.Z    (z)
