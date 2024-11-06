@@ -138,6 +138,10 @@ if __name__ == '__main__':
 
 		# LVS
 		"MAGIC_DEF_LABELS": False,			# Avoid exporting useless internal labels
+
+		# Reduce poly usage to avoid poly density issues
+		"DECAP_CELL" : ["sky130_fd_sc_hd__decap_3"],
+		"FILL_CELL"  : ["sky130_fd_sc_hd__fill_2", "sky130_fd_sc_hd__fill_1"],
 	}
 
 	flow = MuxFlow(
