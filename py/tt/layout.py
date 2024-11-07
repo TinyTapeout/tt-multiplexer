@@ -431,7 +431,7 @@ class Layout:
 			( 'ctrl_ena',       None, None ),
 			( 'ctrl_sel_inc',   None, None ),
 			( 'ctrl_sel_rst_n', None, None ),
-			( 'o', 7, 0 ),
+			( 'o', 0, 7 ),
 		]
 
 		top_pads = [
