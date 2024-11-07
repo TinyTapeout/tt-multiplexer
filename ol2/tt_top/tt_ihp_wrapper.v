@@ -113,7 +113,7 @@ module tt_ihp_wrapper (
 		8'd25, TT_PAD_OUT,			// 10 - uo[1]
 		8'd24, TT_PAD_OUT,			// 9  - uo[0]
 		 8'd0, TT_PAD_NC,			// 8  - n/a
-		 8'd1, TT_PAD_NC,			// 7  - n/a			// FIXME 1 -> 0
+		 8'd0, TT_PAD_NC,			// 7  - n/a
 		 8'd5, TT_PAD_IN,			// 6  - ctl[5]
 		 8'd4, TT_PAD_IN,			// 5  - ctl[4]
 		 8'd3, TT_PAD_IN,			// 4  - ctl[3]
