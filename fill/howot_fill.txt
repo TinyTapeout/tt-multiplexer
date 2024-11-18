@@ -1,0 +1,36 @@
+* Generate GDS through OL2
+
+* Using ihp_fill_simplify.py, generate a new GDS where active/poly/meta1 layer are just
+  large squares for the sub macros.
+
+  Input:  'tt_ihp_wrapper_3f7e017c47c39938c18e7a5cdab3393b793a6699.gds'
+  Output: 'tt_ihp_wrapper_3f7e017c47c39938c18e7a5cdab3393b793a6699_simplified.gds'
+
+* For fill generation use tag tt-ihp-0p2 of our IHP PDK fork
+
+* Apply fill.diff to the sg13g2_filler_Metal.lym KLayout fill macro
+
+* Generate fills for Active/Poly and Metal 1
+
+  - Edit sg13g2_filler_Metal.lym temporarely and remove Metal2-5 fill
+  - klayout -n sg13g2 -zz -r filler.py \
+        -rd output_file=filled_simplified.gds \
+	-rd no_topmetal \
+        tt_ihp_wrapper_3f7e017c47c39938c18e7a5cdab3393b793a6699_simplified.gds
+
+* Generate fills for Metal2-5 / TopMetal1-2
+
+  - Edit sg13g2_filler_Metal.lym temporarely to only leave Metal2-5 fill
+  - klayout -n sg13g2 -zz -r filler.py \
+        -rd output_file=filled.gds \
+	-rd no_activ \
+        tt_ihp_wrapper_3f7e017c47c39938c18e7a5cdab3393b793a6699.gds
+
+* Using ihp_fill_combine.py combine the two fills
+
+  Input: 'filled.gds' and 'filled_simplified.gds'
+  Output: 'tt_ihp_wrapper_3f7e017c47c39938c18e7a5cdab3393b793a6699_filled.gds'
+
+* Run the klayout DRC deck to identify DRC errors
+
+* Using klayout in edit mode, go and fix all the errors in Filler by hand ...

@@ -1,0 +1,30 @@
+--- sg13g2_filler_Metal.lym	2024-11-12 12:34:34.246847421 +0000
++++ /home/tnt/sg13g2_filler_Metal_mo.lym	2024-11-12 12:33:34.641434732 +0000
+@@ -126,12 +126,12 @@
+ 	height_m2s = 1.05
+ 	distance_m2s = 0.45
+ 
+-	width_m3l = 3.5
+-	height_m3l = 3.5
+-	distance_m3l = 1.0
+-	width_m3s = 1.05
+-	height_m3s = 2.55
+-	distance_m3s = 0.45
++	width_m3l = 3.6
++	height_m3l = 3.6
++	distance_m3l = 0.9
++	width_m3s = 1.08
++	height_m3s = 2.58
++	distance_m3s = 0.42
+ 
+ 	width_m4l = 3.5
+ 	height_m4l = 3.5
+@@ -194,7 +194,7 @@
+ 	M3Fil_left = M3Fil.fill_with_left(pattern_m3l, hstep(width_m3l + distance_m3l), vstep(height_m3l + distance_m3l))
+ 
+ 	M3Fil_left.snap(0.005)
+-	M3Fil_left.fill(pattern_m3s, hstep(width_m3s + distance_m3s), vstep(height_m3s + distance_m3s))
++	M3Fil_left.fill(pattern_m3s, hstep(width_m3s + distance_m3s), vstep(height_m3s + distance_m3s), multi_origin)
+ 
+ 	# Metal 4
+ 	print("Metal 4\n")
