@@ -1,11 +1,13 @@
-Tiny Tapeout Power gates
-========================
+Tiny Tapeout Power Gates for SKY130
+===================================
 
-* `tt_pg_vdd_1`: Single height 1.8V switch
-* `tt_pg_vdd_2`: Dual height 1.8V switch
+* `tt_pg_1v8_1`: Single height 1.8V switch
+* `tt_pg_1v8_2`: Dual height 1.8V switch
+* `tt_pg_1v8_4`: Quad height 1.8V switch
+* `tt_pg_3v3_2`: Dual height 3.3V switch
 
-Layouts were done by Harald Pretl,
+Design and layouts were done by Sylvain Munaut.
+
+Based upon original design from Harald Pretl,
 Institute for Integrated Circuits, Johannes Kepler University.
-
-And the original/hierarchical files can be found on
-https://github.com/iic-jku/sky130_power_gate
+( https://github.com/iic-jku/sky130_power_gate )

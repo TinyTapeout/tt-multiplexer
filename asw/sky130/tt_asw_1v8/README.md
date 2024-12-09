@@ -2,7 +2,7 @@
 
 # Analog switch for TT06
 
-[schematic](https://xschem-viewer.com/?file=https://github.com/TinyTapeout/tt-multiplexer/blob/main/tt_asw_1v8/xschem/tt_asw_1v8.sch)
+[schematic](https://xschem-viewer.com/?file=https://github.com/TinyTapeout/tt-multiplexer/blob/main/asw/sky130/tt_asw_1v8/xschem/tt_asw_1v8.sch)
 
 # Layout
 
