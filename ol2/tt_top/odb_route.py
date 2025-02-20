@@ -271,9 +271,9 @@ class Router:
 				sy = k0_it.getAvgXY()[2]
 
 				if sy > inst_y_mid:
-					sy = track_align(inst_bbox.yMax() + track_cfg.pitch - 1)
+					sy = track_align(inst_bbox.yMax() + track_cfg.width + track_cfg.pitch - 1)
 				else:
-					sy = track_align(inst_bbox.yMin())
+					sy = track_align(inst_bbox.yMin() - track_cfg.width)
 
 				# Start custom routing
 				wire = odb.dbWire.create(k0_net)
