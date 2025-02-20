@@ -27,9 +27,9 @@ pdk:
         width:  170
     met1:
       x:
-        offset: 170
-        pitch:  340
-        width:  140
+        offset: 230
+        pitch:  460
+        width:  230
       y:
         offset: 170
         pitch:  340
@@ -40,13 +40,13 @@ pdk:
         pitch:  460
         width:  140
       y:
-        offset: 230
-        pitch:  460
-        width:  140
+        offset: 170
+        pitch:  340
+        width:  170
     met3:
       x:
-        offset: 340
-        pitch:  680
+        offset: 460
+        pitch:  920
         width:  300
       y:
         offset: 340
@@ -58,8 +58,8 @@ pdk:
         pitch:  920
         width:  300
       y:
-        offset: 460
-        pitch:  920
+        offset: 340
+        pitch:  680
         width:  300
     met5:
       x:
