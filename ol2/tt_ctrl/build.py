@@ -106,17 +106,17 @@ if __name__ == '__main__':
 
 	# Create and run custom flow
 	verilog_files = [
-		"../../rtl/tt_ctrl.v",
-		"../../rtl/prim_sky130/tt_prim_buf.v",
-		"../../rtl/prim_sky130/tt_prim_dfrbp.v",
-		"../../rtl/prim_sky130/tt_prim_diode.v",
-		"../../rtl/prim_sky130/tt_prim_inv.v",
-		"../../rtl/prim_sky130/tt_prim_mux2.v",
-		"../../rtl/prim_sky130/tt_prim_mux4.v",
-		"../../rtl/prim_sky130/tt_prim_tbuf.v",
-		"../../rtl/prim_sky130/tt_prim_tie.v",
-		"../../rtl/prim_sky130/tt_prim_tbuf_pol.v",
-		"../../rtl/prim_sky130/tt_prim_zbuf.v",
+		"dir::../../rtl/tt_ctrl.v",
+		"dir::../../rtl/prim_sky130/tt_prim_buf.v",
+		"dir::../../rtl/prim_sky130/tt_prim_dfrbp.v",
+		"dir::../../rtl/prim_sky130/tt_prim_diode.v",
+		"dir::../../rtl/prim_sky130/tt_prim_inv.v",
+		"dir::../../rtl/prim_sky130/tt_prim_mux2.v",
+		"dir::../../rtl/prim_sky130/tt_prim_mux4.v",
+		"dir::../../rtl/prim_sky130/tt_prim_tbuf.v",
+		"dir::../../rtl/prim_sky130/tt_prim_tie.v",
+		"dir::../../rtl/prim_sky130/tt_prim_tbuf_pol.v",
+		"dir::../../rtl/prim_sky130/tt_prim_zbuf.v",
 	]
 
 	flow_cfg = {
@@ -125,11 +125,11 @@ if __name__ == '__main__':
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
-		"VERILOG_INCLUDE_DIRS" : [ "../../rtl/" ],
+		"VERILOG_INCLUDE_DIRS" : [ "dir::../../rtl/" ],
 		"VERILOG_FILES"        : verilog_files,
 
 		# Constraints
-		"SIGNOFF_SDC_FILE" : "signoff.sdc",
+		"SIGNOFF_SDC_FILE" : "dir::signoff.sdc",
 
 		# Synthesis
 		"SYNTH_READ_BLACKBOX_LIB"     : True,
@@ -145,7 +145,7 @@ if __name__ == '__main__':
 		"RIGHT_MARGIN_MULT"  : 6,
 
 		# PDN
-		"PDN_CFG"         : "pdn.tcl",
+		"PDN_CFG"         : "dir::pdn.tcl",
 		"FP_PDN_VPITCH"   : pdn_vpitch   / 1000,
 		"FP_PDN_VOFFSET"  : pdn_voffset  / 1000,
 		"FP_PDN_VSPACING" : pdn_vspacing / 1000,

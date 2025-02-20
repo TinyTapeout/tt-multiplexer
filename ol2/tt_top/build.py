@@ -178,7 +178,7 @@ if __name__ == '__main__':
 		],
 
 		# Constraints
-		"SIGNOFF_SDC_FILE" : "signoff.sdc",
+		"SIGNOFF_SDC_FILE" : "dir::signoff.sdc",
 
 		# Synthesis
 		"SYNTH_ELABORATE_ONLY"      : True,
