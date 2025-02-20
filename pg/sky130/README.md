@@ -4,6 +4,9 @@ Tiny Tapeout Power Gates for SKY130
 * `tt_pg_1v8_1`: Single height 1.8V switch
 * `tt_pg_1v8_2`: Dual height 1.8V switch
 * `tt_pg_1v8_4`: Quad height 1.8V switch
+* `tt_pg_1v8_ll_1`: Single height 1.8V switch (low-leakage variant)
+* `tt_pg_1v8_ll_2`: Dual height 1.8V switch (low-leakage variant)
+* `tt_pg_1v8_ll_4`: Quad height 1.8V switch (low-leakage variant)
 * `tt_pg_3v3_2`: Dual height 3.3V switch
 
 Design and layouts were done by Sylvain Munaut.
