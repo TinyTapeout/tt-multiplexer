@@ -7,7 +7,7 @@ depth 10
 smtbmc
 
 [script]
-read -sv -noblackbox tt_top.v tt_mux.v tt_ctrl.v tt_prim_buf.v tt_prim_dfrbp.v tt_prim_diode.v tt_prim_inv.v tt_prim_mux2.v tt_prim_mux4.v tt_prim_tbuf_pol.v tt_prim_tbuf.v tt_prim_tie.v tt_prim_zbuf.v tt_um_test.v tt_user_module_tristate.v
+read -sv -formal tt_top.v tt_mux.v tt_ctrl.v tt_prim_buf.v tt_prim_dfrbp.v tt_prim_diode.v tt_prim_inv.v tt_prim_mux2.v tt_prim_mux4.v tt_prim_tbuf_pol.v tt_prim_tbuf.v tt_prim_tie.v tt_prim_zbuf.v tt_um_test.v tt_user_module_tristate.v
 
 prep -top tt_top
 

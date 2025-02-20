@@ -89,3 +89,5 @@ tt:
   spine:
     vlayer: 'met4'
     hlayer: 'met3'
+  logo:
+    size: 100000
