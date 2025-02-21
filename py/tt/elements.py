@@ -219,23 +219,23 @@ class PowerSwitch(LayoutElement):
 
 class VddPowerSwitch(PowerSwitch):
 
-	def __init__(self, layout, mh):
+	def __init__(self, layout, mp):
 		super().__init__(
 			layout,
-			mh,
+			mp.height,
 			layout.glb.pg_vdd.width,
-			f'tt_pg_1v8_{mh:d}'
+			f'tt_pg_1v8_{mp.pg_vdd_variant:s}'
 		)
 
 
 class VaaPowerSwitch(PowerSwitch):
 
-	def __init__(self, layout, mh):
+	def __init__(self, layout, mp):
 		super().__init__(
 			layout,
-			mh,
+			mp.height,
 			layout.glb.pg_vaa.width,
-			f'tt_pg_3v3_{mh:d}'
+			f'tt_pg_3v3_{mp.pg_vaa_variant:s}'
 		)
 
 
@@ -413,8 +413,8 @@ class Branch(LayoutElement):
 				mod_name = f'tt_um_{mp.name:s}',
 				mw = mp.width,
 				mh = mp.height,
-				pg_vdd = mp.pg_vdd,
-				pg_vaa = mp.pg_vaa,
+				pg_vdd = mp.pg_vdd_variant is not None,
+				pg_vaa = mp.pg_vaa_variant is not None,
 				analog = mp.analog,
 			)
 
@@ -449,9 +449,9 @@ class Branch(LayoutElement):
 					self.add_child(ana_sw, Point(pos_x, pos_y), orient, name=name_pfx+f'tt_asw_{k:d}_I')
 
 			# Power gating
-			if mp.pg_vdd:
+			if mp.pg_vdd_variant is not None:
 				# Power Switch instance
-				vdd_sw = VddPowerSwitch(layout, mh=mp.height)
+				vdd_sw = VddPowerSwitch(layout, mp)
 
 				# Add Power Switch as child
 				self.add_child(vdd_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vdd_I')
@@ -459,9 +459,9 @@ class Branch(LayoutElement):
 				# Shift the block
 				blk_x += layout.glb.pg_vdd.offset
 
-			if mp.pg_vaa:
+			if mp.pg_vaa_variant is not None:
 				# Power Switch instance
-				vaa_sw = VaaPowerSwitch(layout, mh=mp.height)
+				vaa_sw = VaaPowerSwitch(layout, mp)
 
 				# Add Power Switch as child
 				self.add_child(vaa_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vaa_I')

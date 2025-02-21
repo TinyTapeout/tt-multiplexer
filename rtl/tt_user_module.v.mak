@@ -93,8 +93,8 @@ module tt_user_module #(
 			);
 %   endfor
 %  endif
-%  if mod.pg_vdd:
-			tt_pg_1v8_${mod.height} tt_pg_vdd_I (
+%  if mod.pg_vdd_variant is not None:
+			tt_pg_1v8_${mod.pg_vdd_variant} tt_pg_vdd_I (
 `ifdef USE_POWER_PINS
 				.GPWR    (l_vdpwr),
 				.VPWR    (VDPWR),
@@ -107,8 +107,8 @@ module tt_user_module #(
 			assign l_vdpwr = VDPWR;
 `endif
 %  endif
-%  if mod.pg_vaa:
-			tt_pg_3v3_${mod.height} tt_pg_vaa_I (
+%  if mod.pg_vaa_variant is not None:
+			tt_pg_3v3_${mod.pg_vaa_variant} tt_pg_vaa_I (
 `ifdef USE_POWER_PINS
 				.GPWR    (l_vapwr),
 				.VPWR    (VAPWR),

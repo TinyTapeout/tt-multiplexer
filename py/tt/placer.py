@@ -30,6 +30,9 @@ class ModuleSlot:
 		self.pg_vaa = cfg_data.get('pg_vaa', False)
 		self.analog = cfg_data.get('analog', {})
 
+		if self.pg_vdd is True:
+			self.pg_vdd = 'std' if self.width > 4 else 'll'
+
 	def as_dict(self):
 		return {
 			'name':   self.name,
@@ -51,6 +54,22 @@ class ModuleSlot:
 	@property
 	def blk_id(self):
 		return self.placer.p2l(self.pos_x, self.pos_y)[1]
+
+	@property
+	def pg_vdd_variant(self):
+		if self.pg_vdd == 'std':
+			return f'{self.height:d}'
+		elif self.pg_vdd == 'll':
+			return f'll_{self.height:d}'
+		else:
+			return None
+
+	@property
+	def pg_vaa_variant(self):
+		if self.pg_vaa is True:
+			return f'{self.height:d}'
+		else:
+			return None
 
 
 class ModulePlacer:
