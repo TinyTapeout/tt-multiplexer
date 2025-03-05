@@ -330,8 +330,8 @@ class Layout:
 
 		tracks_um = self._ply_distribute(
 			n_pins = len(block_ply_e) - 2,
-			start  = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset,
-			end    = self.glb.block.width,
+			start  = self.glb.pg_vdd.offset + self.glb.pg_vaa.offset + self.glb.margin.x,
+			end    = self.glb.block.width - self.glb.margin.x,
 			step   = 0,
 			layer  = self.cfg.tt.spine.vlayer,
 			axis   = 'x',
