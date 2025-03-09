@@ -272,14 +272,14 @@ module tt_top #(
 	// Logo & Shuttle ID
 	// -----------------
 
-`ifndef FORMAL
-`ifndef SIM
-	(* blackbox, keep *)
-	tt_logo_top logo_top_I ();
-
-	(* blackbox, keep *)
-	tt_logo_bottom logo_bottom_I ();
-`endif
-`endif
+//`ifndef FORMAL
+//`ifndef SIM
+//	(* blackbox, keep *)
+//	tt_logo_top logo_top_I ();
+//
+//	(* blackbox, keep *)
+//	tt_logo_bottom logo_bottom_I ();
+//`endif
+//`endif
 
 endmodule // tt_top

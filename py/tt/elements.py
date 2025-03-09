@@ -606,12 +606,12 @@ class Top(LayoutElement):
 
 		self.add_child(ctrl, Point(ctrl_x, ctrl_y), 'N', name='ctrl_I')
 
-		# Add Logo & Shuttle ID
-		logo_top = Logo(layout, 'top')
-		self.add_child(logo_top, Point(layout.glb.logo.pos_x, layout.glb.logo.top_pos_y), 'N', name='logo_top_I')
-
-		logo_bottom = Logo(layout, 'bottom')
-		self.add_child(logo_bottom, Point(layout.glb.logo.pos_x, layout.glb.logo.bottom_pos_y), 'N', name='logo_bottom_I')
+#		# Add Logo & Shuttle ID
+#		logo_top = Logo(layout, 'top')
+#		self.add_child(logo_top, Point(layout.glb.logo.pos_x, layout.glb.logo.top_pos_y), 'N', name='logo_top_I')
+#
+#		logo_bottom = Logo(layout, 'bottom')
+#		self.add_child(logo_bottom, Point(layout.glb.logo.pos_x, layout.glb.logo.bottom_pos_y), 'N', name='logo_bottom_I')
 
 
 class Die(LayoutElement):

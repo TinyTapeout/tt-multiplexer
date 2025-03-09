@@ -99,3 +99,5 @@ tt:
     vlayer: 'Metal5'
     hlayer: 'Metal4'
   analog: []
+  logo:
+    size: 550000
