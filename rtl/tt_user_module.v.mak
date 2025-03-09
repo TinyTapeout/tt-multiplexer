@@ -93,7 +93,7 @@ module tt_user_module #(
 			);
 %   endfor
 %  endif
-%  if mod.pg_vdd_variant is not None:
+%  if False and mod.pg_vdd_variant is not None:
 			tt_pg_1v8_${mod.pg_vdd_variant} tt_pg_vdd_I (
 `ifdef USE_POWER_PINS
 				.GPWR    (l_vdpwr),
