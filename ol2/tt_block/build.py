@@ -132,7 +132,8 @@ if __name__ == '__main__':
 	# Generate block templates for all allowed combinations
 	GEN = [
 		# Width,                Height,    pg_vdd, pg_vaa, analog
-		( [ 1, 2, 3, 4, 6    ], [ 1, 2 ],  False,  False,  False ),
+		( [ 1, 2, 3, 4, 6, 8 ], [ 1, 2 ],  False,  False,  False ),
+		( [ 1, 2, 3, 4, 6, 8 ], [ 1, 2 ],  True,   False,  False ),
 	]
 
 	for h_list, v_list, pg_vdd, pg_vaa, analog in GEN:
