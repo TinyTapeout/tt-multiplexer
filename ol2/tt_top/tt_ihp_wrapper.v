@@ -41,7 +41,9 @@ module tt_ihp_wrapper (
 	// GPIO configuration
 	// ------------------
 
-	localparam [15:0] TT_PAD_NC         = 16'b0000000000_00_0000;
+//	localparam [15:0] TT_PAD_NC         = 16'b0000000000_00_0000;
+	localparam [15:0] TT_PAD_NC         = 16'b0000000000_00_0110;
+
 	localparam [15:0] TT_PAD_CTRL       = 16'b0000000000_00_1010;
 	localparam [15:0] TT_PAD_IN         = 16'b0000000000_00_1010;
 	localparam [15:0] TT_PAD_OUT        = 16'b0000000000_00_1001;
