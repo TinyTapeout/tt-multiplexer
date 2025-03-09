@@ -183,12 +183,26 @@ class TopFlow(SequentialFlow):
 		OpenROAD.RCX,
 		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
+		Magic.StreamOut,
 		KLayout.StreamOut,
-#		KLayout.DRC,
-#		Checker.KLayoutDRC,
+		KLayout.XOR,
+		Checker.XOR,
+
 		IHPExtractSpice,
 		Netgen.LVS,
 		Checker.LVS,
+
+#		Magic.SpiceExtraction,
+#		Checker.IllegalOverlap,
+#		Netgen.LVS,
+#		Checker.LVS,
+
+		KLayout.DRC,
+		Checker.KLayoutDRC,
+
+		Magic.DRC,
+		Checker.MagicDRC,
+
 		IHPSealRing,
 	]
 
@@ -294,8 +308,10 @@ if __name__ == '__main__':
 		"QUIT_ON_SYNTH_CHECKS"      : False,
 
 		# Floorplanning
-		"DIE_AREA"  : [   0.00,   0.00, 3600.00, 5000.00 ],
-		"CORE_AREA" : [ 425.00, 425.00, 3175.00, 4575.00 ],
+#		"DIE_AREA"  : [   0.00,   0.00, 3600.00, 5000.00 ],
+#		"CORE_AREA" : [ 425.00, 425.00, 3175.00, 4575.00 ],
+		"DIE_AREA"  : [   0.00,   0.00, 4500.00, 7300.00 ],
+		"CORE_AREA" : [ 425.00, 425.00, 4075.00, 6875.00 ],
 		"FP_SIZING" : "absolute",
 
 		# PDN
@@ -322,11 +338,13 @@ if __name__ == '__main__':
 
 		# Magic stream
 		"MAGIC_ZEROIZE_ORIGIN" : False,
+#		"PRIMARY_GDSII_STREAMOUT_TOOL": "klayout", # Hack
 
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
 
 		# LVS
+#		"MAGIC_EXT_USE_GDS": True,	# Hack
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
 		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom"],
