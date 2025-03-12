@@ -170,6 +170,7 @@ if __name__ == '__main__':
 
 		# Placement
 		"PL_TARGET_DENSITY_PCT" : 50,
+		"PL_TIME_DRIVEN": False,			# Disable resizer
 
 		# Routing
 		"DIODE_PADDING" : 0,

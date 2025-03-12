@@ -142,6 +142,9 @@ if __name__ == '__main__':
 		"LEFT_MARGIN_MULT"   : 6,
 		"RIGHT_MARGIN_MULT"  : 6,
 
+		# Placement
+		"PL_TIME_DRIVEN" : False,			# Disable resizer
+
 		# Routing
 		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
