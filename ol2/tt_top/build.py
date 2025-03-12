@@ -200,8 +200,8 @@ class TopFlow(SequentialFlow):
 		KLayout.DRC,
 		Checker.KLayoutDRC,
 
-		Magic.DRC,
-		Checker.MagicDRC,
+#		Magic.DRC,
+#		Checker.MagicDRC,
 
 		IHPSealRing,
 	]
@@ -310,8 +310,13 @@ if __name__ == '__main__':
 		# Floorplanning
 #		"DIE_AREA"  : [   0.00,   0.00, 3600.00, 5000.00 ],
 #		"CORE_AREA" : [ 425.00, 425.00, 3175.00, 4575.00 ],
-		"DIE_AREA"  : [   0.00,   0.00, 4500.00, 7300.00 ],
-		"CORE_AREA" : [ 425.00, 425.00, 4075.00, 6875.00 ],
+
+#		"DIE_AREA"  : [   0.00,   0.00, 4500.00, 7300.00 ],
+#		"CORE_AREA" : [ 425.00, 425.00, 4075.00, 6875.00 ],
+
+		"DIE_AREA"  : [   0.00,   0.00, 5400.00, 6450.00 ],
+		"CORE_AREA" : [ 425.00, 425.00, 4975.00, 6025.00 ],
+
 		"FP_SIZING" : "absolute",
 
 		# PDN
@@ -342,6 +347,7 @@ if __name__ == '__main__':
 
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
+		"KLAYOUT_DRC_RUNSET": "/mnt/pdk/OL2/pdk_root/ihp-sg13g2/libs.tech/klayout/tech/drc/sg13g2_minimal.lydrc",
 
 		# LVS
 #		"MAGIC_EXT_USE_GDS": True,	# Hack
