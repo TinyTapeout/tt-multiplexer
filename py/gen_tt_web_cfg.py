@@ -18,8 +18,8 @@ def main(argv0):
 	tti.layout
 
 	web_cfg = {
-		'rowCount'        : tti.cfg.tt.grid.x,
-		'colCount'        : tti.cfg.tt.grid.y // 2,
+		'rowCount'        : tti.cfg.tt.grid.y // 2,
+		'colCount'        : tti.cfg.tt.grid.x,
 		'dieWidth'        : tti.cfg.pdk.die.width       / 1000,
 		'dieHeight'       : tti.cfg.pdk.die.height      / 1000,
 		'xPad'            : tti.layout.glb.top.pos_x    / 1000,
