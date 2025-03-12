@@ -6,8 +6,11 @@ set IO_LENGTH 180
 set IO_WIDTH 80
 set BONDPAD_SIZE 70
 set SEALRING_OFFSET 70
-set MAX_NUM_PADS_HORIZONTAL 16
-set MAX_NUM_PADS_VERTICAL 16
+set MAX_NUM_PADS_HORIZONTAL 14
+set MAX_NUM_PADS_VERTICAL 18
+
+set PAD_IDX_OFFSET 1
+set PAD_IDX_COUNT [expr ($MAX_NUM_PADS_HORIZONTAL + $MAX_NUM_PADS_VERTICAL)*2]
 
 proc calc_horizontal_pad_location {index} {
     global IO_LENGTH
@@ -60,7 +63,7 @@ make_io_sites \
 
 
 # Place Pads
-set pad_idx 0
+set pad_idx $PAD_IDX_OFFSET
 
 for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_HORIZONTAL} {incr side_idx} {
 	puts "$pad_idx $side_idx [get_io $pad_idx]"
@@ -68,7 +71,7 @@ for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_HORIZONTAL} {incr side_idx} {
 	if { "$inst_name" != "" } {
 		place_pad -row IO_SOUTH -location [calc_horizontal_pad_location $side_idx] [get_io $pad_idx]
 	}
-	incr pad_idx
+	set pad_idx [ expr ($pad_idx + 1) % $PAD_IDX_COUNT ]
 }
 
 for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_VERTICAL} {incr side_idx} {
@@ -77,7 +80,7 @@ for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_VERTICAL} {incr side_idx} {
 	if { "$inst_name" != "" } {
 		place_pad -row IO_EAST -location [calc_vertical_pad_location $side_idx] [get_io $pad_idx]
 	}
-	incr pad_idx
+	set pad_idx [ expr ($pad_idx + 1) % $PAD_IDX_COUNT ]
 }
 
 for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_HORIZONTAL} {incr side_idx} {
@@ -86,7 +89,7 @@ for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_HORIZONTAL} {incr side_idx} {
 	if { "$inst_name" != "" } {
 		place_pad -row IO_NORTH -location [calc_horizontal_pad_location [expr $MAX_NUM_PADS_HORIZONTAL - $side_idx - 1]] [get_io $pad_idx]
 	}
-	incr pad_idx
+	set pad_idx [ expr ($pad_idx + 1) % $PAD_IDX_COUNT ]
 }
 
 for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_VERTICAL} {incr side_idx} {
@@ -95,7 +98,7 @@ for {set side_idx 0} {$side_idx < $MAX_NUM_PADS_VERTICAL} {incr side_idx} {
 	if { "$inst_name" != "" } {
 		place_pad -row IO_WEST -location [calc_vertical_pad_location [expr $MAX_NUM_PADS_VERTICAL - $side_idx - 1]] [get_io $pad_idx]
 	}
-	incr pad_idx
+	set pad_idx [ expr ($pad_idx + 1) % $PAD_IDX_COUNT ]
 }
 
 # Place Corner Cells and Filler
