@@ -82,6 +82,12 @@ class ModulePlacer:
 		# Current place mode
 		self.analog_fill = False
 
+		# Y candidtates
+		self.yc = []
+		for y_mod in range(8):
+			for y in range(y_mod, self.cfg.tt.grid.y, 8):
+				self.yc.append(y)
+
 		# Extract analog muxes positions
 		self.mux_analog = set()
 		if hasattr(self.cfg.tt, 'analog'):
@@ -245,7 +251,7 @@ class ModulePlacer:
 
 	def _find_xy_for_module(self, mod):
 		# Scan the whole grid in order and check if suitable
-		for y in range(self.cfg.tt.grid.y):
+		for y in self.yc:
 			for x in range(self.cfg.tt.grid.x):
 				if self._site_suitable(mod, x, y):
 					return x, y
