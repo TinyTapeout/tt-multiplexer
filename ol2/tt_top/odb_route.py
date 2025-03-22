@@ -177,8 +177,8 @@ class Router:
 		# Vias
 		tech = self.reader.db.getTech()
 
-		via_m23 = tech.findVia('M2M3_PR')
-		via_m34 = tech.findVia('M3M4_PR')
+		via4 = tech.findVia('Via4_YX_so')
+		via3 = tech.findVia('Via3_YX_so')
 
 		# Find controller instance
 		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
@@ -191,30 +191,42 @@ class Router:
 			# Starting point
 			it = ctrl_inst.findITerm(port_name)
 			sx, sy = it.getAvgXY()[1:]
+			sl = it.getGeometries()[0][0]
 
 			# Net / Wire
 			net = it.getNet()
 			wire = odb.dbWire.create(net)
 
 			# Ending point
-			bt = net.get1stBTerm()
-			ex, ey = bt.getFirstPinLocation()[1:]
-			el = bt.getBPins()[0].getBoxes()[0].getTechLayer()
+			it_other = getOtherITermsOnNet(it)[0]
+			e_rect = [rect for ly, rect in it_other.getGeometries() if ly.getName() == 'Metal3'][0]
+			ex = e_rect.xCenter()
+			ey = e_rect.yCenter()
 
-			# Set via type for intermediate routing points
-			rpts = [(v, via_m34) for v in rpts]
+			# Prepare path
+			if len(rpts) == 1:
+				rpts = [
+					( rpts[0], via4 ),
+					( ex, via3 ),
+					( ey, None ),
+				]
 
-			# Append ending point to intermediate routing points
-			if len(rpts) & 1:
-				rpts.extend([(ex, via_m23), (ey, None)])
+			elif len(rpts) == 2:
+				rpts = [
+					( rpts[0], via4 ),
+					( rpts[1], via3 ),
+					( ey, None ),
+					( ex, None ),
+				]
+
 			else:
-				rpts.extend([(ey, via_m34), (ex, None)])
+				raise RuntimeError('Invalid path')
 
 			# Encoder start
 			encoder = odb.dbWireEncoder()
 			encoder.begin(wire)
 
-			encoder.newPath(self.layer_v, 'FIXED')
+			encoder.newPath(sl, 'FIXED')
 			encoder.addPoint(sx, sy)
 
 			# Scan through routing points
@@ -1832,7 +1844,7 @@ def route(
 	#r.route_k01_global()
 	#r.route_k01_gpio()
 	#r.create_k01_obs()
-	#r.route_pad()
+	r.route_pad()
 	r.route_um_tieoffs()
 	r.route_um_signals()
 
