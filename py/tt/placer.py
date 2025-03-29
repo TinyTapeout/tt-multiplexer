@@ -269,8 +269,9 @@ class ModulePlacer:
 			return False
 
 		# If in missing fill mode, that slot must be facing a missing mux
+		# If the module is h>=4, then it also must be facing that
 		# (We're using ld2la here since that's the same idea)
-		if self.missing_fill:
+		if self.missing_fill or mod.height >= 4:
 			amux_id, ablk_id = self.ld2la(mux_id, blk_id)
 			if not amux_id in self.mux_missing:
 				return False
