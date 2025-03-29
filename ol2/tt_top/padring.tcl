@@ -13,33 +13,37 @@ set PAD_IDX_OFFSET 1
 set PAD_IDX_COUNT [expr ($MAX_NUM_PADS_HORIZONTAL + $MAX_NUM_PADS_VERTICAL)*2]
 
 proc calc_horizontal_pad_location {index} {
-    global IO_LENGTH
-    global IO_WIDTH
-    global BONDPAD_SIZE
-    global MAX_NUM_PADS_HORIZONTAL
-    global SEALRING_OFFSET
+	global IO_LENGTH
+	global IO_WIDTH
+	global BONDPAD_SIZE
+	global MAX_NUM_PADS_HORIZONTAL
+	global SEALRING_OFFSET
 
-    set DIE_WIDTH [expr {[lindex $::env(DIE_AREA) 2] - [lindex $::env(DIE_AREA) 0]}]
-    set PAD_OFFSET [expr {$IO_LENGTH + $BONDPAD_SIZE + $SEALRING_OFFSET}]
-    set PAD_AREA_WIDTH [expr {$DIE_WIDTH - ($PAD_OFFSET * 2)}]
-    set HORIZONTAL_PAD_DISTANCE [expr {($PAD_AREA_WIDTH / $MAX_NUM_PADS_HORIZONTAL) - $IO_WIDTH}]
+	set DIE_WIDTH [expr {[lindex $::env(DIE_AREA) 2] - [lindex $::env(DIE_AREA) 0]}]
+	set PAD_OFFSET [expr {$IO_LENGTH + $BONDPAD_SIZE + $SEALRING_OFFSET}]
+	set PAD_AREA_WIDTH [expr {$DIE_WIDTH - ($PAD_OFFSET * 2)}]
+	set SPACE_WIDTH [expr {$PAD_AREA_WIDTH - ($IO_WIDTH * $MAX_NUM_PADS_HORIZONTAL)}]
+	set HORIZONTAL_PAD_DISTANCE [expr {2 * floor($SPACE_WIDTH / (2 * $MAX_NUM_PADS_HORIZONTAL))}]
+	set SPACE_LEFT [expr {$SPACE_WIDTH - $HORIZONTAL_PAD_DISTANCE * ($MAX_NUM_PADS_HORIZONTAL - 1)}]
 
-    return [expr {$PAD_OFFSET + (($IO_WIDTH + $HORIZONTAL_PAD_DISTANCE) * $index) + ($HORIZONTAL_PAD_DISTANCE / 2)}]
+	return [expr {$PAD_OFFSET + ($SPACE_LEFT / 2) + (($IO_WIDTH + $HORIZONTAL_PAD_DISTANCE) * $index)}]
 }
 
 proc calc_vertical_pad_location {index} {
-    global IO_LENGTH
-    global IO_WIDTH
-    global BONDPAD_SIZE
-    global MAX_NUM_PADS_VERTICAL
-    global SEALRING_OFFSET
+	global IO_LENGTH
+	global IO_WIDTH
+	global BONDPAD_SIZE
+	global MAX_NUM_PADS_VERTICAL
+	global SEALRING_OFFSET
 
-    set DIE_HEIGHT [expr {[lindex $::env(DIE_AREA) 3] - [lindex $::env(DIE_AREA) 1]}]
-    set PAD_OFFSET [expr {$IO_LENGTH + $BONDPAD_SIZE + $SEALRING_OFFSET}]
-    set PAD_AREA_HEIGHT [expr {$DIE_HEIGHT - ($PAD_OFFSET * 2)}]
-    set VERTICAL_PAD_DISTANCE [expr {($PAD_AREA_HEIGHT / $MAX_NUM_PADS_VERTICAL) - $IO_WIDTH}]
+	set DIE_HEIGHT [expr {[lindex $::env(DIE_AREA) 3] - [lindex $::env(DIE_AREA) 1]}]
+	set PAD_OFFSET [expr {$IO_LENGTH + $BONDPAD_SIZE + $SEALRING_OFFSET}]
+	set PAD_AREA_HEIGHT [expr {$DIE_HEIGHT - ($PAD_OFFSET * 2)}]
+	set SPACE_HEIGHT [expr {$PAD_AREA_HEIGHT - ($IO_WIDTH * $MAX_NUM_PADS_VERTICAL)}]
+	set VERTICAL_PAD_DISTANCE [expr {2 * floor($SPACE_HEIGHT / (2 * $MAX_NUM_PADS_VERTICAL))}]
+	set SPACE_LEFT [expr {$SPACE_HEIGHT - $VERTICAL_PAD_DISTANCE * ($MAX_NUM_PADS_VERTICAL - 1)}]
 
-    return [expr {$PAD_OFFSET + (($IO_WIDTH + $VERTICAL_PAD_DISTANCE) * $index) + ($VERTICAL_PAD_DISTANCE / 2)}]
+	return [expr {$PAD_OFFSET + ($SPACE_LEFT / 2) + (($IO_WIDTH + $VERTICAL_PAD_DISTANCE) * $index)}]
 }
 
 proc get_io {index} {
