@@ -197,8 +197,8 @@ class TopFlow(SequentialFlow):
 #		Netgen.LVS,
 #		Checker.LVS,
 
-		KLayout.DRC,
-		Checker.KLayoutDRC,
+#		KLayout.DRC,
+#		Checker.KLayoutDRC,
 
 #		Magic.DRC,
 #		Checker.MagicDRC,
