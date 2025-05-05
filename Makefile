@@ -104,7 +104,8 @@ clean:
 		sim/tt_top_tb \
 		sim/*.vcd \
 		sim/tt_user_module.v \
-		formal/modules_*.{yaml,v} \
+		formal/modules_*.v \
+		formal/modules_*.yaml \
 		formal/*.vcd \
 		$(NULL)
 	rm -Rf formal/tt_tristate
