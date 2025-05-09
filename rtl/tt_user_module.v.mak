@@ -73,6 +73,9 @@ module tt_user_module #(
 %  if mod.name == "htfab_r2r_dac":
 				.ua      ({ana[12]}),
 %  endif
+%  if mod.name == "NicklausThompson_555_1x1":
+				.ua      ({ana[13], ana[14], ana[15]}),
+%  endif
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),

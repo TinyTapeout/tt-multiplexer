@@ -28,8 +28,10 @@ def route_analog_pins(
 
 	# Manual routing for analog pins
 	tech = reader.db.getTech()
+	metal5 = tech.findLayer("Metal5")
 	via4 = tech.findVia("Via4_YX_so")
 	via3 = tech.findVia("Via3_XY_so")
+
 	for inst in reader.block.getInsts():
 		if inst.getMaster().getName() == "tt_um_htfab_r2r_dac":
 			for term in inst.getITerms():
@@ -40,7 +42,7 @@ def route_analog_pins(
 					wire = odb.dbWire.create(net)
 					encoder = odb.dbWireEncoder()
 					encoder.begin(wire)
-					encoder.newPath(tech.findLayer("Metal5"), "FIXED")
+					encoder.newPath(metal5, "FIXED")
 					encoder.addPoint(bbox.xMin(), bbox.yCenter())
 					encoder.addPoint(bbox.xMin() - 50000, bbox.yCenter())
 					encoder.addTechVia(via4)
@@ -48,6 +50,54 @@ def route_analog_pins(
 					encoder.addPoint(319855, 988490)
 					encoder.addTechVia(via3)
 					encoder.addPoint(319855, 987490)
+					encoder.end()
+		if inst.getMaster().getName() == "tt_um_NicklausThompson_555_1x1":
+			for term in inst.getITerms():
+				net = term.getNet()
+				if net.getName() == "pad_raw[59]":
+					net.clearSpecial()
+					bbox = term.getBBox()
+					wire = odb.dbWire.create(net)
+					encoder = odb.dbWireEncoder()
+					encoder.begin(wire)	
+					encoder.newPath(metal5, "FIXED")
+					encoder.addPoint(bbox.xMin(), bbox.yCenter())
+					encoder.addPoint(bbox.xMin() - 49000, bbox.yCenter())
+					encoder.addTechVia(via4)
+					encoder.addPoint(bbox.xMin() - 49000, 886490)
+					encoder.addPoint(319855, 886490)
+					encoder.addTechVia(via3)
+					encoder.addPoint(319855, 884490)
+					encoder.end()
+				if net.getName() == "pad_raw[60]":
+					net.clearSpecial()
+					bbox = term.getBBox()
+					wire = odb.dbWire.create(net)
+					encoder = odb.dbWireEncoder()
+					encoder.begin(wire)
+					encoder.newPath(metal5, "FIXED")
+					encoder.addPoint(bbox.xMin(), bbox.yCenter())
+					encoder.addPoint(bbox.xMin() - 50000, bbox.yCenter())
+					encoder.addTechVia(via4)
+					encoder.addPoint(bbox.xMin() - 50000, 784490)
+					encoder.addPoint(319855, 784490)
+					encoder.addTechVia(via3)
+					encoder.addPoint(319855, 782490)
+					encoder.end()
+				if net.getName() == "pad_raw[61]":
+					net.clearSpecial()
+					bbox = term.getBBox()
+					wire = odb.dbWire.create(net)
+					encoder = odb.dbWireEncoder()
+					encoder.begin(wire)
+					encoder.newPath(metal5, "FIXED")
+					encoder.addPoint(bbox.xMin(), bbox.yCenter())
+					encoder.addPoint(bbox.xMin() - 50000, bbox.yCenter())
+					encoder.addTechVia(via4)
+					encoder.addPoint(bbox.xMin() - 50000, 682490)
+					encoder.addPoint(319855, 682490)
+					encoder.addTechVia(via3)
+					encoder.addPoint(319855, 680490)
 					encoder.end()
 
 
