@@ -13,7 +13,7 @@ module {mod_name} (
 	input  wire VGND,
 	input  wire VDPWR,
 	input  wire VAPWR,
-	inout  wire [7:0] ua,
+	inout  wire [3:0] ua,
 	input  wire [7:0] ui_in,
 	output wire [7:0] uo_out,
 	input  wire [7:0] uio_in,

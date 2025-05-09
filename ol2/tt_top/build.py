@@ -68,6 +68,19 @@ class CustomRoute(OdbpyStep):
 
 
 @Step.factory.register()
+class RouteAnalogPins(OdbpyStep):
+
+	id = "TT.Top.RouteAnalogPins"
+	name = "Routes Analog Pins for specific user modules"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_route_analog_pins.py"
+		)
+
+
+@Step.factory.register()
 class PadRing(OpenROADStep):
 
 	id = "TT.Top.PadRing"
@@ -175,6 +188,7 @@ class TopFlow(SequentialFlow):
 		CustomRoute,
 		OpenROAD.GlobalRouting,
 		OpenROAD.DetailedRouting,
+		RouteAnalogPins,
 		Checker.TrDRC,
 		Odb.ReportDisconnectedPins,
 		Checker.DisconnectedPins,

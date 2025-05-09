@@ -70,6 +70,9 @@ module tt_user_module #(
 %  if mod.analog:
 				.ua      (ua),
 %  endif
+%  if mod.name == "htfab_r2r_dac":
+				.ua      ({ana[12]}),
+%  endif
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
 				.uio_oe  (uio_oe),
