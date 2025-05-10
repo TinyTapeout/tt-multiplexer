@@ -58,7 +58,7 @@ def route_analog_pins(
 					encoder.addTechVia(via3)
 					encoder.addPoint(319855, 987490)
 					encoder.end()
-		if inst.getMaster().getName() == "tt_um_NicklausThompson_555_1x1":
+		if inst.getMaster().getName() == "tt_um_algofoogle_antonalog":
 			for term in inst.getITerms():
 				net = term.getNet()
 				if net.getName() == "pad_raw[59]":
