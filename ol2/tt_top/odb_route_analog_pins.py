@@ -11,6 +11,9 @@ import sys
 import click
 import odb
 
+sys.path.append('../../py')
+import tt
+
 try:
 	from reader import click_odb
 	interactive = False
@@ -25,6 +28,7 @@ except:
 def route_analog_pins(
 	reader,
 ):
+	tti = tt.TinyTapeout()
 
 	# Manual routing for analog pins
 	tech = reader.db.getTech()
@@ -39,76 +43,36 @@ def route_analog_pins(
 		layer_rule.setSpacing(2700)
 
 	for inst in reader.block.getInsts():
-		if inst.getMaster().getName() == "tt_um_htfab_r2r_dac":
-			for term in inst.getITerms():
-				net = term.getNet()
-				if net.getName() == "pad_raw[58]":
-					net.clearSpecial()
-					net.setNonDefaultRule(analog_track)
-					bbox = term.getBBox()
-					wire = odb.dbWire.create(net)
-					encoder = odb.dbWireEncoder()
-					encoder.begin(wire)
-					encoder.newPath(metal5, "FIXED", analog_track.getLayerRule(metal5))
-					encoder.addPoint(bbox.xMin(), bbox.yCenter())
-					encoder.addPoint(bbox.xMin() - 50000, bbox.yCenter())
-					encoder.addTechVia(via4)
-					encoder.addPoint(bbox.xMin() - 50000, 988490)
-					encoder.addPoint(319855, 988490)
-					encoder.addTechVia(via3)
-					encoder.addPoint(319855, 987490)
-					encoder.end()
-		if inst.getMaster().getName() == "tt_um_algofoogle_antonalog":
-			for term in inst.getITerms():
-				net = term.getNet()
-				if net.getName() == "pad_raw[59]":
-					net.clearSpecial()
-					net.setNonDefaultRule(analog_track)
-					bbox = term.getBBox()
-					wire = odb.dbWire.create(net)
-					encoder = odb.dbWireEncoder()
-					encoder.begin(wire)	
-					encoder.newPath(metal5, "FIXED", analog_track.getLayerRule(metal5))
-					encoder.addPoint(bbox.xMin(), bbox.yCenter())
-					encoder.addPoint(bbox.xMin() - 47300, bbox.yCenter())
-					encoder.addTechVia(via4)
-					encoder.addPoint(bbox.xMin() - 47300, 886490)
-					encoder.addPoint(319855, 886490)
-					encoder.addTechVia(via3)
-					encoder.addPoint(319855, 884490)
-					encoder.end()
-				if net.getName() == "pad_raw[60]":
-					net.clearSpecial()
-					net.setNonDefaultRule(analog_track)
-					bbox = term.getBBox()
-					wire = odb.dbWire.create(net)
-					encoder = odb.dbWireEncoder()
-					encoder.begin(wire)
-					encoder.newPath(metal5, "FIXED", analog_track.getLayerRule(metal5))
-					encoder.addPoint(bbox.xMin(), bbox.yCenter())
-					encoder.addPoint(bbox.xMin() - 50000, bbox.yCenter())
-					encoder.addTechVia(via4)
-					encoder.addPoint(bbox.xMin() - 50000, 784490)
-					encoder.addPoint(319855, 784490)
-					encoder.addTechVia(via3)
-					encoder.addPoint(319855, 782490)
-					encoder.end()
-				if net.getName() == "pad_raw[61]":
-					net.clearSpecial()
-					net.setNonDefaultRule(analog_track)
-					bbox = term.getBBox()
-					wire = odb.dbWire.create(net)
-					encoder = odb.dbWireEncoder()
-					encoder.begin(wire)
-					encoder.newPath(metal5, "FIXED", analog_track.getLayerRule(metal5))
-					encoder.addPoint(bbox.xMin(), bbox.yCenter())
-					encoder.addPoint(bbox.xMin() - 50000, bbox.yCenter())
-					encoder.addTechVia(via4)
-					encoder.addPoint(bbox.xMin() - 50000, 682490)
-					encoder.addPoint(319855, 682490)
-					encoder.addTechVia(via3)
-					encoder.addPoint(319855, 680490)
-					encoder.end()
+		name = inst.getMaster().getName()
+		if not name.startswith("tt_um_"):
+			continue
+		user_module = next(filter(lambda m: m.name == name[6:], tti.placer.modules), None)
+		if not user_module.analog_dedicated:
+			continue
+		paths = user_module.analog_dedicated["paths"]
+		for term in inst.getITerms():
+			net = term.getNet()
+			if net.getName() in paths:
+				net.clearSpecial()
+				net.setNonDefaultRule(analog_track)
+				bbox = term.getBBox()
+				wire = odb.dbWire.create(net)
+				encoder = odb.dbWireEncoder()
+				encoder.begin(wire)
+				encoder.newPath(metal5, "FIXED", analog_track.getLayerRule(metal5))
+				x = bbox.xMin()
+				y = bbox.yCenter()
+				encoder.addPoint(x, y)
+				for item in paths[net.getName()]:
+					if "x" in item:
+						x = item["x"]
+						encoder.addPoint(x, y)
+					if "y" in item:
+						y = item["y"]
+						encoder.addPoint(x, y)
+					if "via" in item:
+						encoder.addTechVia(tech.findVia(item["via"]))
+				encoder.end()
 
 
 if __name__ == "__main__":

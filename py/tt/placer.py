@@ -29,6 +29,7 @@ class ModuleSlot:
 		self.pg_vdd = cfg_data.get('pg_vdd', True)
 		self.pg_vaa = cfg_data.get('pg_vaa', False)
 		self.analog = cfg_data.get('analog', {})
+		self.analog_dedicated = cfg_data.get('analog_dedicated', None)
 
 		if self.pg_vdd is True:
 			self.pg_vdd = 'std' if self.width > 4 else 'll'
@@ -45,6 +46,7 @@ class ModuleSlot:
 			'pg_vdd': self.pg_vdd,
 			'pg_vaa': self.pg_vaa,
 			'analog': self.analog,
+			'analog_dedicated': self.analog_dedicated,
 		}
 
 	@property

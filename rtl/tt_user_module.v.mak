@@ -70,11 +70,8 @@ module tt_user_module #(
 %  if mod.analog:
 				.ua      (ua),
 %  endif
-%  if mod.name == "htfab_r2r_dac":
-				.ua      ({ana[12]}),
-%  endif
-%  if mod.name == "algofoogle_antonalog":
-				.ua      ({ana[13], ana[14], ana[15]}),
+%  if mod.analog_dedicated:
+				.ua      ({${mod.analog_dedicated["pins"]}}),
 %  endif
 				.uio_in  (uio_in),
 				.uio_out (uio_out),
