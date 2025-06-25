@@ -80,13 +80,16 @@ class ModulePlacer:
 		self.verbose = verbose
 
 		# Current place mode
-		self.analog_fill = False
+		self.missing_fill = False
 
-		# Extract analog muxes positions
-		self.mux_analog = set()
+		# Extract missing muxes positions
+		self.mux_missing = set()
+
+		self.analog_ena  = False
 		if hasattr(self.cfg.tt, 'analog'):
 			for grp in self.cfg.tt.analog:
-				self.mux_analog.update(grp['mux_id'])
+				self.mux_missing.update(grp['mux_id'])
+				self.analog_ena = True
 
 		# Run placement
 		self.gen_grid()
@@ -219,13 +222,14 @@ class ModulePlacer:
 	def _site_suitable(self, mod, pos_x, pos_y):
 		# Check this is a connectable position
 		mux_id, blk_id = self.p2l(pos_x, pos_y)
-		if mux_id in self.mux_analog:
+		if mux_id in self.mux_missing:
 			return False
 
-		# If in analog fill mode, that slot must be facing an analog slot
-		if self.analog_fill:
+		# If in missing fill mode, that slot must be facing a missing mux
+		# (We're using ld2la here since that's the same idea)
+		if self.missing_fill:
 			amux_id, ablk_id = self.ld2la(mux_id, blk_id)
-			if not amux_id in self.mux_analog:
+			if not amux_id in self.mux_missing:
 				return False
 
 		# Check all positions exist and are free
@@ -273,8 +277,8 @@ class ModulePlacer:
 		if self._module_placed(mod):
 			return
 
-		# If we're trying to fill analog slots, only height=2 matters
-		if self.analog_fill and (mod.height != 2):
+		# If we're trying to fill slots facing missing muxes, only height>=2 matters
+		if self.missing_fill and (mod.height < 2):
 			return
 
 		# Find final X, Y
@@ -291,7 +295,7 @@ class ModulePlacer:
 
 		# Valid ?
 		if (x is None) or (y is None):
-			if self.analog_fill:
+			if self.missing_fill:
 				return
 			raise RuntimeError(f"Module '{mod.name:s}' couldn't be placed")
 
@@ -321,7 +325,7 @@ class ModulePlacer:
 
 	def place_modules(self):
 		# Deal with analog modules first if we support analog
-		if self.mux_analog:
+		if self.analog_ena:
 			ap = AnalogPlacer(self)
 			ap.place_modules(self.modules)
 
@@ -343,12 +347,12 @@ class ModulePlacer:
 		self._place_modules_group(full_placed)
 
 			# Semi/Auto trying to fill analog positions first
-		self.analog_fill = True
+		self.missing_fill = True
 		self._place_modules_group(semi_placed)
 		self._place_modules_group(auto_placed)
 
 			# And then normal mode
-		self.analog_fill = False
+		self.missing_fill = False
 		self._place_modules_group(semi_placed)
 		self._place_modules_group(auto_placed)
 

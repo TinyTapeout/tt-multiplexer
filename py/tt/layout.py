@@ -30,7 +30,7 @@ class Layout:
 		self.hspine_layout()
 		self.vspine_layout()
 		self.ctrl_layout()
-		self.analog_layout()
+		self.mux_layout()
 
 	def _align(self, v, layer, dir_, ceil=False):
 		# Grab config data for tracks / sites
@@ -514,7 +514,7 @@ class Layout:
 		self.ply_ctrl_io_top.update( spread(tr_pads, limit_right, self.glb.ctrl.width) )
 		self.ply_ctrl_io_bot.update( spread(br_pads, limit_right, self.glb.ctrl.width) )
 
-	def analog_layout(self):
+	def mux_layout(self):
 		# Generate list of masked muxes
 		self.mux_mask = 0
 
