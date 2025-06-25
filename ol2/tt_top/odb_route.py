@@ -854,6 +854,19 @@ class ModulePowerStrapper:
 					( y_mid - self.stripe_space, w ),
 				]
 
+			elif h == 4:
+				spc = self.stripe_space // 2
+				return [
+					( y_mid + spc * 7, w ),
+					( y_mid + spc * 5, w ),
+					( y_mid + spc * 3, w ),
+					( y_mid + spc * 1, w ),
+					( y_mid - spc * 1, w ),
+					( y_mid - spc * 3, w ),
+					( y_mid - spc * 5, w ),
+					( y_mid - spc * 7, w ),
+				]
+
 			else:
 				raise RuntimeError('Unsupported heigh Power Gate')
 
