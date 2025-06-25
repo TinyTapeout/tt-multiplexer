@@ -838,7 +838,7 @@ class ModulePowerStrapper:
 		y_max = bbox.yMax()
 		y_mid = (y_min + y_max) // 2
 
-		# If we only have one power strap, allocate all to it
+		# If we only have one power gate, allocate all to it
 		if pg_cnt == 1:
 			# Wide strip
 			w = 2 * self.stripe_width + self.space
