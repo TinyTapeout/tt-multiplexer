@@ -22,5 +22,8 @@ if hasattr(cfg.tt, 'analog'):
 	for grp in cfg.tt.analog:
 		for mux_id in grp['mux_id']:
 			mux_mask |= 1 << mux_id
+if hasattr(cfg.tt, 'huge_modules'):
+	for mux_id in cfg.tt.huge_modules.mux_id:
+		mux_mask |= 1 << mux_id
 %>
 `define TT_MUX_MASK ${cfg.tt.grid.y}'h${'{:X}'.format(mux_mask)}

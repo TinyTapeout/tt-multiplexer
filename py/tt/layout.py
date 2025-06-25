@@ -523,6 +523,10 @@ class Layout:
 				for mux_id in grp['mux_id']:
 					self.mux_mask |= 1 << mux_id
 
+		if hasattr(self.cfg.tt, 'huge_modules'):
+			for mux_id in self.cfg.tt.huge_modules.mux_id:
+				self.mux_mask |= 1 << mux_id
+
 	def mux_exists(self, mux_id):
 		# Check if a given mux exists or is masked for some reason
 		return not ((self.mux_mask >> mux_id) & 1)

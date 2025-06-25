@@ -91,6 +91,10 @@ class ModulePlacer:
 				self.mux_missing.update(grp['mux_id'])
 				self.analog_ena = True
 
+		if hasattr(self.cfg.tt, 'huge_modules'):
+			for mux_id in self.cfg.tt.huge_modules.mux_id:
+				self.mux_missing.add(mux_id)
+
 		# Run placement
 		self.gen_grid()
 		self.load_modules(mod_file)
@@ -187,7 +191,7 @@ class ModulePlacer:
 			self.modules.append(mod)
 
 			# Size & Position limits
-			if mod.height not in [1,2]:
+			if mod.height not in [1,2,4]:
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid height {mod.height:d}")
 
 			if mod.width not in [1,2,3,4,6,8]:
