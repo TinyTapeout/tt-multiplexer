@@ -54,8 +54,9 @@ module tt_user_module #(
 	assign ow = { uio_oe, uio_out, uo_out };
 
 	generate
+		case ({MUX_ID[15:0], BLK_ID[15:0]})
 % for (mux_id, blk_id), mod in grid.items():
-		if ((MUX_ID == ${mux_id}) && (BLK_ID == ${blk_id}))
+		{ 16'd${mux_id}, 16'd${blk_id} }:
 		begin : block_${mux_id}_${blk_id}
 `ifdef USE_POWER_PINS
 			wire l_vdpwr;
@@ -123,17 +124,11 @@ module tt_user_module #(
 %  endif
 		end
 % endfor
-
-% for (mux_id, blk_id) in grid.keys():
-		if ((MUX_ID == ${mux_id}) && (BLK_ID == ${blk_id}))
-		begin
-		end
-		else
-% endfor
-		begin
+		default: begin
 			// Tie-off
 			assign ow = { N_OW{k_zero} };
 		end
+		endcase
 	endgenerate
 
 endmodule // tt_user_module
