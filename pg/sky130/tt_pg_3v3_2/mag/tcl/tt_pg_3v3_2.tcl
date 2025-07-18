@@ -27,14 +27,14 @@ paint met4
 label VAPWR FreeSans 20 0 0 0 center -met4
 port make
 port class input
-port use power 
+port use power
 
 box position 885 0
 paint met4
 label GAPWR FreeSans 20 0 0 0 center -met4
 port make
 port class output
-port use power 
+port use power
 
 box height 50
 box width 1380

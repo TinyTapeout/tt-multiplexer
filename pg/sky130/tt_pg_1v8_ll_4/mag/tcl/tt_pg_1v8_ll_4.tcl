@@ -1,4 +1,4 @@
-cellname rename (UNNAMED) tt_pg_1v8_ll_2
+cellname rename (UNNAMED) tt_pg_1v8_ll_4
 
 box position 0 0
 box height 51136
@@ -20,14 +20,14 @@ paint met4
 label VPWR FreeSans 20 0 0 0 center -met4
 port make
 port class input
-port use power 
+port use power
 
 box position 570 0
 paint met4
 label GPWR FreeSans 20 0 0 0 center -met4
 port make
 port class output
-port use power 
+port use power
 
 box height 50
 box width 920

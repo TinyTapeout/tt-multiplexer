@@ -20,14 +20,14 @@ paint met4
 label VPWR FreeSans 20 0 0 0 center -met4
 port make
 port class input
-port use power 
+port use power
 
 box position 570 0
 paint met4
 label GPWR FreeSans 20 0 0 0 center -met4
 port make
 port class output
-port use power 
+port use power
 
 box height 50
 box width 920
@@ -39,6 +39,6 @@ port class input
 port use signal
 
 select top cell
-#lef write ../lef/tt_pg_1v8_ll_2.lef -hide -pinonly
+lef write ../lef/tt_pg_1v8_ll_2.lef -hide -pinonly
 gds write ../gds/tt_pg_1v8_ll_2.gds
 save tt_pg_1v8_ll_2.mag
