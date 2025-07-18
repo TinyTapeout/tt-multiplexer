@@ -12,9 +12,13 @@ pdk:
     height: 2720
   pwrgate:
     vdd:
+      name: 'tt_pg_1v8'
       width: 9200
     vaa:
+      name: 'tt_pg_3v3'
       width: 13800
+  analog:
+    switch: 'tt_asw_3v3'
   tracks:
     li1:
       x:

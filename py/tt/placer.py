@@ -56,18 +56,24 @@ class ModuleSlot:
 		return self.placer.p2l(self.pos_x, self.pos_y)[1]
 
 	@property
-	def pg_vdd_variant(self):
+	def pg_vdd_module(self):
 		if self.pg_vdd is not False:
-			return f'{self.pg_vdd:s}_{self.height:d}'
+			name = self.placer.cfg.pdk.pwrgate.vdd.name
+			return f'{name:s}_{self.pg_vdd:s}_{self.height:d}'
 		else:
 			return None
 
 	@property
-	def pg_vaa_variant(self):
+	def pg_vaa_module(self):
 		if self.pg_vaa is True:
-			return f'{self.height:d}'
+			name = self.placer.cfg.pdk.pwrgate.vaa.name
+			return f'{name:s}_{self.height:d}'
 		else:
 			return None
+
+	@property
+	def asw_module(self):
+		return self.placer.cfg.pdk.analog.switch
 
 
 class ModulePlacer:

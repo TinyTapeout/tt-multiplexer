@@ -225,7 +225,7 @@ class VddPowerSwitch(PowerSwitch):
 			layout,
 			mp.height,
 			layout.glb.pg_vdd.width,
-			f'tt_pg_1v8_{mp.pg_vdd_variant:s}'
+			f'{mp.pg_vdd_module:s}'
 		)
 
 
@@ -236,7 +236,7 @@ class VaaPowerSwitch(PowerSwitch):
 			layout,
 			mp.height,
 			layout.glb.pg_vaa.width,
-			f'tt_pg_3v3_{mp.pg_vaa_variant:s}'
+			f'{mp.pg_vaa_module:s}'
 		)
 
 
@@ -250,7 +250,7 @@ class AnalogSwitch(LayoutElement):
 		height = 21760
 
 		# Set mod_name
-		self.mod_name = f'tt_asw_3v3'
+		self.mod_name = layout.cfg.pdk.analog.switch
 
 		# Super
 		super().__init__(
@@ -414,8 +414,8 @@ class Branch(LayoutElement):
 				mod_name = f'tt_um_{mp.name:s}',
 				mw = mp.width,
 				mh = mp.height,
-				pg_vdd = mp.pg_vdd_variant is not None,
-				pg_vaa = mp.pg_vaa_variant is not None,
+				pg_vdd = mp.pg_vdd_module is not None,
+				pg_vaa = mp.pg_vaa_module is not None,
 				analog = mp.analog,
 			)
 
@@ -450,7 +450,7 @@ class Branch(LayoutElement):
 					self.add_child(ana_sw, Point(pos_x, pos_y), orient, name=name_pfx+f'tt_asw_{k:d}_I')
 
 			# Power gating
-			if mp.pg_vdd_variant is not None:
+			if mp.pg_vdd_module is not None:
 				# Power Switch instance
 				vdd_sw = VddPowerSwitch(layout, mp)
 
@@ -460,7 +460,7 @@ class Branch(LayoutElement):
 				# Shift the block
 				blk_x += layout.glb.pg_vdd.offset
 
-			if mp.pg_vaa_variant is not None:
+			if mp.pg_vaa_module is not None:
 				# Power Switch instance
 				vaa_sw = VaaPowerSwitch(layout, mp)
 
