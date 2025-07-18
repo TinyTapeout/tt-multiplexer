@@ -31,7 +31,7 @@ class ModuleSlot:
 		self.analog = cfg_data.get('analog', {})
 
 		if self.pg_vdd is True:
-			self.pg_vdd = 'std' if self.width > 4 else 'll'
+			self.pg_vdd = 'hp' if self.width > 4 else 'll'
 
 	def as_dict(self):
 		return {
@@ -57,10 +57,8 @@ class ModuleSlot:
 
 	@property
 	def pg_vdd_variant(self):
-		if self.pg_vdd == 'std':
-			return f'{self.height:d}'
-		elif self.pg_vdd == 'll':
-			return f'll_{self.height:d}'
+		if self.pg_vdd is not False:
+			return f'{self.pg_vdd:s}_{self.height:d}'
 		else:
 			return None
 
