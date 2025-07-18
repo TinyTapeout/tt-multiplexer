@@ -1,9 +1,9 @@
 Tiny Tapeout Power Gates for SKY130
 ===================================
 
-* `tt_pg_1v8_1`: Single height 1.8V switch
-* `tt_pg_1v8_2`: Dual height 1.8V switch
-* `tt_pg_1v8_4`: Quad height 1.8V switch
+* `tt_pg_1v8_hp_1`: Single height 1.8V switch (high-performance variant)
+* `tt_pg_1v8_hp_2`: Dual height 1.8V switch (high-performance variant)
+* `tt_pg_1v8_hp_4`: Quad height 1.8V switch (high-performance variant)
 * `tt_pg_1v8_ll_1`: Single height 1.8V switch (low-leakage variant)
 * `tt_pg_1v8_ll_2`: Dual height 1.8V switch (low-leakage variant)
 * `tt_pg_1v8_ll_4`: Quad height 1.8V switch (low-leakage variant)
