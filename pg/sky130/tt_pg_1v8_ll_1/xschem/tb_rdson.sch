@@ -85,7 +85,7 @@ C {devices/lab_pin.sym} 420 -160 0 1 {name=p1 sig_type=std_logic lab=vdd_dut
 C {tt_pg_1v8_ll_1.sym} 250 80 0 0 {name=x2
 schematic=tt_pg_1v8_ll_1_pex.sim
 spice_sym_def="tcleval(.include [file normalize ../mag/tt_pg_1v8_ll_1.pex.spice])"
-tclcommand="textwindow [file normalize ../mag/tt_pg_1v8.pex.spice]"}
+tclcommand="textwindow [file normalize ../mag/tt_pg_1v8_ll_1.pex.spice]"}
 C {devices/gnd.sym} 80 140 0 0 {name=l2 lab=GND}
 C {devices/isource.sym} 420 90 0 0 {name=I1 value=1m savecurrent=true}
 C {devices/gnd.sym} 420 140 0 0 {name=l4 lab=GND}
