@@ -52,6 +52,11 @@ module tt_top_tb;
 		.N_O    (8),
 		.N_I    (10)
 	) dut_I (
+`ifdef USE_POWER_PINS
+		.VDPWR       (1'b1),
+		.VAPWR       (1'b1),
+		.VGND        (1'b0),
+`endif
 		.io_in       (io_in),
 		.io_out      (io_out),
 		.io_oeb      (io_oeb),

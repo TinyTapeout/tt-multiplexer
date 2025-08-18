@@ -23,6 +23,12 @@ module tt_mux #(
 	parameter integer U_OW = N_O + N_IO * 2,
 	parameter integer U_IW = N_I + N_IO
 )(
+	// Power
+`ifdef USE_POWER_PINS
+	input  wire VPWR,
+	input  wire VGND,
+`endif
+
 	// Connections to user modules
 	input  wire [(U_OW*N_UM)-1:0] um_ow,
 	output wire [(U_IW*N_UM)-1:0] um_iw,

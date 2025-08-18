@@ -19,6 +19,12 @@ module tt_ctrl #(
 	parameter integer S_OW = N_O + N_IO * 2 + 2,
 	parameter integer S_IW = N_I + N_IO + 9 + 1 + 2
 )(
+	// Power
+`ifdef USE_POWER_PINS
+	input  wire VPWR,
+	input  wire VGND,
+`endif
+
 	// User pads connections
 	input  wire  [N_IO-1:0] pad_uio_in,
 	output wire  [N_IO-1:0] pad_uio_out,
