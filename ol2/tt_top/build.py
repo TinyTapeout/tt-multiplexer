@@ -35,6 +35,7 @@ sys.path.append('../../py')
 import tt
 
 
+@Step.factory.register()
 class CustomPower(OdbpyStep):
 
 	id = "TT.Top.CustomPower"
@@ -47,6 +48,7 @@ class CustomPower(OdbpyStep):
 		)
 
 
+@Step.factory.register()
 class CustomRoute(OdbpyStep):
 
 	id = "TT.Top.CustomRoute"

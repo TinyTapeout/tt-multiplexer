@@ -27,6 +27,7 @@ sys.path.append('../../py')
 import tt
 
 
+@Step.factory.register()
 class IOPlacement(OdbpyStep):
 
 	id = "TT.Block.IOPlacement"
