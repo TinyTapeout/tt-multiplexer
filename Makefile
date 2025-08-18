@@ -4,6 +4,8 @@
 
 # Configs
 TECH ?= generic
+TECH_PG  ?= $(TECH)
+TECH_ASW ?= $(TECH)
 SIM_DEFS += -DSIM
 
 # Binaries
@@ -27,13 +29,8 @@ SIM_SRC=$(addprefix sim/, \
 	tt_um_test.v \
 )
 
-SIM_SRC+=$(addprefix pg/, \
-	tt_pg_vdd_1/tt_pg_vdd_1.v \
-	tt_pg_vdd_2/tt_pg_vdd_2.v \
-)
-SIM_SRC+=$(addprefix asw/, \
-	tt_asw.v \
-)
+SIM_SRC+=$(wildcard pg/$(TECH_PG)/*/src/*.v)
+SIM_SRC+=$(wildcard asw/$(TECH_ASW)/*/src/*.v)
 
 PRIM_SRC=$(addprefix rtl/prim_$(TECH)/, \
 	tt_prim_buf.v \
