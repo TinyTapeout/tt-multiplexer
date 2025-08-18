@@ -73,7 +73,7 @@ rtl/tt_user_module.v: rtl/tt_user_module.v.mak cfg/modules_placed.yaml
 # Simulation targets
 sim: sim/tt_top_tb.vcd
 
-sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(RTL_INC) $(PRIM_SRC) 
+sim/tt_top_tb: $(SIM_SRC) $(RTL_SRC) $(RTL_INC) $(PRIM_SRC)
 	$(IVERILOG) $(SIM_DEFS) -Wall -Wno-timescale -Irtl -o $@ $(SIM_SRC) $(RTL_SRC) $(PRIM_SRC)
 
 sim/tt_top_tb.vcd: sim/tt_top_tb
