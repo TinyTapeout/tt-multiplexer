@@ -44,7 +44,6 @@ class BlockTemplateFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
 		Yosys.Synthesis,
-		Misc.LoadBaseSDC,
 		OpenROAD.Floorplan,
 		IOPlacement,
 	]
