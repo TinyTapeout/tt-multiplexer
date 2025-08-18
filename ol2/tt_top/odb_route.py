@@ -899,8 +899,8 @@ class ModulePowerStrapper:
 
 	def _get_x_data(self, um_it, pg_it):
 		# Find geometry for those terminals
-		geom_um = pg_it.getGeometries()
-		geom_pg = um_it.getGeometries()
+		geom_um = [ x[1] for x in pg_it.getGeometries() ]
+		geom_pg = [ x[1] for x in um_it.getGeometries() ]
 		geom = geom_um + geom_pg
 
 		# Extent
