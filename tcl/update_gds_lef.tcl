@@ -12,7 +12,7 @@ set psdm [property MASKHINTS_PSDM]
 set nsdm [property MASKHINTS_NSDM]
 
 select top cell
-flatten flat_tmp
+flatten -dotoplabels flat_tmp
 load flat_tmp
 cellname delete $project
 cellname rename flat_tmp $project

@@ -7,7 +7,7 @@ set project [lindex $argv $argc-1]
 load $project
 
 # Flatten
-flatten ${project}_pex
+flatten -dotoplabels ${project}_pex
 load ${project}_pex
 select top cell
 
