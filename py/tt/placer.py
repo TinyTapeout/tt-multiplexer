@@ -198,7 +198,7 @@ class ModulePlacer:
 			if mod.height not in [1,2,4]:
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid height {mod.height:d}")
 
-			if mod.width not in [1,2,3,4,6,8]:
+			if not 1 <= mod.width <= (self.cfg.tt.grid.x // 2):
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid width {mod.width:d}")
 
 			if (mod.pos_x is not None) and (
