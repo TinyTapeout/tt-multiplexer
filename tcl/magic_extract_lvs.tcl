@@ -5,6 +5,12 @@
 # Load cell
 set project [lindex $argv $argc-1]
 load $project
+
+# Flatten
+flatten -dotoplabels flat_tmp
+load flat_tmp
+cellname delete $project
+cellname rename flat_tmp $project
 select top cell
 
 # Run extraction
