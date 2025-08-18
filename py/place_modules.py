@@ -14,8 +14,7 @@ import tt
 
 
 def main(argv0, src_fn, dst_fn):
-	cfg_fn = tt.TinyTapeout.get_config_file()
-	cfg    = tt.ConfigNode.from_yaml(open(cfg_fn, 'r'))
+	cfg = tt.TinyTapeout.get_config()
 	placer = tt.ModulePlacer(cfg, src_fn, verbose=True)
 	placer.save_modules(dst_fn)
 

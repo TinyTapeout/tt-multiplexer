@@ -18,16 +18,16 @@ from .elements import *
 class TinyTapeout:
 
 	def __init__(self, config=None, modules=None):
-		# Determine the config files
-		config  = self.get_config_file(config)
-		modules = self.get_modules_file(modules) if (modules is not False) else False
-
 		# Generic config / layout
-		self.cfg    = ConfigNode.from_yaml(open(config, 'r'))
+		self.cfg    = self.get_config(config)
 		self.layout = Layout(self.cfg)
 
 		# Modules placement
 		if modules is not False:
+			# Get module file
+			modules = self.get_modules_file(modules)
+
+			# Placer / Elements
 			self.placer = ModulePlacer(self.cfg, modules)
 			self.die    = Die(self.layout, self.placer)
 
@@ -46,4 +46,13 @@ class TinyTapeout:
 	@classmethod
 	def get_modules_file(kls, modules=None):
 		return kls._get_data_file(modules, 'TT_MODULES', 'modules_placed.yaml')
+
+	@classmethod
+	def get_config(kls, config=None):
+		# Determine the config files
+		config  = kls.get_config_file(config)
+		# Load actual config
+		cfg = ConfigNode.from_yaml(open(config, 'r'))
+
+		return cfg
 

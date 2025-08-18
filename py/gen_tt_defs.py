@@ -16,8 +16,7 @@ import tt
 
 def main(argv0, tmpl_fn):
 
-	cfg_fn = tt.TinyTapeout.get_config_file()
-	cfg    = tt.ConfigNode.from_yaml(open(cfg_fn, 'r'))
+	cfg = tt.TinyTapeout.get_config()
 
 	template = Template(filename=tmpl_fn)
 	output = template.render(cfg=cfg)
