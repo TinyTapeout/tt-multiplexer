@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
 	def pdn_align(x):
 		grid = 0.005
-		return int(x / grid) * grid
+		return round(x / grid) * grid
 
 	flow_cfg.update({
 		"FP_PDN_HWIDTH"  : pdn_align(pdn_width),
