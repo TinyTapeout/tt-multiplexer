@@ -1,4 +1,4 @@
-MAGIC_RC ?= $(PDK_ROOT)/sky130A/libs.tech/magic/sky130A.magicrc
+MAGIC_RC ?= $(PDK_ROOT)/$(PDK)/libs.tech/magic/$(PDK).magicrc
 TCL_BASE = $(dir $(lastword $(MAKEFILE_LIST)))
 
 %.lvs.spice: %.mag
