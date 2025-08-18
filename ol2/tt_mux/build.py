@@ -12,9 +12,9 @@ import sys
 
 from typing import List, Type
 
-from openlane.flows.sequential import SequentialFlow
-from openlane.steps.odb import OdbpyStep
-from openlane.steps import (
+from librelane.flows.sequential import SequentialFlow
+from librelane.steps.odb import OdbpyStep
+from librelane.steps import (
 	Step,
 	Yosys,
 	OpenROAD,
