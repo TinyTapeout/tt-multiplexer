@@ -1,4 +1,6 @@
 pdk:
+  name: 'sky130A'
+  tech: 'sky130'
   die:
     width: 3166630
     height: 4766630

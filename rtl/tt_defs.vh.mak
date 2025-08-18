@@ -16,6 +16,8 @@
 `define TT_N_O  ${cfg.tt.uio.o}
 `define TT_N_I  ${cfg.tt.uio.i}
 
+`define TT_TECH_${cfg.pdk.tech.upper()}
+
 <%
 mux_mask = 0
 if hasattr(cfg.tt, 'analog'):

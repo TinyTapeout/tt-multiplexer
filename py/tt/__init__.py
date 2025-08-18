@@ -35,13 +35,18 @@ class TinyTapeout:
 	def _get_data_file(kls, user_val, env_var, default_val):
 		base = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir, 'cfg'))
 		val = os.getenv(env_var, user_val) or default_val
+		if val is None:
+			return None
 		if not os.path.isabs(val):
 			val = os.path.join(base, val)
 		return val
 
 	@classmethod
 	def get_config_file(kls, config=None):
-		return kls._get_data_file(config, 'TT_CONFIG', 'sky130.yaml')
+		DEFAULT_CONFIG = {
+			'sky130A': 'sky130.yaml',
+		}.get(os.getenv('PDK'))
+		return kls._get_data_file(config, 'TT_CONFIG', DEFAULT_CONFIG)
 
 	@classmethod
 	def get_modules_file(kls, modules=None):
@@ -51,8 +56,16 @@ class TinyTapeout:
 	def get_config(kls, config=None):
 		# Determine the config files
 		config  = kls.get_config_file(config)
+		if config is None:
+			raise RuntimeError('Unable to load config. Make sure either PDK and/or TT_CONFIG env var is set')
+
 		# Load actual config
 		cfg = ConfigNode.from_yaml(open(config, 'r'))
+
+		# Check PDK
+		pdk_env = os.getenv('PDK')
+		if (pdk_env is not None) and (pdk_env != cfg.pdk.name):
+			raise RuntimeError('Environment variable PDK set to value inconsistent with loaded config file')
 
 		return cfg
 
