@@ -11,7 +11,7 @@
 `include "tt_defs.vh"
 
 module tt_top #(
-	parameter integer N_PADS = 44,
+	parameter integer N_PADS = 48,
 	parameter integer G_X  = `TT_G_X,
 	parameter integer G_Y  = `TT_G_Y,
 	parameter integer N_AE = `TT_N_AE,
@@ -89,45 +89,30 @@ module tt_top #(
 
 	// Split in groups
 	assign {
-		pad_ctl_in,
-		pad_ana_in[11:6],
+		pad_ana_in,
 		pad_uo_in,
 		pad_uio_in,
-		pad_ui_in[1],	// u_rst
-		pad_ui_in[0],	// u_clk
-		pad_ui_in[9],
-		pad_ana_in[5:0],
-		pad_ui_in[8:2]
+		pad_ui_in,
+		pad_ctl_in
 	} = io_in;
 
 	assign io_out = {
-		pad_ctl_out,
-		pad_ana_out[11:6],
+		pad_ana_out,
 		pad_uo_out,
 		pad_uio_out,
-		pad_ui_out[1],	// u_rst
-		pad_ui_out[0],	// u_clk
-		pad_ui_out[9],
-		pad_ana_out[5:0],
-		pad_ui_out[8:2]
+		pad_ui_out,
+		pad_ctl_out
 	};
 
 	assign io_oex = {
-		pad_ctl_oex,
-		pad_ana_oex[11:6],
+		pad_ana_oex,
 		pad_uo_oex,
 		pad_uio_oex,
-		pad_ui_oex[1],	// u_rst
-		pad_ui_oex[0],	// u_clk
-		pad_ui_oex[9],
-		pad_ana_oex[5:0],
-		pad_ui_oex[8:2]
+		pad_ui_oex,
+		pad_ctl_oex
 	};
 
-	assign pad_ana_analog = {
-		io_ana[37:32],
-		io_ana[12:7]
-	};
+	assign pad_ana_analog = io_ana[N_PADS-1:N_PADS-N_AE];
 
 	// Tie-offs
 		// Control
