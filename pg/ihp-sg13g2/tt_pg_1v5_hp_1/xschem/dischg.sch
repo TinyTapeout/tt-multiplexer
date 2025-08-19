@@ -1,0 +1,1 @@
+../../common/xschem/dischg.sch

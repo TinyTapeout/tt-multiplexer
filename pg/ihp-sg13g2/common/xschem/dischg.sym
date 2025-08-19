@@ -1,0 +1,21 @@
+v {xschem version=3.4.8RC file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname"
+template="name=x1"
+}
+V {}
+S {}
+E {}
+L 4 -100 -10 -80 -10 {}
+L 7 70 -10 90 -10 {}
+L 7 70 10 90 10 {}
+B 5 87.5 7.5 92.5 12.5 {name=VGND dir=inout sim_pinnumber=1}
+B 5 87.5 -12.5 92.5 -7.5 {name=GPWR dir=inout sim_pinnumber=2}
+B 5 -102.5 -12.5 -97.5 -7.5 {name=gate dir=in sim_pinnumber=3}
+P 4 5 70 -20 -80 -20 -80 20 70 20 70 -20 {}
+T {@symname} -45 -6 0 0 0.3 0.3 {}
+T {@name} 75 -32 0 0 0.2 0.2 {}
+T {GPWR} 65 -14 0 1 0.2 0.2 {}
+T {gate} -75 -14 0 0 0.2 0.2 {}
+T {VGND} 65 6 0 1 0.2 0.2 {}

@@ -1,0 +1,126 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_pg_1v5_ll_2
+  CLASS BLOCK ;
+  FOREIGN tt_pg_1v5_ll_2 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 9.600 BY 313.740 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 269.260 2.100 282.620 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 189.880 2.100 203.240 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 110.500 2.100 123.860 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 31.120 2.100 44.480 ;
+    END
+  END VGND
+  PIN VPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 254.260 9.600 267.620 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 284.260 9.600 297.620 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 3.740 267.620 9.600 284.260 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 174.880 9.600 188.240 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 204.880 9.600 218.240 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 3.740 188.240 9.600 204.880 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 95.500 9.600 108.860 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 125.500 9.600 138.860 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 3.740 108.860 9.600 125.500 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 16.120 9.600 29.480 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 46.120 9.600 59.480 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 3.740 29.480 9.600 46.120 ;
+    END
+  END VPWR
+  PIN GPWR
+    DIRECTION OUTPUT ;
+    USE POWER ;
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 219.880 9.600 252.620 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 140.500 9.600 173.240 ;
+    END
+    PORT
+      LAYER TopMetal1 ;
+        RECT 0.000 61.120 9.600 93.860 ;
+    END
+  END GPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 1.830400 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 313.240 9.600 313.740 ;
+    END
+  END ctrl
+  OBS
+      LAYER GatPoly ;
+        RECT 0.340 0.940 9.260 313.250 ;
+      LAYER Metal1 ;
+        RECT 0.000 1.010 9.600 313.180 ;
+      LAYER Metal2 ;
+        RECT 0.000 1.070 9.600 313.740 ;
+      LAYER Metal3 ;
+        RECT 0.000 1.000 9.600 313.740 ;
+      LAYER Metal4 ;
+        RECT 0.000 1.000 9.600 312.740 ;
+      LAYER Metal5 ;
+        RECT 0.000 1.000 9.600 312.740 ;
+      LAYER TopMetal1 ;
+        RECT 0.000 299.260 9.600 312.740 ;
+        RECT 0.000 1.000 9.600 14.480 ;
+  END
+END tt_pg_1v5_ll_2
+END LIBRARY
+
