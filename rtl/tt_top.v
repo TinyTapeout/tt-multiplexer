@@ -279,6 +279,9 @@ module tt_top #(
 
 	(* blackbox, keep *)
 	tt_logo_bottom logo_bottom_I ();
+
+	(* blackbox, keep *)
+	tt_logo_corner logo_corner_I ();
 `endif
 `endif
 

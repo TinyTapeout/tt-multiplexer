@@ -355,7 +355,7 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
-		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom"],
+		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom", "tt_logo_corner"],
 	}
 
 	# Update PDN config
