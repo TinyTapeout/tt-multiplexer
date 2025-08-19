@@ -103,5 +103,7 @@ tt:
     vlayer: 'Metal4'
     hlayer: 'Metal5'
   analog: []
+  huge_modules:
+    mux_id: [ 20 ]
   logo:
     size: 50000
