@@ -86,6 +86,9 @@ class ModulePlacer:
 		# Current place mode
 		self.missing_fill = False
 
+		# Y candidates
+		self.yc = self.gen_y_candidates()
+
 		# Extract missing muxes positions
 		self.mux_missing = set()
 
@@ -103,6 +106,38 @@ class ModulePlacer:
 		self.gen_grid()
 		self.load_modules(mod_file)
 		self.place_modules()
+
+	def gen_y_candidates(self):
+		# Start length
+		N = self.cfg.tt.grid.y
+		L = self.cfg.tt.grid.y
+
+		# Initial split
+		m = L // 2
+		starts = [ 0, m ]
+		used   = { 0, m }
+
+		# Iterate
+		while len(starts) < N:
+			# Split
+			m = m // 2
+
+			# Add points at each starts
+			new = []
+			for p in starts:
+				i = p + m
+
+				while i < N:
+					if i not in used:
+						new.append(i)
+						used.add(i)
+						break
+					else:
+						i = i + 1
+
+			starts.extend(new)
+
+		return starts
 
 	def gen_grid(self):
 		self.lgrid = {}
@@ -257,14 +292,14 @@ class ModulePlacer:
 
 	def _find_xy_for_module(self, mod):
 		# Scan the whole grid in order and check if suitable
-		for y in range(self.cfg.tt.grid.y):
+		for y in self.yc:
 			for x in range(self.cfg.tt.grid.x):
 				if self._site_suitable(mod, x, y):
 					return x, y
 		return None, None
 
 	def _find_y_for_module(self, mod):
-		for y in range(self.cfg.tt.grid.y):
+		for y in self.yc:
 			if self._site_suitable(mod, mod.pos_x, y):
 				return mod.pos_x, y
 		return None, None
