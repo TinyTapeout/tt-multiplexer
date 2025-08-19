@@ -68,6 +68,8 @@ class MuxFlow(SequentialFlow):
 		OpenROAD.RCX,
 		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
+		OpenROAD.WriteAbstractLEF,
+		OpenROAD.WriteCDL,
 		Magic.StreamOut,
 		Magic.WriteLEF,
 		KLayout.StreamOut,
@@ -75,9 +77,13 @@ class MuxFlow(SequentialFlow):
 		Checker.XOR,
 		Magic.DRC,
 		Checker.MagicDRC,
+		KLayout.DRC,
+		Checker.KLayoutDRC,
 		Magic.SpiceExtraction,
 		Checker.IllegalOverlap,
 		Netgen.LVS,
+		Checker.LVS,
+		KLayout.LVS,
 		Checker.LVS,
 	]
 
@@ -129,7 +135,7 @@ if __name__ == '__main__':
 		# Routing
 		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
-		"RT_MAX_LAYER"         : "met4",
+		"RT_MAX_LAYER"         : "Metal5",
 
 		# LEF generation option
 		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
