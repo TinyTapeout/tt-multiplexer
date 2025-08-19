@@ -14,11 +14,17 @@ import math
 import os
 import sys
 
-from typing import List, Type
+from os.path import abspath
+from typing import List, Tuple, Type
 
+from librelane.common import Path
 from librelane.flows.misc import OpenInKLayout
 from librelane.flows.sequential import SequentialFlow
+from librelane.state import DesignFormat, State
+from librelane.steps.klayout import KLayoutStep
 from librelane.steps.odb import OdbpyStep
+from librelane.steps.openroad import OpenROADStep
+from librelane.steps.step import ViewsUpdate, MetricsUpdate
 from librelane.steps import (
 	Step,
 	Yosys,
@@ -61,6 +67,97 @@ class CustomRoute(OdbpyStep):
 		)
 
 
+@Step.factory.register()
+class PadRing(OpenROADStep):
+
+	id = "TT.Top.PadRing"
+	name = "Creates Pad Ring"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"padring.tcl"
+		)
+
+
+@Step.factory.register()
+class IHPExtractSpice(Step):
+
+	id = "TT.IHP.ExtractSpice"
+	name = "Extracts SPICE netlist from GDS using metal only"
+
+	inputs = [DesignFormat.GDS]
+	outputs = [DesignFormat.SPICE]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_gds = state_in[DesignFormat.GDS]
+		output_spice = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.SPICE.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/ihp_extract_spice.py"
+		)
+
+		self.run_subprocess(
+			[
+				script,
+				abspath(input_gds),
+				abspath(output_spice),
+			],
+		)
+
+		views_updates[DesignFormat.SPICE] = Path(output_spice)
+
+		return views_updates, {}
+
+
+@Step.factory.register()
+class IHPSealRing(KLayoutStep):
+
+	id = "TT.IHP.SealRing"
+	name = "Adds Seal Ring to the GDS"
+
+	inputs = [DesignFormat.GDS]
+	outputs = [DesignFormat.GDS]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_gds = state_in[DesignFormat.GDS]
+		output_gds = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.GDS.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/ihp_seal_ring.py"
+		)
+
+		self.run_pya_script(
+			[
+				script,
+				"--input-gds",
+				abspath(input_gds),
+				"--output-gds",
+				abspath(output_gds),
+				"--die-width",
+				f"{self.config['DIE_AREA'][2]:f}",
+				"--die-height",
+				f"{self.config['DIE_AREA'][3]:f}",
+			],
+		)
+
+		views_updates[DesignFormat.GDS] = Path(output_gds)
+
+		return views_updates, {}
+
+
 class TopFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -69,9 +166,9 @@ class TopFlow(SequentialFlow):
 		Checker.YosysUnmappedCells,
 		Checker.YosysSynthChecks,
 		OpenROAD.Floorplan,
-		Odb.ApplyDEFTemplate,
-		Odb.ManualMacroPlacement,
 		CustomPower,
+		PadRing,
+		Odb.ManualMacroPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
 		OpenROAD.DetailedPlacement,
@@ -90,12 +187,23 @@ class TopFlow(SequentialFlow):
 		KLayout.StreamOut,
 		KLayout.XOR,
 		Checker.XOR,
-		Magic.DRC,
-		Checker.MagicDRC,
-		Magic.SpiceExtraction,
-		Checker.IllegalOverlap,
+
+		IHPExtractSpice,
 		Netgen.LVS,
 		Checker.LVS,
+
+#		Magic.SpiceExtraction,
+#		Checker.IllegalOverlap,
+#		Netgen.LVS,
+#		Checker.LVS,
+
+		KLayout.DRC,
+		Checker.KLayoutDRC,
+
+#		Magic.DRC,
+#		Checker.MagicDRC,
+
+		IHPSealRing,
 	]
 
 
@@ -139,9 +247,9 @@ if __name__ == '__main__':
 				macros[m.mod_name].update({
 					'nl':   f'dir::verilog/{m.mod_name:s}.v',
 					'spef': {
-						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
+#						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
 						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom.spef' ],
-						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
+#						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
 					},
 				})
 
@@ -160,14 +268,14 @@ if __name__ == '__main__':
 	# Custom config
 	flow_cfg = {
 		# Main design properties
-		"DESIGN_NAME"    : "openframe_project_wrapper",
+		"DESIGN_NAME"    : "tt_ihp_wrapper",
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES": [
-			"dir::openframe_project_wrapper.v",
+			"dir::tt_ihp_wrapper.v",
 			"dir::../../rtl/tt_top.v",
-			"dir::../../rtl/tt_gpio.v",
+			"dir::../../rtl/tt_ihp_gpio.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
 
@@ -177,6 +285,17 @@ if __name__ == '__main__':
 		"MACROS": macros,
 		"EXTRA_VERILOG_MODELS": [
 			"dir::verilog/tt_um_all.v",
+		],
+		"EXTRA_LIBS": [
+			"pdk_dir::libs.ref/sg13g2_io/lib/sg13g2_io_dummy.lib",
+		],
+		"EXTRA_LEFS": [
+			"pdk_dir::libs.ref/sg13g2_io/lef/sg13g2_io.lef",
+			"dir::lef/bondpad_70x70.lef",
+		],
+		"EXTRA_GDS_FILES": [
+			"pdk_dir::libs.ref/sg13g2_io/gds/sg13g2_io.gds",
+			"dir::gds/bondpad_70x70.gds",
 		],
 
 		# Constraints
@@ -193,11 +312,16 @@ if __name__ == '__main__':
 		"QUIT_ON_SYNTH_CHECKS"      : False,
 
 		# Floorplanning
-		"DIE_AREA"  : [  0.00,  0.00, 3166.63, 4766.63 ],
-		"CORE_AREA" : [ 85.00, 85.00, 3081.63, 4681.63 ],
+#		"DIE_AREA"  : [   0.00,   0.00, 3600.00, 5000.00 ],
+#		"CORE_AREA" : [ 425.00, 425.00, 3175.00, 4575.00 ],
+
+#		"DIE_AREA"  : [   0.00,   0.00, 4500.00, 7300.00 ],
+#		"CORE_AREA" : [ 425.00, 425.00, 4075.00, 6875.00 ],
+
+		"DIE_AREA"  : [   0.00,   0.00, 5400.00, 6450.00 ],
+		"CORE_AREA" : [ 425.00, 425.00, 4975.00, 6025.00 ],
+
 		"FP_SIZING" : "absolute",
-		"FP_DEF_TEMPLATE" : "dir::openframe_project_wrapper.def",
-		"FP_TEMPLATE_COPY_POWER_PINS" : True,
 
 		# PDN
 		"VDD_NETS": [ "vdpwr", "vapwr" ],
@@ -213,20 +337,20 @@ if __name__ == '__main__':
 		"FP_PDN_CORE_RING_HWIDTH"   : 25,
 		"FP_PDN_CORE_RING_VOFFSET"  :  0,
 		"FP_PDN_CORE_RING_HOFFSET"  :  0,
-		"FP_PDN_CORE_RING_VSPACING" :  2.0,
-		"FP_PDN_CORE_RING_HSPACING" :  2.0,
+		"FP_PDN_CORE_RING_VSPACING" :  5.0,
+		"FP_PDN_CORE_RING_HSPACING" :  5.0,
 
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
-		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
-		"RT_MAX_LAYER"          : "met4",
+		"RT_MAX_LAYER"          : "Metal5",
 
 		# Magic stream
 		"MAGIC_ZEROIZE_ORIGIN" : False,
 
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
+		"KLAYOUT_DRC_RUNSET": "pdk_dir::libs.tech/klayout/tech/drc/sg13g2_minimal.lydrc",
 
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
@@ -235,8 +359,8 @@ if __name__ == '__main__':
 	}
 
 	# Update PDN config
-	pdn_width   =  8.75
-	pdn_spacing =  2.25
+	pdn_width   =  10.0
+	pdn_spacing =  5.0
 	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +
