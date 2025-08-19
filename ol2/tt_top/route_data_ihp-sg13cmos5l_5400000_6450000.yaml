@@ -1,0 +1,77 @@
+ports:
+    # Top Left (from left to right)
+    'pad_ui_in[0]' : [ 5366340, 322080 ]
+    'pad_ui_in[1]' : [ 5444460, 322080 ]
+    'pad_ui_in[9]' : [ 5763240, 322080 ]
+    'pad_ui_in[8]' : [ 6125700 ]
+    'pad_ui_in[7]' : [ 6126120 ]
+    'pad_ui_in[6]' : [ 6126540 ]
+    'pad_ui_in[5]' : [ 6126960 ]
+    'pad_ui_in[4]' : [ 6127380 ]
+    'pad_ui_in[3]' : [ 6127800 ]
+    'pad_ui_in[2]' : [ 6128220 ]
+
+    # Top Right (from right to left)
+    'pad_uio_in[0]'  : [ 5763240, 5076960 ]
+    'pad_uio_oex[0]' : [ 5841360, 5077440 ]
+    'pad_uio_out[0]' : [ 5841780, 5077920 ]
+    'pad_uio_in[1]'  : [ 6119820 ]
+    'pad_uio_oex[1]' : [ 6120240 ]
+    'pad_uio_out[1]' : [ 6120660 ]
+    'pad_uio_in[2]'  : [ 6121080 ]
+    'pad_uio_oex[2]' : [ 6121500 ]
+    'pad_uio_out[2]' : [ 6121920 ]
+    'pad_uio_in[3]'  : [ 6122340 ]
+    'pad_uio_oex[3]' : [ 6122760 ]
+    'pad_uio_out[3]' : [ 6123180 ]
+    'pad_uio_in[4]'  : [ 6123600 ]
+    'pad_uio_oex[4]' : [ 6124020 ]
+    'pad_uio_out[4]' : [ 6124440 ]
+    'pad_uio_in[5]'  : [ 6124860 ]
+    'pad_uio_oex[5]' : [ 6125280 ]
+    'pad_uio_out[5]' : [ 6125700 ]
+    'pad_uio_in[6]'  : [ 6126120 ]
+    'pad_uio_oex[6]' : [ 6126540 ]
+    'pad_uio_out[6]' : [ 6126960 ]
+    'pad_uio_in[7]'  : [ 6127380 ]
+    'pad_uio_oex[7]' : [ 6127800 ]
+    'pad_uio_out[7]' : [ 6128220 ]
+
+    # Bottom left (from left to right)
+    'ctrl_ena'       : [ 603540, 322080 ]
+    'ctrl_sel_inc'   : [ 322140 ]
+    'ctrl_sel_rst_n' : [ 321720 ]
+
+    'pad_uo_out[0]'  : [ 321300 ]
+
+    # Bottom right (from right to left)
+    'pad_uo_out[7]'  : [ 603540, 5077920 ]
+    'pad_uo_out[6]'  : [ 323820 ]
+    'pad_uo_out[5]'  : [ 323400 ]
+    'pad_uo_out[4]'  : [ 322980 ]
+    'pad_uo_out[3]'  : [ 322560 ]
+    'pad_uo_out[2]'  : [ 322140 ]
+    'pad_uo_out[1]'  : [ 321720 ]
+
+analog:
+    # Mux 2 ( Right edge 4922.4, center 3024.0 )
+    'gpio\[18\].gpio_I.pad_ana' : [ 3006500, 4925900 ]
+    'gpio\[19\].gpio_I.pad_ana' : [ 3011500, 4930900 ]
+    'gpio\[20\].gpio_I.pad_ana' : [ 3016500, 4935900 ]
+    'gpio\[21\].gpio_I.pad_ana' : [ 3021500, 4940900 ]
+    'gpio\[24\].gpio_I.pad_ana' : [ 3026500, 4940900 ]
+    'gpio\[25\].gpio_I.pad_ana' : [ 3031500, 4935900 ]
+    'gpio\[26\].gpio_I.pad_ana' : [ 3036500, 4930900 ]
+    'gpio\[27\].gpio_I.pad_ana' : [ 3041500, 4925900 ]
+
+    # Mux 5 ( Left edge 477.6, center 3817.8 )
+    'gpio\[52\].gpio_I.pad_ana' : [ 3825300, 474100 ]
+    'gpio\[53\].gpio_I.pad_ana' : [ 3820300, 469100 ]
+    'gpio\[54\].gpio_I.pad_ana' : [ 3815300, 469100 ]
+    'gpio\[55\].gpio_I.pad_ana' : [ 3810300, 474100 ]
+
+    # Mux 12 ( Left edge 477.6, center 1833.3 )
+    'gpio\[58\].gpio_I.pad_ana' : [ 1840800, 474100 ]
+    'gpio\[59\].gpio_I.pad_ana' : [ 1835800, 469100 ]
+    'gpio\[60\].gpio_I.pad_ana' : [ 1830800, 469100 ]
+    'gpio\[61\].gpio_I.pad_ana' : [ 1825800, 474100 ]

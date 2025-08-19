@@ -16,11 +16,17 @@ import pathlib
 import shutil
 import sys
 
-from typing import List, Type
+from os.path import abspath
+from typing import List, Tuple, Type
 
+from librelane.common import Path
 from librelane.flows.misc import OpenInKLayout
 from librelane.flows.sequential import SequentialFlow
+from librelane.state import DesignFormat, State
+from librelane.steps.klayout import KLayoutStep
 from librelane.steps.odb import OdbpyStep
+from librelane.steps.openroad import OpenROADStep
+from librelane.steps.step import ViewsUpdate, MetricsUpdate
 from librelane.steps import (
 	Step,
 	Yosys,
@@ -63,6 +69,115 @@ class CustomRoute(OdbpyStep):
 		)
 
 
+@Step.factory.register()
+class PadRing(OpenROADStep):
+
+	id = "TT.Top.PadRing"
+	name = "Creates Pad Ring"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"padring.tcl"
+		)
+
+@Step.factory.register()
+class PlaceCktAna(OdbpyStep):
+
+	id = "TT.Top.PlaceCktAna"
+	name = "Place analog pads contacts to core"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_place_ckt_ana.py"
+		)
+
+
+@Step.factory.register()
+class FixupBTerms(OdbpyStep):
+
+	id = "TT.Top.FixupBTerms"
+	name = "Custom Fixups for TT Top Level"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_prune_bterms.py"
+		)
+
+@Step.factory.register()
+class IHPExtractSpice(Step):
+
+	id = "TT.IHP.ExtractSpice"
+	name = "Extracts SPICE netlist from GDS using metal only"
+
+	inputs = [DesignFormat.GDS]
+	outputs = [DesignFormat.SPICE]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_gds = state_in[DesignFormat.GDS]
+		output_spice = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.SPICE.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/ihp_extract_spice.py"
+		)
+
+		self.run_subprocess(
+			[
+				script,
+				abspath(input_gds),
+				abspath(output_spice),
+			],
+		)
+
+		views_updates[DesignFormat.SPICE] = Path(output_spice)
+
+		return views_updates, {}
+
+
+@Step.factory.register()
+class FixupExtractedNetlist(Step):
+
+	id = "TT.Top.FixupExtractedNetlist"
+	name = "Fix netlist port for LVS"
+
+	inputs = [DesignFormat.SPICE]
+	outputs = [DesignFormat.SPICE]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_spice = state_in[DesignFormat.SPICE]
+		output_spice = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.SPICE.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/ihp_fixup_netlist.py"
+		)
+
+		self.run_subprocess(
+			[
+				script,
+				abspath(input_spice),
+				abspath(output_spice),
+			],
+		)
+
+		views_updates[DesignFormat.SPICE] = Path(output_spice)
+
+		return views_updates, {}
+
+
 class TopFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -71,9 +186,11 @@ class TopFlow(SequentialFlow):
 		Checker.YosysUnmappedCells,
 		Checker.YosysSynthChecks,
 		OpenROAD.Floorplan,
-		Odb.ApplyDEFTemplate,
-		Odb.ManualMacroPlacement,
 		CustomPower,
+		PadRing,
+		PlaceCktAna,
+		FixupBTerms,
+		Odb.ManualMacroPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
 		OpenROAD.DetailedPlacement,
@@ -92,12 +209,24 @@ class TopFlow(SequentialFlow):
 		KLayout.StreamOut,
 		KLayout.XOR,
 		Checker.XOR,
-		Magic.DRC,
-		Checker.MagicDRC,
-		Magic.SpiceExtraction,
-		Checker.IllegalOverlap,
+
+		IHPExtractSpice,
 		Netgen.LVS,
 		Checker.LVS,
+
+		Magic.SpiceExtraction,
+		Checker.IllegalOverlap,
+		FixupExtractedNetlist,
+		Netgen.LVS,
+		Checker.LVS,
+
+		KLayout.DRC,
+		Checker.KLayoutDRC,
+
+#		Magic.DRC,
+#		Checker.MagicDRC,
+
+		KLayout.SealRing,
 	]
 
 
@@ -182,9 +311,9 @@ if __name__ == '__main__':
 				}
 				if os.path.isfile(f'spef/{m.mod_name:s}.nom.spef'):
 					md['spef'] = {
-						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
+#						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
 						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom.spef' ],
-						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
+#						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
 					}
 				macros[m.mod_name].update(md)
 			if m.is_logo:
@@ -194,6 +323,14 @@ if __name__ == '__main__':
 			"location": [ m.pos.x.um, m.pos.y.um ],
 			"orientation": m.orient,
 		}
+
+	macros['tt_ckt_ana'] = {
+		'gds': [ f'dir::gds/tt_ckt_ana.gds', ],
+		'lef': [ f'dir::lef/tt_ckt_ana.lef', ],
+		'nl': f'dir::verilog/tt_ckt_ana.v',
+		'instances': { }
+	}
+	disc_modules.append('tt_ckt_ana')
 
 	# Generate dummy for all user modules
 	mod_tpl = open('tt_um_tpl.v', 'r').read()
@@ -205,14 +342,14 @@ if __name__ == '__main__':
 	# Custom config
 	flow_cfg = {
 		# Main design properties
-		"DESIGN_NAME"    : "openframe_project_wrapper",
+		"DESIGN_NAME"    : "tt_ihp_wrapper",
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES": [
-			"dir::openframe_project_wrapper.v",
+			"dir::tt_ihp_wrapper.v",
 			"dir::../../rtl/tt_top.v",
-			"dir::../../rtl/tt_gpio.v",
+			"dir::../../rtl/tt_ihp_gpio.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
 
@@ -222,6 +359,12 @@ if __name__ == '__main__':
 		"MACROS": macros,
 		"EXTRA_VERILOG_MODELS": [
 			"dir::verilog/tt_um_all.v",
+		],
+		"EXTRA_LEFS": [
+			"dir::lef/bondpad_70x70.lef",
+		],
+		"EXTRA_GDS_FILES": [
+			"dir::gds/bondpad_70x70.gds",
 		],
 
 		# Constraints
@@ -238,11 +381,7 @@ if __name__ == '__main__':
 		"QUIT_ON_SYNTH_CHECKS"      : False,
 
 		# Floorplanning
-		"DIE_AREA"  : [  0.00,  0.00, 3166.63, 4766.63 ],
-		"CORE_AREA" : [ 85.00, 85.00, 3081.63, 4681.63 ],
 		"FP_SIZING" : "absolute",
-		"FP_DEF_TEMPLATE" : "dir::openframe_project_wrapper.def",
-		"FP_TEMPLATE_COPY_POWER_PINS" : True,
 
 		# PDN
 		"VDD_NETS": [ "vdpwr", "vapwr" ],
@@ -254,25 +393,25 @@ if __name__ == '__main__':
 		"PDN_ENABLE_GLOBAL_CONNECTIONS" : False,
 
 		"FP_PDN_CORE_RING"          : True,
-		"FP_PDN_CORE_RING_VWIDTH"   : 25,
-		"FP_PDN_CORE_RING_HWIDTH"   : 25,
+		"FP_PDN_CORE_RING_VWIDTH"   : 30,
+		"FP_PDN_CORE_RING_HWIDTH"   : 30,
 		"FP_PDN_CORE_RING_VOFFSET"  :  0,
 		"FP_PDN_CORE_RING_HOFFSET"  :  0,
-		"FP_PDN_CORE_RING_VSPACING" :  2.0,
-		"FP_PDN_CORE_RING_HSPACING" :  2.0,
+		"FP_PDN_CORE_RING_VSPACING" :  3.0,
+		"FP_PDN_CORE_RING_HSPACING" :  3.0,
 
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
-		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
 		"DRT_ANTENNA_REPAIR_ITERS" : 0,
-		"RT_MAX_LAYER"          : "met4",
+		"RT_MAX_LAYER"          : "TopMetal1",
 
 		# Magic stream
 		"MAGIC_ZEROIZE_ORIGIN" : False,
 
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
+		"KLAYOUT_DRC_RUNSET": "pdk_dir::libs.tech/klayout/tech/drc/ihp-sg13cmos5l.drc",
 
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
@@ -280,9 +419,29 @@ if __name__ == '__main__':
 		"IGNORE_DISCONNECTED_MODULES": disc_modules,
 	}
 
+	# Pad config
+	flow_cfg["PAD_SOUTH"] = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in range( 0,16) ]
+	flow_cfg["PAD_EAST"]  = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in range(16,32) ]
+	flow_cfg["PAD_NORTH"] = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in reversed(range(32,48)) ]
+	flow_cfg["PAD_WEST"]  = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in reversed(range(48,64)) ]
+
+	# Update die area based on data from config
+	die_w = tti.cfg.pdk.die.width.um
+	die_h = tti.cfg.pdk.die.height.um
+
+	core_x0 = 421.0
+	core_y0 = 425.0
+	core_x1 = die_w - 421.0
+	core_y1 = die_h - 425.0
+
+	flow_cfg.update({
+		"DIE_AREA"  : [   0.00,     0.00,   die_w,   die_h ],
+		"CORE_AREA" : [ core_x0, core_y0, core_x1, core_y1 ],
+	})
+
 	# Update PDN config
-	pdn_width   =  8.75
-	pdn_spacing =  2.25
+	pdn_width   =  12.0
+	pdn_spacing =   3.0
 	pdn_pitch   = (tti.layout.glb.branch.pitch // 5).um
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +

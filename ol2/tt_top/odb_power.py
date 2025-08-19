@@ -31,17 +31,29 @@ def power(
 	PDN = {
 		'vgnd' : {
 			'type' :  'GROUND',
-			'pins' : [ 'VGND' ],
+			'pins' : [ 'VGND', 'vss' ],
 		},
 		'vdpwr' : {
 			'type' : 'POWER',
-			'pins' : [ 'VPWR', 'VDPWR' ],
+			'pins' : [ 'VPWR', 'VDPWR', 'vdd' ],
 			'pg' : ( 'tt_pg_vdd_I', 'VPWR', 'GPWR' ),
 		},
 		'vapwr' : {
 			'type' : 'POWER',
 			'pins' : [ 'VAPWR' ],
 			'pg' : ( 'tt_pg_vaa_I', 'VAPWR', 'GAPWR' ),
+			'insts' : {
+				'gpio\\[22\\].gpio_I.genblk1.pad_I': [ 'pad', ],
+				'gpio\\[57\\].gpio_I.genblk1.pad_I': [ 'pad', ],
+			},
+		},
+		'iovss' : {
+			'type' : 'GROUND',
+			'pins' : [ 'iovss' ],
+		},
+		'iovdd' : {
+			'type' : 'POWER',
+			'pins' : [ 'iovdd' ],
 		},
 	}
 
