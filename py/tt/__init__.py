@@ -45,6 +45,7 @@ class TinyTapeout:
 	def get_config_file(kls, config=None):
 		DEFAULT_CONFIG = {
 			'sky130A': 'sky130.yaml',
+			'ihp-sg13g2': 'ihp-sg13g2.yaml',
 		}.get(os.getenv('PDK'))
 		return kls._get_data_file(config, 'TT_CONFIG', DEFAULT_CONFIG)
 
