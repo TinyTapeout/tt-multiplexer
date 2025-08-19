@@ -75,6 +75,8 @@ class CtrlFlow(SequentialFlow):
 		Checker.XOR,
 		Magic.DRC,
 		Checker.MagicDRC,
+		KLayout.DRC,
+		Checker.KLayoutDRC,
 		Magic.SpiceExtraction,
 		Checker.IllegalOverlap,
 		Netgen.LVS,
@@ -97,7 +99,7 @@ if __name__ == '__main__':
 		tti.layout.ply_ctrl_vspine[ 'spine_iw[0]'],
 	]
 
-	pdn_vwidth   = tt.LayoutDimension(1600)
+	pdn_vwidth   = tt.LayoutDimension(2100)
 	pdn_vspacing = tt.LayoutDimension(1700)
 	pdn_vpitch = (pdn_vwidth + pdn_vspacing) * 3 + max(
 		lim_pts[1] - lim_pts[0],
@@ -152,12 +154,15 @@ if __name__ == '__main__':
 		"FP_PDN_VWIDTH"   : pdn_vwidth.um,
 
 		# Placement
-		"PL_TARGET_DENSITY_PCT" : 40,
+		"PL_TARGET_DENSITY_PCT" : 50,
 		"PL_TIME_DRIVEN": False,			# Disable resizer
 
 		# Routing
 		"DIODE_PADDING" : 0,
-		"RT_MAX_LAYER"  : "met4",
+		"RT_MAX_LAYER"  : "Metal4",
+
+		# Streamout
+		"PRIMARY_GDSII_STREAMOUT_TOOL": 'magic',
 
 		# LEF generation option
 		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
