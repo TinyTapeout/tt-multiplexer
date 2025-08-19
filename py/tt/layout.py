@@ -474,7 +474,7 @@ class Layout:
 						rv.append(f'pad_uo_out[{ti:d}]')
 
 					elif t == 'io':
-						rv.append(f'pad_uio_oe_n[{ti:d}]')
+						rv.append(f'pad_uio_oex[{ti:d}]')
 						rv.append(f'pad_uio_out[{ti:d}]')
 						rv.append(f'pad_uio_in[{ti:d}]')
 			return rv

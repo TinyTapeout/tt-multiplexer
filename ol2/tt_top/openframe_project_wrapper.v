@@ -154,7 +154,7 @@ module openframe_project_wrapper (
 		.io_ana      (pad_ana),
 		.io_in       (pad_in),
 		.io_out      (pad_out),
-		.io_oeb      (pad_oeb),
+		.io_oex      (pad_oeb),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);

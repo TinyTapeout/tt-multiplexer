@@ -11,7 +11,7 @@ set all_ctl      [ get_ports ctrl* ]
 
 # User IOs pads connections
 set all_pads_in  [ get_ports "pad_uio_in* pad_ui_in*" ]
-set all_pads_out [ get_ports "pad_uio_out* pad_uio_oe_n* pad_uo_out*" ]
+set all_pads_out [ get_ports "pad_uio_out* pad_uio_oex* pad_uo_out*" ]
 
 # Spine
 	# [10:1] - Control

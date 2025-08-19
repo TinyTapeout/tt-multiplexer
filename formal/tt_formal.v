@@ -18,7 +18,7 @@ module tt_formal;
 	// DUT signals
 	wire [37:0] io_in;
 	wire [37:0] io_out;
-	wire [37:0] io_oeb;
+	wire [37:0] io_oex;
 	wire        k_zero;
 	wire        k_one;
 
@@ -36,14 +36,14 @@ module tt_formal;
 	) dut_I (
 		.io_in       (io_in),
 		.io_out      (io_out),
-		.io_oeb      (io_oeb),
+		.io_oex      (io_oex),
 		.k_zero      (k_zero),
 		.k_one       (k_one)
 	);
 
     /* 
-    IO in/out/oeb is split like this:
-    io_oeb is 'output enable bar': low means a pin is an output
+    IO in/out/oex is split like this:
+    io_oex is 'output enable X': polarity is tech dependent
 
 	31:24 user out
 	23:16 user io
@@ -59,7 +59,7 @@ module tt_formal;
     assign { io_in[13], io_in[6:0] } = io_out[31:24];
 
     // loop back bidirectional outs to ins, depending on output enable
-    assign io_in[23:16] = io_out[23:16] & (~io_oeb[23:16]);
+    assign io_in[23:16] = io_out[23:16] & (~io_oex[23:16]);
 
 
 endmodule // tt_formal

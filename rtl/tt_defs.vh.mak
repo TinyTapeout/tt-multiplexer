@@ -18,6 +18,11 @@
 
 `define TT_TECH_${cfg.pdk.tech.upper()}
 
+`ifdef TT_TECH_SKY130
+`define OE_POLARITY_NEGATIVE
+`endif
+
+
 <%
 mux_mask = 0
 if hasattr(cfg.tt, 'analog'):

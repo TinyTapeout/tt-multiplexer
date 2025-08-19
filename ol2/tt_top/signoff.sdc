@@ -57,7 +57,7 @@ set_driving_cell -lib_cell sky130_fd_sc_hd__buf_16 -pin X [all_inputs]
 # Loads
 # -----
 
-# All `io_out` & `io_oeb` go to gpio_control_block and have a bit
+# All `io_out` & `io_oex` go to gpio_control_block and have a bit
 # of capacitance (estimates from lib and gpio_control_block.spef)
 set_load 0.03 [all_outputs]
 
