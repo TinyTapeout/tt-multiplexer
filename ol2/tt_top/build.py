@@ -271,7 +271,7 @@ if __name__ == '__main__':
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = tti.cfg.pdk.name,
 	)
 
 	flow.start(last_run = args.open_in_klayout)

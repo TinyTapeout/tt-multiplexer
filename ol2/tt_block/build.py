@@ -109,7 +109,7 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=F
 		flow_cfg,
 		design_dir = design_dir,
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = tti.cfg.pdk.name,
 	)
 
 	flow.start()

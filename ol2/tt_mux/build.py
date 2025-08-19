@@ -7,6 +7,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+import glob
 import os
 import sys
 
@@ -91,17 +92,11 @@ if __name__ == '__main__':
 	# Create and run custom flow
 	verilog_files = [
 		"dir::../../rtl/tt_mux.v",
-		"dir::../../rtl/prim_sky130/tt_prim_buf.v",
-		"dir::../../rtl/prim_sky130/tt_prim_dfrbp.v",
-		"dir::../../rtl/prim_sky130/tt_prim_diode.v",
-		"dir::../../rtl/prim_sky130/tt_prim_inv.v",
-		"dir::../../rtl/prim_sky130/tt_prim_mux2.v",
-		"dir::../../rtl/prim_sky130/tt_prim_mux4.v",
-		"dir::../../rtl/prim_sky130/tt_prim_tbuf.v",
-		"dir::../../rtl/prim_sky130/tt_prim_tie.v",
-		"dir::../../rtl/prim_sky130/tt_prim_tbuf_pol.v",
-		"dir::../../rtl/prim_sky130/tt_prim_zbuf.v",
 	]
+	verilog_files.extend([
+		'dir::' + x
+			for x in glob.glob(f'../../rtl/prim_{tti.cfg.pdk.tech}/tt_prim_*.v')
+	])
 
 	flow_cfg = {
 		# Main design properties
@@ -148,7 +143,7 @@ if __name__ == '__main__':
 		flow_cfg,
 		design_dir = ".",
 		pdk_root   = PDK_ROOT,
-		pdk        = "sky130A",
+		pdk        = tti.cfg.pdk.name,
 	)
 
 	flow.start()
