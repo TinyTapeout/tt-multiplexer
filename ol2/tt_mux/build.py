@@ -75,6 +75,8 @@ class MuxFlow(SequentialFlow):
 		Checker.XOR,
 		Magic.DRC,
 		Checker.MagicDRC,
+		KLayout.DRC,
+		Checker.KLayoutDRC,
 		Magic.SpiceExtraction,
 		Checker.IllegalOverlap,
 		Netgen.LVS,
@@ -133,7 +135,10 @@ if __name__ == '__main__':
 		# Routing
 		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
-		"RT_MAX_LAYER"         : "met4",
+		"RT_MAX_LAYER"         : "Metal4",
+
+		# Streamout
+		"PRIMARY_GDSII_STREAMOUT_TOOL": 'magic',
 
 		# LEF generation option
 		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
