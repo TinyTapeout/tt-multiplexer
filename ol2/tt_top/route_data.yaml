@@ -82,9 +82,11 @@ analog:
     'analog_noesd_io[12]' : [ 3102110, 3076240 ]
 
     # Center 1381.76
-    'analog_noesd_io[32]' : [ 1388510, 90400 ]
-    'analog_noesd_io[33]' : [ 1385810, 87700 ]
-    'analog_noesd_io[34]' : [ 1383110, 85000 ]
-    'analog_noesd_io[35]' : [ 1380410, 85000 ]
-    'analog_noesd_io[36]' : [ 1377710, 87700 ]
-    'analog_noesd_io[37]' : [ 1375010, 90400 ]
+    'analog_noesd_io[32]' : [ 1385810, 90400 ]
+    'analog_noesd_io[33]' : [ 1383110, 87700 ]
+    'analog_noesd_io[34]' : [ 1380410, 85000 ]
+    'analog_noesd_io[35]' : [ 1377710, 85000 ]
+
+    # Center 810.56
+    'analog_noesd_io[36]' : [ 811910, 85000 ]
+    'analog_noesd_io[37]' : [ 809210, 85000 ]
