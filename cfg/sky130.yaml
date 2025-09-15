@@ -109,6 +109,6 @@ tt:
         10:  976120
         11:  760120
   huge_modules:
-    mux_id: [ 3, 19 ]
+    mux_id: [ 3, 19, 25 ]
   logo:
     size: 100000
