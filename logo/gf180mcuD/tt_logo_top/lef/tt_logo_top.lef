@@ -1,0 +1,15 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_logo_top
+  CLASS BLOCK ;
+  FOREIGN tt_logo_top ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 65.000 BY 65.000 ;
+  OBS
+      LAYER Metal4 ;
+        RECT 0.000 0.000 65.000 65.000 ;
+  END
+END tt_logo_top
+END LIBRARY

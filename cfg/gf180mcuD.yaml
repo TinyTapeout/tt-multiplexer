@@ -1,0 +1,200 @@
+pdk:
+  name: 'gf180mcuD'
+  tech: 'gf180mcuD'
+  scale: 2000
+  die:
+    width:  3932000
+    height: 5122000
+    margin:
+      left:   450000
+      right:  450000
+      top:    450000
+      bottom: 450000
+  site:
+    width:  560
+    height: 3920
+  pwrgate:
+    vdd:
+      name: tt_pg_3v3
+      width: 11200
+      variants: ['hp']
+    vaa:
+      name: tt_pg_5v0
+      width: 14560
+  analog:
+    switch:
+      name: tt_asw_5v0
+      width: 40320
+      height: 30250
+    pad:
+      width: 3000
+  tracks:
+    Metal1:
+      x:
+        offset: 230
+        pitch:  560
+        width:  230
+      y:
+        offset: 230
+        pitch:  560
+        width:  230
+    Metal2:
+      x:
+        offset: 280
+        pitch:  560
+        width:  280
+      y:
+        offset: 280
+        pitch:  560
+        width:  280
+    Metal3:
+      x:
+        offset: 280
+        pitch:  560
+        width:  280
+      y:
+        offset: 280
+        pitch:  560
+        width:  280
+    Metal4:
+      x:
+        offset: 280
+        pitch:  560
+        width:  280
+      y:
+        offset: 280
+        pitch:  560
+        width:  280
+    Metal5:
+      x:
+        offset: 450
+        pitch:  900
+        width:  440
+      y:
+        offset: 450
+        pitch:  900
+        width:  440
+tt:
+  grid:     # In number of blocks
+    x:  8   # Must be divisible by 4
+    y: 20   # Must be EVEN
+  block:
+    w: -1
+    h: -1
+  margin:   # In 'sites'
+    x: 6
+    y: 1
+  uio:
+    ae: 22
+    au:  8
+    i:  10
+    o:   8
+    io:  8
+  spine:
+    vlayer: 'Metal4'
+    hlayer: 'Metal3'
+  analog:
+    - mux_id: [ 10 ]
+      pins:
+        0:   978500
+        1:  1189500
+        2:  1400500
+        3:  1611500
+        4:  1822500
+        5:  2033500
+    - mux_id: [ 7 ]
+      pins:
+        6:  2666500
+        7:  2877500
+        8:  3088500
+        9:  3299500
+        10: 3510500
+        11: 3721500
+    - mux_id: [ 5 ]
+      pins:
+        12: 3721500
+        13: 3510500
+        14: 3299500
+        15: 3088500
+    - mux_id: [ 4 ]
+      pins:
+        16: 2455500
+        17: 2244500
+        18: 2033500
+        19: 1822500
+        20: 1611500
+        21: 1400500
+  huge_modules:
+    mux_id: [ 12, 15 ]
+  logo:
+    tt_logo_top:
+      width: 65000
+      height: 65000
+      x:
+        align: 'center'
+        anchor: 'spine.center'
+      y:
+        align: 'top'
+        anchor: 'top_level.top'
+        offset: -3920
+    tt_logo_bottom:
+      width: 65000
+      height: 65000
+      x:
+        align: 'center'
+        anchor: 'spine.center'
+      y:
+        align: 'bottom'
+        anchor: 'top_level.bottom'
+        offset: 3920
+    tt_logo_corner_tl:
+      width: 164000
+      height: 164000
+      x:
+        offset: 26000
+      y:
+        anchor: 'die.top'
+        align: 'top'
+        offset: -26000
+    tt_logo_corner_tr:
+      width: 220000
+      height: 220000
+      x:
+        anchor: 'die.right'
+        align: 'right'
+        offset: -26000
+      y:
+        anchor: 'die.top'
+        align: 'top'
+        offset: -26000
+    gf180mcu_ws_ip__project_id:
+      width: 195500
+      height: 59500
+      x:
+        offset: 175600
+      y:
+        offset: 26000
+    gf180mcu_ws_ip__qrcode_id:
+      width: 142800
+      height: 142800
+      x:
+        offset: 26000
+      y:
+        offset: 26000
+    gf180mcu_ws_ip__shuttle_id:
+      width: 195500
+      height: 59500
+      orient: 'E'
+      x:
+        offset: 26000
+      y:
+        offset: 175600
+    gf180mcu_ws_ip__logo:
+      width: 143250
+      height: 143250
+      x:
+        anchor: 'die.right'
+        align: 'right'
+        offset: -26000
+      y:
+        offset: 26000
