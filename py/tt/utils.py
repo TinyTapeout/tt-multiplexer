@@ -19,36 +19,56 @@ __all__ = [ 'ConfigNode', 'Point', 'Rect' ]
 
 class ConfigNode:
 
-	def __init__(self, cfg = None):
-		self._cfg = cfg or {}
+	def __init__(self, init = None):
+		self._cfg = {}
 
-	def __get(self, k):
-		v = self._cfg[k]
-		if isinstance(v, dict):
-			self._cfg[k] = v = ConfigNode(v)
-		return v
+		if init is not None:
+			for k,v in init.items():
+				self[k] = v
 
 	def __getattr__(self, k):
 		try:
-			return self.__get(k)
+			return self._cfg[k]
 		except KeyError:
 			raise AttributeError()
 
 	def __setattr__(self, k, v):
 		if k[0] != '_':
-			self._cfg[k] = v
+			# Convert sub-dict to ConfigNode
+			if isinstance(v, dict):
+				self._cfg[k] = self.__class__(v)
+			else:
+				self._cfg[k] = v
 		else:
 			super().__setattr__(k,v)
 
 	def __getitem__(self, k):
-		return self.__get(k)
+		return self._cfg[k]
 
 	def __setitem__(self, k, v):
 		self.__setattr__(k, v)
 
-	@classmethod
-	def from_yaml(kls, stream):
-		return kls(yaml.load(stream, yaml.FullLoader))
+	def __contains__(self, k):
+		return k in self._cfg
+
+	def items(self):
+		return self._cfg.items()
+
+	def update_from_dict(self, upd_dict):
+		for k, nv in upd_dict.items():
+			if k not in self:
+				self[k] = nv
+			else:
+				cv = self._cfg[k]
+				if isinstance(cv, ConfigNode):
+					if not isinstance(nv, dict):
+						raise RuntimeError(f'Invalid Config update type for key {k}')
+					cv.update_from_dict(nv)
+				else:
+					self._cfg[k] = nv
+
+	def update_from_yaml(self, stream):
+		self.update_from_dict(yaml.load(stream, yaml.FullLoader))
 
 
 class Point(namedtuple('Point', 'x y')):
