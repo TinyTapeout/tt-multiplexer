@@ -17,11 +17,63 @@ from .utils import *
 __all__ = [ 'Layout' ]
 
 
+CFG_SCHEMA = [
+	"pdk.die.*",
+	"pdk.site.*",
+	"pdk.pwrgate.*",
+	"pdk.tracks.*",
+	"tt.logo.size",
+]
+
+def config_update_for_layout(cfg):
+	"""This updates a config according to schema above, converting some `int` to
+	LayoutDimension objects"""
+
+	# Apply scale for this config
+	if 'scale' in cfg.pdk:
+		LayoutDimension.set_iu_scale(cfg.pdk.scale)
+
+	# Internal helper
+	def _update_node(base, key, recurse=False):
+		v = base[key]
+		if isinstance(v, int):
+			base[key] = LayoutDimension(v)
+		elif recurse and isinstance(v, (dict, ConfigNode)):
+			for sk, sv in v.items():
+				_update_node(v, sk, True)
+
+	# Scan schema entries
+	for entry in CFG_SCHEMA:
+		# Split entry
+		entry = entry.split('.')
+
+		# Find node
+		n = cfg
+		for e in entry[:-1]:
+			if e not in n:
+				n = None
+				break
+			else:
+				n = n[e]
+
+		if n is None:
+			continue
+
+		if entry[-1] == '*':
+			for sk, sv in n.items():
+				_update_node(n, sk, True)
+		else:
+			_update_node(n, entry[-1])
+
+
 class Layout:
 
 	def __init__(self, cfg):
 		# Save config
 		self.cfg = cfg
+
+		# Make sure it's ready for layout
+		config_update_for_layout(cfg)
 
 		# Sub-layouts
 		self.global_layout()
@@ -64,17 +116,17 @@ class Layout:
 			raise RuntimeError("Grid Y must be even")
 
 		# Main object
-		self.glb = glb = ConfigNode()
+		self.glb = glb = LayoutNode()
 
-		glb.margin = ConfigNode()
-		glb.top    = ConfigNode()
-		glb.branch = ConfigNode()
-		glb.block  = ConfigNode()
-		glb.mux    = ConfigNode()
-		glb.ctrl   = ConfigNode()
-		glb.pg_vdd = ConfigNode()
-		glb.pg_vaa = ConfigNode()
-		glb.logo   = ConfigNode()
+		glb.margin = LayoutNode()
+		glb.top    = LayoutNode()
+		glb.branch = LayoutNode()
+		glb.block  = LayoutNode()
+		glb.mux    = LayoutNode()
+		glb.ctrl   = LayoutNode()
+		glb.pg_vdd = LayoutNode()
+		glb.pg_vaa = LayoutNode()
+		glb.logo   = LayoutNode()
 
 		# Size of the various busses
 		self.vspine = ConfigNode({
