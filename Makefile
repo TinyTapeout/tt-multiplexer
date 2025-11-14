@@ -53,6 +53,14 @@ SIM_SRC += $(addprefix sim/sky130/, \
 SIM_DEFS += -DWITH_POWER=1 -DUSE_POWER_PINS=1 -DFUNCTIONAL=1 -DUNIT_DELAY=\#1
 endif
 
+ifeq ($(TECH),gf180mcuD)
+SIM_SRC += $(addprefix sim/gf180mcuD/, \
+	gf180mcu_fd_sc_mcu7t5v0.v \
+	primitives.v \
+)
+SIM_DEFS += -DWITH_POWER=1 -DUSE_POWER_PINS=1 -DFUNCTIONAL=1 -DUNIT_DELAY=\#1
+endif
+
 all: sim
 
 # Generated sources
