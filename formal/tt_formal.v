@@ -63,3 +63,5 @@ module tt_formal;
 
 
 endmodule // tt_formal
+
+`default_nettype wire

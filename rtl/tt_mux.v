@@ -342,3 +342,5 @@ module tt_mux #(
 	);
 
 endmodule // tt_mux
+
+`default_nettype wire

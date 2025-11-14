@@ -298,3 +298,5 @@ module tt_top #(
 `endif
 
 endmodule // tt_top
+
+`default_nettype wire

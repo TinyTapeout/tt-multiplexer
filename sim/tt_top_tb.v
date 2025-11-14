@@ -128,3 +128,5 @@ module tt_top_tb;
 	end
 
 endmodule // tt_top_tb
+
+`default_nettype wire

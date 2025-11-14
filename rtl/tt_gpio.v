@@ -80,3 +80,4 @@ module tt_gpio #(
 
 endmodule // tt_gpio
 
+`default_nettype wire

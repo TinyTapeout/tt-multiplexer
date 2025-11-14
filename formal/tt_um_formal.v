@@ -44,3 +44,5 @@ module tt_um_formal (
     end
 
 endmodule // tt_um_formal
+
+`default_nettype wire
