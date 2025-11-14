@@ -33,6 +33,10 @@ class ModuleSlot:
 		if self.pg_vdd is True:
 			self.pg_vdd = 'hp' if self.width > 4 else 'll'
 
+		if ((self.pos_x is None) and (self.pos_y is None) and
+		        ('mux_id' in cfg_data) and ('blk_id' in cfg_data)):
+			self.pos_x, self.pos_y = self.placer.l2p(cfg_data['mux_id'], cfg_data['blk_id'])
+
 	def as_dict(self):
 		return {
 			'name':   self.name,
