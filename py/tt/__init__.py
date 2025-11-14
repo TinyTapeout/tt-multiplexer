@@ -32,35 +32,43 @@ class TinyTapeout:
 			self.die    = Die(self.layout, self.placer)
 
 	@classmethod
-	def _get_data_file(kls, user_val, env_var, default_val):
+	def _get_data_files(kls, user_val, env_var, default_val):
 		base = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir, 'cfg'))
 		val = os.getenv(env_var, user_val) or default_val
 		if val is None:
 			return None
-		if not os.path.isabs(val):
-			val = os.path.join(base, val)
-		return val
+		rv = []
+		for fn in val.split(':'):
+			if not os.path.isabs(fn):
+				fn = os.path.join(base, fn)
+			rv.append(fn)
+		return rv
 
 	@classmethod
-	def get_config_file(kls, config=None):
+	def get_config_files(kls, config=None):
 		DEFAULT_CONFIG = {
 			'sky130A': 'sky130.yaml',
 		}.get(os.getenv('PDK'))
-		return kls._get_data_file(config, 'TT_CONFIG', DEFAULT_CONFIG)
+		return kls._get_data_files(config, 'TT_CONFIG', DEFAULT_CONFIG)
 
 	@classmethod
 	def get_modules_file(kls, modules=None):
-		return kls._get_data_file(modules, 'TT_MODULES', 'modules_placed.yaml')
+		mf = kls._get_data_files(modules, 'TT_MODULES', 'modules_placed.yaml')
+		if (mf is not None) and len(mf) > 1:
+			raise RuntimeError('Multiple modules files are not supported')
+		return None if not mf else mf[0]
 
 	@classmethod
 	def get_config(kls, config=None):
 		# Determine the config files
-		config  = kls.get_config_file(config)
+		config  = kls.get_config_files(config)
 		if config is None:
 			raise RuntimeError('Unable to load config. Make sure either PDK and/or TT_CONFIG env var is set')
 
 		# Load actual config
-		cfg = ConfigNode.from_yaml(open(config, 'r'))
+		cfg = ConfigNode()
+		for fn in config:
+			cfg.update_from_yaml(open(fn, 'r'))
 
 		# Check PDK
 		pdk_env = os.getenv('PDK')
