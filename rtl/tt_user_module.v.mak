@@ -132,3 +132,5 @@ module tt_user_module #(
 	endgenerate
 
 endmodule // tt_user_module
+
+`default_nettype wire

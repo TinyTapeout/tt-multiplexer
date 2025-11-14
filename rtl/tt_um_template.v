@@ -26,3 +26,5 @@ module tt_um_template (
 );
 
 endmodule // tt_um_template
+
+`default_nettype wire

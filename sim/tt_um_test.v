@@ -48,3 +48,5 @@ module tt_um_test (
 	assign uio_oe  = ui_in[0] ? 8'hff : 8'h00;
 
 endmodule // tt_um_test
+
+`default_nettype wire

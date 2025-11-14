@@ -355,3 +355,5 @@ module tt_ctrl #(
 	);
 
 endmodule // tt_ctrl
+
+`default_nettype wire
