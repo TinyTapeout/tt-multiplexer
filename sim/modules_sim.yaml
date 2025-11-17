@@ -1,4 +1,4 @@
 modules:
   - name: test
-    x: 7
-    y: 5
+    mux_id: 6
+    blk_id: 5
