@@ -12,8 +12,8 @@
 
 module tt_top_tb;
 
-	localparam integer MUX_ID = 12;
-	localparam integer BLK_ID = 0;
+	localparam integer MUX_ID = 6;
+	localparam integer BLK_ID = 5;
 
 
 	// Signals
