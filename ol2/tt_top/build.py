@@ -146,7 +146,7 @@ if __name__ == '__main__':
 				})
 
 		macros[m.mod_name]['instances'][m.inst_name] = {
-			"location": [ m.pos.x / 1000, m.pos.y / 1000 ],
+			"location": [ m.pos.x.um, m.pos.y.um ],
 			"orientation": m.orient,
 		}
 
@@ -237,15 +237,15 @@ if __name__ == '__main__':
 	# Update PDN config
 	pdn_width   =  8.75
 	pdn_spacing =  2.25
-	pdn_pitch   = tti.layout.glb.branch.pitch / 5000
+	pdn_pitch   = (tti.layout.glb.branch.pitch // 5).um
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +
 		tti.layout.glb.branch.pitch // 10 -
 		tti.layout.glb.margin.y // 2
-	) / 1000
+	).um
 	pdn_offset -= (pdn_spacing + pdn_width)
 
-	sh = tti.cfg.pdk.site.height / 1000
+	sh = tti.cfg.pdk.site.height.um
 	if 'CORE_AREA' in flow_cfg:
 		pdn_offset -= math.ceil(flow_cfg['CORE_AREA'][1] / sh) * sh
 	else:

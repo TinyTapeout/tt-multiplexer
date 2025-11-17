@@ -34,7 +34,7 @@ def io_place(
 	layer_ns = reader.tech.findLayer(tti.cfg.tt.spine.vlayer)
 
 	# Adjust pin position (in case there is a power gate)
-	pin_ofs = die_area.xMax() - die_area.xMin()
+	pin_ofs = tt.LayoutDimension.from_iu(die_area.xMax() - die_area.xMin())
 	pin_ofs -= tti.layout.glb.block.width
 	while pin_ofs > 0:
 		pin_ofs -= tti.layout.glb.block.pitch
