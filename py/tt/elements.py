@@ -282,8 +282,9 @@ class Block(LayoutElement):
 		)
 
 		# Power gating offset
-		if pg_vdd:
-			width -= layout.glb.pg_vdd.offset
+		#if pg_vdd:
+		#	width -= layout.glb.pg_vdd.offset
+		width -= layout.glb.pg_vdd.offset
 
 		if pg_vaa:
 			width -= layout.glb.pg_vaa.offset
@@ -304,8 +305,9 @@ class Block(LayoutElement):
 
 		# Power gating offset
 		pin_ofs = 0
-		if self.pg_vdd:
-			pin_ofs += self.layout.glb.pg_vdd.offset
+		#if self.pg_vdd:
+		#	pin_ofs += self.layout.glb.pg_vdd.offset
+		pin_ofs += self.layout.glb.pg_vdd.offset
 		if self.pg_vaa:
 			pin_ofs += self.layout.glb.pg_vaa.offset
 
@@ -458,6 +460,8 @@ class Branch(LayoutElement):
 				self.add_child(vdd_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vdd_I')
 
 				# Shift the block
+				blk_x += layout.glb.pg_vdd.offset
+			else:
 				blk_x += layout.glb.pg_vdd.offset
 
 			if mp.pg_vaa_module is not None:
