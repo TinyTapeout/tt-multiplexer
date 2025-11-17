@@ -168,7 +168,7 @@ module tt_top #(
 `endif
 	ctrl_I (
 `ifdef USE_POWER_PINS
-		.VPWR           (VDPWR),
+		.VDPWR          (VDPWR),
 		.VGND           (VGND),
 `endif
 		.pad_uio_in     (pad_uio_in),
@@ -233,7 +233,7 @@ module tt_top #(
 `endif
 			mux_I (
 `ifdef USE_POWER_PINS
-				.VPWR      (VDPWR),
+				.VDPWR     (VDPWR),
 				.VGND      (VGND),
 `endif
 				.um_ow     (l_um_ow),
