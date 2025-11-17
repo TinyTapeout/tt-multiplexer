@@ -94,7 +94,7 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=F
 		"VERILOG_DEFINES" : defines,
 
 		# Floorplanning
-		"DIE_AREA"           :  [0, 0, block_width/1000, block_height/1000 ],
+		"DIE_AREA"           :  [0, 0, block_width.um, block_height.um ],
 		"FP_SIZING"          : "absolute",
 		"BOTTOM_MARGIN_MULT" : 1,
 		"TOP_MARGIN_MULT"    : 1,

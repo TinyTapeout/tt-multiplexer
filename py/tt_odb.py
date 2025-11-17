@@ -7,6 +7,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+import tt
 import odb
 
 
@@ -22,11 +23,13 @@ def place_pin(die_area, layer, bterm, pos, side='N', wide=False):
 	bpin.setPlacementStatus("PLACED")
 
 	# Rectangle graphic
-	WIDTH  = 300
-	LENGTH = 1000
+	WIDTH  = tt.LayoutDimension(300).iu
+	LENGTH = tt.LayoutDimension(1000).iu
 
 	if wide:
 		WIDTH *= 3
+
+	pos = pos.iu
 
 	if side == 'N':
 		rect = odb.Rect(0, 0, WIDTH, LENGTH)

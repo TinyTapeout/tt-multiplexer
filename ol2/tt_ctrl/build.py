@@ -97,8 +97,8 @@ if __name__ == '__main__':
 		tti.layout.ply_ctrl_vspine[ 'spine_iw[0]'],
 	]
 
-	pdn_vwidth   = 1600
-	pdn_vspacing = 1700
+	pdn_vwidth   = tt.LayoutDimension(1600)
+	pdn_vspacing = tt.LayoutDimension(1700)
 	pdn_vpitch = (pdn_vwidth + pdn_vspacing) * 3 + max(
 		lim_pts[1] - lim_pts[0],
 		lim_pts[3] - lim_pts[2],
@@ -133,7 +133,7 @@ if __name__ == '__main__':
 		"SYNTH_ABC_BUFFERING"         : False,
 
 		# Floorplanning
-		"DIE_AREA"           : [ 0, 0, tti.layout.glb.ctrl.width/1000, tti.layout.glb.ctrl.height/1000 ],
+		"DIE_AREA"           : [ 0, 0, tti.layout.glb.ctrl.width.um, tti.layout.glb.ctrl.height.um ],
 		"FP_SIZING"          : "absolute",
 		"BOTTOM_MARGIN_MULT" : 1,
 		"TOP_MARGIN_MULT"    : 1,
@@ -142,10 +142,10 @@ if __name__ == '__main__':
 
 		# PDN
 		"PDN_CFG"         : "dir::pdn.tcl",
-		"FP_PDN_VPITCH"   : pdn_vpitch   / 1000,
-		"FP_PDN_VOFFSET"  : pdn_voffset  / 1000,
-		"FP_PDN_VSPACING" : pdn_vspacing / 1000,
-		"FP_PDN_VWIDTH"   : pdn_vwidth   / 1000,
+		"FP_PDN_VPITCH"   : pdn_vpitch.um,
+		"FP_PDN_VOFFSET"  : pdn_voffset.um,
+		"FP_PDN_VSPACING" : pdn_vspacing.um,
+		"FP_PDN_VWIDTH"   : pdn_vwidth.um,
 
 		# Placement
 		"PL_TARGET_DENSITY_PCT" : 40,
