@@ -110,6 +110,10 @@ if __name__ == '__main__':
 		# Constraints
 		"SIGNOFF_SDC_FILE" : "dir::signoff.sdc",
 
+		# Power
+		"VDD_PIN": "VDPWR",
+		"GND_PIN": "VGND",
+
 		# Synthesis
 		"SYNTH_READ_BLACKBOX_LIB"     : True,
 		"SYNTH_DIRECT_WIRE_BUFFERING" : False,
@@ -129,7 +133,7 @@ if __name__ == '__main__':
 		# Routing
 		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
-		"RT_MAX_LAYER"         : "met4",
+		"RT_MAX_LAYER"         : "Metal4",
 
 		# LEF generation option
 		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
@@ -138,6 +142,33 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS": False,			# Avoid exporting useless internal labels
 	}
+
+	flow_cfg.update({
+		"VDD_PIN_VOLTAGE": 3.3,
+		"DEFAULT_CORNER": "nom_tt_025C_3v30",
+		"STA_CORNERS": [
+			"nom_tt_025C_3v30",
+			"nom_ss_125C_3v00",
+			"nom_ff_n40C_3v60",
+			"min_tt_025C_3v30",
+			"min_ss_125C_3v00",
+			"min_ff_n40C_3v60",
+			"max_tt_025C_3v30",
+			"max_ss_125C_3v00",
+			"max_ff_n40C_3v60",
+		],
+		"LIB": {
+			"*_tt_025C_3v30": [
+				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib"
+			],
+			"*_ss_125C_3v00": [
+				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_3v00.lib"
+			],
+			"*_ff_n40C_3v60": [
+				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_n40C_3v60.lib"
+			],
+		},
+	})
 
 	flow = MuxFlow(
 		flow_cfg,
