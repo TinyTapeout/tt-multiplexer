@@ -14,11 +14,16 @@ import math
 import os
 import sys
 
-from typing import List, Type
+from os.path import abspath
+from typing import List, Tuple, Type
 
+from librelane.common import Path
 from librelane.flows.misc import OpenInKLayout
 from librelane.flows.sequential import SequentialFlow
+from librelane.state import DesignFormat, State
+from librelane.steps.openroad import OpenROADStep
 from librelane.steps.odb import OdbpyStep
+from librelane.steps.step import ViewsUpdate, MetricsUpdate
 from librelane.steps import (
 	Step,
 	Yosys,
@@ -61,6 +66,55 @@ class CustomRoute(OdbpyStep):
 		)
 
 
+@Step.factory.register()
+class FixupBTerms(OdbpyStep):
+
+	id = "TT.Top.FixupBTerms"
+	name = "Custom Fixups for TT Top Level"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_prune_bterms.py"
+		)
+
+
+@Step.factory.register()
+class FixupExtractedNetlist(Step):
+
+	id = "TT.Top.FixupExtractedNetlist"
+	name = "Fix netlist port for LVS"
+
+	inputs = [DesignFormat.SPICE]
+	outputs = [DesignFormat.SPICE]
+
+	def run(self, state_in: State, **kwargs) -> Tuple[ViewsUpdate, MetricsUpdate]:
+		views_updates: ViewsUpdate = {}
+
+		input_spice = state_in[DesignFormat.SPICE]
+		output_spice = os.path.join(
+			self.step_dir,
+			f"{self.config['DESIGN_NAME']}.{DesignFormat.SPICE.extension}"
+		)
+
+		script = os.path.join(
+			os.path.dirname(__file__),
+			"../../py/gf_fixup_netlist.py"
+		)
+
+		self.run_subprocess(
+			[
+				script,
+				abspath(input_spice),
+				abspath(output_spice),
+			],
+		)
+
+		views_updates[DesignFormat.SPICE] = Path(output_spice)
+
+		return views_updates, {}
+
+
 class TopFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -69,9 +123,10 @@ class TopFlow(SequentialFlow):
 		Checker.YosysUnmappedCells,
 		Checker.YosysSynthChecks,
 		OpenROAD.Floorplan,
-		Odb.ApplyDEFTemplate,
-		Odb.ManualMacroPlacement,
 		CustomPower,
+		OpenROAD.PadRing,
+		FixupBTerms,
+		Odb.ManualMacroPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
 		OpenROAD.DetailedPlacement,
@@ -90,10 +145,17 @@ class TopFlow(SequentialFlow):
 		KLayout.StreamOut,
 		KLayout.XOR,
 		Checker.XOR,
-		Magic.DRC,
-		Checker.MagicDRC,
+#		KLayout.Antenna,
+#		Checker.KLayoutAntenna,
+#		Magic.DRC,
+#		Checker.MagicDRC,
+		KLayout.SealRing,
+		KLayout.Filler,
+		KLayout.Density,
+		Checker.KLayoutDensity,
 		Magic.SpiceExtraction,
 		Checker.IllegalOverlap,
+		FixupExtractedNetlist,
 		Netgen.LVS,
 		Checker.LVS,
 	]
@@ -150,6 +212,17 @@ if __name__ == '__main__':
 			"orientation": m.orient,
 		}
 
+	macros['gf180mcu_ws_ip__id'] = {
+		'gds': [ f'dir::gds/gf180mcu_ws_ip__id.gds', ],
+		'lef': [ f'dir::lef/gf180mcu_ws_ip__id.lef', ],
+		'instances': {
+			'chip_id_I': {
+				'location': [ 26.0, 26.0 ],
+				'orientation': 'N',
+			},
+		},
+	}
+
 	# Generate dummy for all user modules
 	mod_tpl = open('tt_um_tpl.v', 'r').read()
 	open('verilog/tt_um_all.v', 'w').write('\n'.join([
@@ -160,14 +233,14 @@ if __name__ == '__main__':
 	# Custom config
 	flow_cfg = {
 		# Main design properties
-		"DESIGN_NAME"    : "openframe_project_wrapper",
+		"DESIGN_NAME"    : "tt_gf_wrapper",
 		"DESIGN_IS_CORE" : False,
 
 		# Sources
 		"VERILOG_FILES": [
-			"dir::openframe_project_wrapper.v",
+			"dir::tt_gf_wrapper.v",
 			"dir::../../rtl/tt_top.v",
-			"dir::../../rtl/tt_gpio.v",
+			"dir::../../rtl/tt_gf_gpio.v",
 			"dir::../../rtl/tt_user_module.v",
 		],
 
@@ -193,15 +266,13 @@ if __name__ == '__main__':
 		"QUIT_ON_SYNTH_CHECKS"      : False,
 
 		# Floorplanning
-		"DIE_AREA"  : [  0.00,  0.00, 3166.63, 4766.63 ],
-		"CORE_AREA" : [ 85.00, 85.00, 3081.63, 4681.63 ],
+		"DIE_AREA"  : [   0.00,   0.00, 3932.00, 5122.00 ],
+		"CORE_AREA" : [ 440.00, 440.00, 3492.00, 4682.00 ],
 		"FP_SIZING" : "absolute",
-		"FP_DEF_TEMPLATE" : "dir::openframe_project_wrapper.def",
-		"FP_TEMPLATE_COPY_POWER_PINS" : True,
 
 		# PDN
-		"VDD_NETS": [ "vdpwr", "vapwr" ],
-		"GND_NETS": [ "vgnd",  "vgnd"  ],
+		"VDD_NETS": [ "vdpwr", ],
+		"GND_NETS": [ "vgnd",  ],
 
 		"PDN_CFG": "dir::pdn.tcl",
 
@@ -209,18 +280,17 @@ if __name__ == '__main__':
 		"PDN_ENABLE_GLOBAL_CONNECTIONS" : False,
 
 		"FP_PDN_CORE_RING"          : True,
-		"FP_PDN_CORE_RING_VWIDTH"   : 25,
-		"FP_PDN_CORE_RING_HWIDTH"   : 25,
+		"FP_PDN_CORE_RING_VWIDTH"   : 27.5,
+		"FP_PDN_CORE_RING_HWIDTH"   : 30,
 		"FP_PDN_CORE_RING_VOFFSET"  :  0,
 		"FP_PDN_CORE_RING_HOFFSET"  :  0,
-		"FP_PDN_CORE_RING_VSPACING" :  2.0,
-		"FP_PDN_CORE_RING_HSPACING" :  2.0,
+		"FP_PDN_CORE_RING_VSPACING" :  1.5,
+		"FP_PDN_CORE_RING_HSPACING" :  1.5,
 
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
-		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
-		"RT_MAX_LAYER"          : "met4",
+		"RT_MAX_LAYER"          : "Metal4",
 
 		# Magic stream
 		"MAGIC_ZEROIZE_ORIGIN" : False,
@@ -231,12 +301,48 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
-		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom"],
+		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom", "gf180mcu_ws_ip__id"],
 	}
 
+	flow_cfg.update({
+		"VDD_PIN_VOLTAGE": 3.3,
+		"DEFAULT_CORNER": "nom_tt_025C_3v30",
+		"STA_CORNERS": [
+			"nom_tt_025C_3v30",
+			"nom_ss_125C_3v00",
+			"nom_ff_n40C_3v60",
+			"min_tt_025C_3v30",
+			"min_ss_125C_3v00",
+			"min_ff_n40C_3v60",
+			"max_tt_025C_3v30",
+			"max_ss_125C_3v00",
+			"max_ff_n40C_3v60",
+		],
+		"LIB": {
+			"*_tt_025C_3v30": [
+				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib",
+				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__tt_025C_3v30.lib",
+			],
+			"*_ss_125C_3v00": [
+				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_3v00.lib",
+				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib",
+			],
+			"*_ff_n40C_3v60": [
+				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_n40C_3v60.lib",
+				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_n40C_3v63.lib",
+			],
+		},
+	})
+
+	# Pad config
+	flow_cfg["PAD_SOUTH"] = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in range( 0,17) ]
+	flow_cfg["PAD_EAST"]  = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in range(17,37) ]
+	flow_cfg["PAD_NORTH"] = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in reversed(range(37,54)) ]
+	flow_cfg["PAD_WEST"]  = [ f"gpio\\[{i}\\].gpio_I.genblk1.pad_I" for i in reversed(range(54,74)) ]
+
 	# Update PDN config
-	pdn_width   =  8.75
-	pdn_spacing =  2.25
+	pdn_width   = 14.50
+	pdn_spacing =  1.10
 	pdn_pitch   = (tti.layout.glb.branch.pitch // 5).um
 	pdn_offset  = (
 		tti.layout.glb.top.pos_y +

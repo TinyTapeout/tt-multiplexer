@@ -24,391 +24,391 @@ module {mod_name} (
 	input  wire       rst_n
 );
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_0 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[0]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_0 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[0]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_1 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[1]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_1 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[1]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_2 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[2]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_2 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[2]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_3 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[3]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_3 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[3]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_4 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[4]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_4 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[4]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_5 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[5]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_5 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[5]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_6 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[6]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_6 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[6]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_ui_in_7 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ui_in[7]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_ui_in_7 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ui_in[7]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_0 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[0]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_0 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[0]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_1 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[1]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_1 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[1]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_2 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[2]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_2 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[2]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_3 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[3]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_3 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[3]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_4 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[4]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_4 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[4]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_5 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[5]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_5 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[5]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_6 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[6]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_6 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[6]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_uio_in_7 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (uio_in[7]),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_uio_in_7 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (uio_in[7]),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_ctl_ena (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (ena),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_ctl_ena (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (ena),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_clk (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (clk),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_clk (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (clk),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_in_rst_n (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (rst_n),
-		.X    ()
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_in_rst_n (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (rst_n),
+		.Z    ()
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_0 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[0])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_0 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[0])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_1 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[1])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_1 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[1])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_2 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[2])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_2 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[2])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_3 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[3])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_3 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[3])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_4 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[4])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_4 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[4])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_5 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[5])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_5 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[5])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_6 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[6])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_6 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[6])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uo_out_7 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uo_out[7])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uo_out_7 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uo_out[7])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_0 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[0])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_0 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[0])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_1 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[1])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_1 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[1])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_2 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[2])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_2 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[2])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_3 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[3])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_3 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[3])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_4 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[4])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_4 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[4])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_5 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[5])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_5 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[5])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_6 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[6])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_6 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[6])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_out_7 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_out[7])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_out_7 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_out[7])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_0 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[0])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_0 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[0])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_1 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[1])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_1 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[1])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_2 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[2])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_2 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[2])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_3 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[3])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_3 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[3])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_4 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[4])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_4 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[4])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_5 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[5])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_5 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[5])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_6 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[6])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_6 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[6])
 	);
 
-	sky130_fd_sc_hd__clkbuf_2 buf_out_uio_oe_7 (
-		.VGND (VGND),
-		.VNB  (VGND),
-		.VPB  (VDPWR),
-		.VPWR (VDPWR),
-		.A    (),
-		.X    (uio_oe[7])
+	gf180mcu_fd_sc_mcu7t5v0__buf_2 buf_out_uio_oe_7 (
+		.VSS  (VGND),
+		.VNW  (VGND),
+		.VPW  (VDPWR),
+		.VDD  (VDPWR),
+		.I    (),
+		.Z    (uio_oe[7])
 	);
 
 endmodule // {mod_name}

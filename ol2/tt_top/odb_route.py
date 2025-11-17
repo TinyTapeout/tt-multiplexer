@@ -34,9 +34,9 @@ class Router:
 		# Find useful data
 		tech = reader.db.getTech()
 
-		self.layer_h = tech.findLayer('met3')
-		self.layer_v = tech.findLayer('met4')
-		self.via     = tech.findVia('M3M4_PR')
+		self.layer_h = tech.findLayer('Metal3')
+		self.layer_v = tech.findLayer('Metal4')
+		self.via     = tech.findVia('Via3_HV')
 
 		self.x_spine = []
 		self.y_muxes = {}
@@ -238,10 +238,13 @@ class Router:
 	def route_um_tieoffs(self):
 		# Get track info
 		# We route horizontally on met4, non-preferred direction ...
-		track_cfg = self.tti.cfg.pdk.tracks.met4.y
+		track_cfg = self.tti.cfg.pdk.tracks.Metal4.y
 
-		def track_align(v):
-			return track_cfg.offset + ((v - track_cfg.offset) // track_cfg.pitch) * track_cfg.pitch
+		def track_align(v, ceil=False):
+			if ceil:
+				v += track_cfg.pitch.iu - 1
+			n = (v - track_cfg.offset.iu) // track_cfg.pitch.iu
+			return track_cfg.offset.iu + n * track_cfg.pitch.iu
 
 		# Scan all the muxes
 		for inst in self.reader.instances:
@@ -271,9 +274,9 @@ class Router:
 				sy = k0_it.getAvgXY()[2]
 
 				if sy > inst_y_mid:
-					sy = track_align(inst_bbox.yMax() + track_cfg.width + track_cfg.pitch - 1)
+					sy = track_align(inst_bbox.yMax() + track_cfg.pitch.iu, ceil=True)
 				else:
-					sy = track_align(inst_bbox.yMin() - track_cfg.width)
+					sy = track_align(inst_bbox.yMin() - track_cfg.pitch.iu, ceil=False)
 
 				# Start custom routing
 				wire = odb.dbWire.create(k0_net)
@@ -363,8 +366,8 @@ class Router:
 
 
 	def k01_get_track(self, side, idx):
-		# Get full die area
-		die = self.reader.block.getDieArea()
+		# Get full core area
+		core = self.reader.block.getCoreArea()
 
 		# Prepare recording of used tracks if not done already
 		if not hasattr(self, 'k01_tracks'):
@@ -376,25 +379,25 @@ class Router:
 			}
 
 		# Track config
-		cfg_tv = self.tti.cfg.pdk.tracks.met4.x
-		cfg_th = self.tti.cfg.pdk.tracks.met3.y
+		cfg_tv = self.tti.cfg.pdk.tracks.Metal3.x
+		cfg_th = self.tti.cfg.pdk.tracks.Metal3.y
 
 		# Alignement function
 		def a(cfg, v):
-			return cfg.offset + ((v - cfg.offset) // cfg.pitch) * cfg.pitch
+			return cfg.offset.iu + ((v - cfg.offset.iu) // cfg.pitch.iu) * cfg.pitch.iu
 
 		# Return requested track
 		if side == 'left':
-			t = cfg_tv.offset + cfg_tv.pitch * idx
+			t = a(cfg_tv, core.xMin() + cfg_tv.pitch.iu * idx)
 
 		elif side == 'right':
-			t = a(cfg_tv, die.xMax() - cfg_tv.pitch * idx)
+			t = a(cfg_tv, core.xMax() - cfg_tv.pitch.iu * idx)
 
 		elif side == 'bot':
-			t = cfg_th.offset + cfg_th.pitch * idx
+			t = a(cfg_th, core.yMin() + cfg_th.pitch.iu * idx)
 
 		elif side == 'top':
-			t = a(cfg_th, die.yMax() - cfg_th.pitch * idx)
+			t = a(cfg_th, core.yMax() - cfg_th.pitch.iu * idx)
 
 		else:
 			# ?!!?
@@ -504,13 +507,12 @@ class Router:
 		# Vias
 		tech = self.reader.db.getTech()
 
-		via = {
-			('met2', 'met3'): tech.findVia('M2M3_PR'),
-			('met3', 'met4'): tech.findVia('M3M4_PR'),
-		}
+		via    = tech.findVia('Via3_HV')
+		via_lr = tech.findVia('Via2_HV')
+		via_tb = tech.findVia('Via2_VH')
 
-		# Get full die area
-		die = self.reader.block.getDieArea()
+		# Get full core area
+		core = self.reader.block.getCoreArea()
 
 		# Find controller instance
 		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
@@ -530,7 +532,7 @@ class Router:
 			net = ctrl_iterm.getNet()
 
 			# Check if there are any users
-			if (net is None) or (len(net.getBTerms()) == 0):
+			if (net is None) or (len(net.getITerms()) == 1):
 				continue
 
 			# Limits
@@ -557,48 +559,46 @@ class Router:
 			encoder.newPath(self.layer_v, 'FIXED')
 			encoder.addPoint(x, y)
 			encoder.addPoint(x, ly[0])
-			encoder.addTechVia(self.via)
+			encoder.addTechVia(via)
 			encoder.addPoint(lx[1], ly[0])
-			encoder.addTechVia(self.via)
 			encoder.addPoint(lx[1], ly[1])
-			encoder.addTechVia(self.via)
 			encoder.addPoint(lx[0], ly[1])
-			encoder.addTechVia(self.via)
 			encoder.addPoint(lx[0], ly[0])
-			encoder.addTechVia(self.via)
 			encoder.addPoint(x, ly[0])
 
 			# Iterate over all BTerms
-			for pad_bterm in net.getBTerms():
+			for iterm in net.getITerms():
+				# Skip controller
+				if ctrl_inst.this == iterm.getInst().this:
+					continue
+
 				# Get pin location / Bounding Box
-				pr, px, py = pad_bterm.getFirstPinLocation()
+				pr, px, py = iterm.getAvgXY()
 				if pr is not True:
 					continue
 
-				pad_bb  = pad_bterm.getBBox()
-				pad_box = pad_bterm.getBPins()[0].getBoxes()[0]
-				pad_ly  = pad_box.getTechLayer()
+				iterm_ly = iterm.getGeometries()[0][0]
 
 				# Start path
-				encoder.newPath(pad_ly, 'FIXED')
+				encoder.newPath(iterm_ly, 'FIXED')
 				encoder.addPoint(px, py)
 
 				# Check side
-				if pad_bb.yMin() < 0:				# Bottom
+				if py < core.yMin():		# Bottom
 					encoder.addPoint(px, ly[0])
-					encoder.addTechVia(via[(pad_ly.getName(), self.layer_h.getName())])
+					encoder.addTechVia(via_tb)
 
-				elif pad_bb.yMax() > die.yMax():	# Top
+				elif py > core.yMax():	# Top
 					encoder.addPoint(px, ly[1])
-					encoder.addTechVia(via[(pad_ly.getName(), self.layer_h.getName())])
+					encoder.addTechVia(via_tb)
 
-				elif pad_bb.xMin() < 0:				# Left
+				elif px < core.yMin():	# Left
 					encoder.addPoint(lx[0], py)
-					encoder.addTechVia(via[(pad_ly.getName(), self.layer_v.getName())])
+					encoder.addTechVia(via_lr)
 
-				elif pad_bb.xMax() > die.xMax():	# Right
+				elif px > core.xMax():	# Right
 					encoder.addPoint(lx[1], py)
-					encoder.addTechVia(via[(pad_ly.getName(), self.layer_v.getName())])
+					encoder.addTechVia(via_lr)
 
 				else:
 					# ?!?!?
@@ -709,6 +709,12 @@ class ViaGenerator:
 				# but when creating the via we need it border to border ?!?!
 				self.cut_spc[0] -= self.cut_sz[0]
 				self.cut_spc[1] -= self.cut_sz[1]
+
+				# Check for special array rules
+				for asr in ly.getTechLayerArraySpacingRules():
+					mcs = asr.getCutSpacing()
+					self.cut_spc[0] = max(mcs, self.cut_spc[0])
+					self.cut_spc[1] = max(mcs, self.cut_spc[1])
 
 			# Or Metal ?
 			elif ly.getType() == 'ROUTING':
@@ -986,8 +992,15 @@ class RingPowerStrapper:
 		# Find useful data
 		self.tech = tech = reader.db.getTech()
 
-		self.layer = tech.findLayer('met3')
-		self.viagen = ViaGenerator(reader, 'M3M4_PR_C')
+		self.layers = {
+			2: tech.findLayer('Metal2'),
+			3: tech.findLayer('Metal3'),
+			4: tech.findLayer('Metal4'),
+		}
+		self.viagen = {
+			(2,3): ViaGenerator(reader, 'Via2_GEN_HV'),
+			(3,4): ViaGenerator(reader, 'Via3_GEN_VV'),
+		}
 
 	def find_ring_for_net(self, net):
 		# Find all the boxes on met4
@@ -1025,78 +1038,86 @@ class RingPowerStrapper:
 	def complete_ring(self, net, ring):
 		sw = odb.dbSWire.create(net, "ROUTED")
 		for box in [ ring['b'], ring['t'] ]:
-			odb.createSBoxes(sw, self.tech.findLayer('met4'), [odb.Rect(box.xMin(), box.yMin(), box.xMax(), box.yMax())], "RING")
+			odb.createSBoxes(sw, self.tech.findLayer('Metal4'), [odb.Rect(box.xMin(), box.yMin(), box.xMax(), box.yMax())], "RING")
 
 	def strap_draw_lr(self, sw, sxl, sxr, rxl, rxr, yb, yt):
-		# Stripe
-		odb.createSBoxes(sw, self.layer, [odb.Rect(sxl, yb, sxr, yt)], "STRIPE")
+		# Metal2 Stripe
+		odb.createSBoxes(sw, self.layers[2], [odb.Rect(sxl, yb, sxr, yt)], "STRIPE")
 
-		# Connecting via
-		via = self.viagen.get4sz(rxr-rxl, yt-yb)
+		# Metal3 "Intermediate"
+		odb.createSBoxes(sw, self.layers[3], [odb.Rect(rxl, yb, rxr, yt)], "STRIPE")
+
+		# Connecting vias
+		via23 = self.viagen[(2,3)].get4sz(rxr-rxl, yt-yb)
+		via34 = self.viagen[(3,4)].get4sz(rxr-rxl, yt-yb)
 
 		rxm = (rxl + rxr) // 2
 		ym  = ( yb +  yt) // 2
-		odb.createSBoxes(sw, via, [odb.Point(rxm, ym)], "STRIPE")
+		odb.createSBoxes(sw, via23, [odb.Point(rxm, ym)], "STRIPE")
+		odb.createSBoxes(sw, via34, [odb.Point(rxm, ym)], "STRIPE")
 
 	def strap_draw_tb(self, sw, xl, xr, syb, syt, ryb, ryt):
-		# Stripe
-		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, syb, xr, syt)], "STRIPE")
+		# Metal2 Stripe
+		odb.createSBoxes(sw, self.layers[2], [odb.Rect(xl, syb, xr, syt)], "STRIPE")
 
-		# Connecting via
-		via = self.viagen.get4sz(xr-xl, ryt-ryb)
+		# Metal3 "Intermediate"
+		odb.createSBoxes(sw, self.layers[3], [odb.Rect(xl, ryb, xr, ryt)], "STRIPE")
+
+		# Connecting vias
+		via23 = self.viagen[(2,3)].get4sz(xr-xl, ryt-ryb)
+		via34 = self.viagen[(3,4)].get4sz(xr-xl, ryt-ryb)
 
 		xm  = ( xl +  xr) // 2
 		rym = (ryb + ryt) // 2
-		odb.createSBoxes(sw, via, [odb.Point(xm, rym)], "STRIPE")
+		odb.createSBoxes(sw, via23, [odb.Point(xm, rym)], "STRIPE")
+		odb.createSBoxes(sw, via34, [odb.Point(xm, rym)], "STRIPE")
 
-	def strap_bterm(self, net, ring, sw, bterm):
-		# Die area
-		die = self.reader.block.getDieArea()
+	def strap_iterm(self, net, ring, sw, iterm):
+		# Core area
+		core = self.reader.block.getCoreArea()
 
-		# Scan all the boxes for that bterm and connect it
-		# to the appropriate rail
-		for bpin in  bterm.getBPins():
-			for bbox in bpin.getBoxes():
-				# All power pins are expected to be on met3
-				if bbox.getTechLayer().getName() != 'met3':
-					continue
+		# Scan all the geometries for that ITerm
+		for ly, rect in iterm.getGeometries():
+			# All power pins connections are expected to be on Metal2
+			if ly.getName() != 'Metal2':
+				continue
 
-				# Which side is the pin on ?
-				if bbox.xMin() < die.xMin():
-					# Left
-					self.strap_draw_lr(sw,
-						bbox.xMin(),      ring['l'].xMax(),
-						ring['l'].xMin(), ring['l'].xMax(),
-						bbox.yMin(),      bbox.yMax()
-					)
+			# Which side is the pin on ?
+			if rect.xMax() < core.xMin():
+				# Left
+				self.strap_draw_lr(sw,
+					rect.xMax(),      ring['l'].xMax(),
+					ring['l'].xMin(), ring['l'].xMax(),
+					rect.yMin(),      rect.yMax()
+				)
 
-				elif bbox.xMax() > die.xMax():
-					# Right
-					self.strap_draw_lr(sw,
-						ring['r'].xMin(), bbox.xMax(),
-						ring['r'].xMin(), ring['r'].xMax(),
-						bbox.yMin(),      bbox.yMax()
-					)
+			elif rect.xMin() > core.xMax():
+				# Right
+				self.strap_draw_lr(sw,
+					ring['r'].xMin(), rect.xMin(),
+					ring['r'].xMin(), ring['r'].xMax(),
+					rect.yMin(),      rect.yMax()
+				)
 
-				elif bbox.yMin() < die.yMin():
-					# Bottom
-					self.strap_draw_tb(sw,
-						bbox.xMin(),      bbox.xMax(),
-						bbox.yMin(),      ring['b'].yMax(),
-						ring['b'].yMin(), ring['b'].yMax(),
-					)
+			elif rect.yMax() < core.yMin():
+				# Bottom
+				self.strap_draw_tb(sw,
+					rect.xMin(),      rect.xMax(),
+					rect.yMax(),      ring['b'].yMax(),
+					ring['b'].yMin(), ring['b'].yMax(),
+				)
 
-				elif bbox.yMax() > die.yMax():
-					# Top
-					self.strap_draw_tb(sw,
-						bbox.xMin(),      bbox.xMax(),
-						ring['t'].yMin(), bbox.yMax(),
-						ring['t'].yMin(), ring['t'].yMax(),
-					)
+			elif rect.yMin() > core.yMax():
+				# Top
+				self.strap_draw_tb(sw,
+					rect.xMin(),      rect.xMax(),
+					ring['t'].yMin(), rect.yMin(),
+					ring['t'].yMin(), ring['t'].yMax(),
+				)
 
-				else:
-					# ???
-					continue
+			else:
+				# ???
+				continue
 
 	def strap_net(self, net):
 		# Find all the rings boxes
@@ -1104,15 +1125,20 @@ class RingPowerStrapper:
 		if ring is None:
 			return
 
-		# Complete the ring with met4 on top/bottom
+		# Complete the ring with Metal4 on top/bottom
 		self.complete_ring(net, ring)
 
 		# Create new SWire for our straps
 		sw = odb.dbSWire.create(net, "ROUTED")
 
-		# Find all the BTerms
-		for bterm in net.getBTerms():
-			self.strap_bterm(net, ring, sw, bterm)
+		# Find all the ITerms
+		for iterm in net.getITerms():
+			# Check it's a pad
+			if not iterm.getInst().getName().endswith('.pad_I'):
+				continue
+
+			# Connect it
+			self.strap_iterm(net, ring, sw, iterm)
 
 	def run(self):
 		# Scan all power nets and check if they need strapping
@@ -1685,23 +1711,23 @@ def route(
 	r.create_spine_obs()
 	r.create_macro_obs()
 	r.route_k01_global()
-	r.route_k01_gpio()
-	r.create_k01_obs()
-	r.route_pad()
+	#r.route_k01_gpio()
+	#r.create_k01_obs()
+	#r.route_pad()
 	r.route_um_tieoffs()
 	r.route_um_signals()
 
 	# Create the module power straps
-	p = ModulePowerStrapper(reader, tti)
-	p.run()
+	#p = ModulePowerStrapper(reader, tti)
+	#p.run()
 
 	# Create the ring power straps
 	p = RingPowerStrapper(reader)
 	p.run()
 
 	# Analog router
-	a = AnalogRouter(reader, tti)
-	a.run()
+	#a = AnalogRouter(reader, tti)
+	#a.run()
 
 if __name__ == "__main__":
 	route()

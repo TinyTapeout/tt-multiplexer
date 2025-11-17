@@ -31,11 +31,11 @@ def power(
 	PDN = {
 		'vgnd' : {
 			'type' :  'GROUND',
-			'pins' : [ 'VGND' ],
+			'pins' : [ 'VGND', 'VSS', 'DVSS' ],
 		},
 		'vdpwr' : {
 			'type' : 'POWER',
-			'pins' : [ 'VPWR', 'VDPWR' ],
+			'pins' : [ 'VPWR', 'VDPWR', 'VDD', 'DVDD' ],
 			'pg' : ( 'tt_pg_vdd_I', 'VPWR', 'GPWR' ),
 		},
 		'vapwr' : {
