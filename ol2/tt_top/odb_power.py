@@ -29,19 +29,31 @@ def power(
 
 	# Config
 	PDN = {
+		'dvss' : {
+			'type' :  'GROUND',
+			'pins' : [ 'DVSS' ],
+		},
+		'dvdd' : {
+			'type' :  'POWER',
+			'pins' : [ 'DVDD' ],
+		},
 		'vgnd' : {
 			'type' :  'GROUND',
-			'pins' : [ 'VGND' ],
+			'pins' : [ 'VGND', 'VSS' ],
 		},
 		'vdpwr' : {
 			'type' : 'POWER',
-			'pins' : [ 'VPWR', 'VDPWR' ],
+			'pins' : [ 'VPWR', 'VDPWR', 'VDD' ],
 			'pg' : ( 'tt_pg_vdd_I', 'VPWR', 'GPWR' ),
 		},
 		'vapwr' : {
 			'type' : 'POWER',
 			'pins' : [ 'VAPWR' ],
 			'pg' : ( 'tt_pg_vaa_I', 'VAPWR', 'GAPWR' ),
+			'insts' : {
+				'gpio\\[25\\].gpio_I.genblk1.pad_I': [ 'ASIG5V', ],
+				'gpio\\[63\\].gpio_I.genblk1.pad_I': [ 'ASIG5V', ],
+			},
 		},
 	}
 
