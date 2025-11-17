@@ -25,7 +25,7 @@ module tt_mux #(
 )(
 	// Power
 `ifdef USE_POWER_PINS
-	input  wire VPWR,
+	input  wire VDPWR,
 	input  wire VGND,
 `endif
 
