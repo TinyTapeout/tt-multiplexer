@@ -274,12 +274,12 @@ module tt_top #(
 
 `ifndef FORMAL
 `ifndef SIM
-//	(* blackbox, keep *)
-//	tt_logo_top logo_top_I ();
-//
-//	(* blackbox, keep *)
-//	tt_logo_bottom logo_bottom_I ();
-//
+	(* blackbox, keep *)
+	tt_logo_top logo_top_I ();
+
+	(* blackbox, keep *)
+	tt_logo_bottom logo_bottom_I ();
+
 //	(* blackbox, keep *)
 //	tt_logo_corner logo_corner_I ();
 `endif
