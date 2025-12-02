@@ -329,18 +329,23 @@ if __name__ == '__main__':
 			"max_ss_125C_3v00",
 			"max_ff_n40C_3v60",
 		],
+		"PAD_CELL_LIBRARY": "gf180mcu_ocd_io",
+		"PAD_GDS": [
+			"pdk_dir::libs.ref/gf180mcu_ocd_io/gds/gf180mcu_ocd_io.gds",
+		],
+		"PAD_CDLS": [],
 		"LIB": {
 			"*_tt_025C_3v30": [
 				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib",
-				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__tt_025C_3v30.lib",
+				"pdk_dir::libs.ref/gf180mcu_ocd_io/lib/gf180mcu_ocd_io__tt_025C_3v30.lib",
 			],
 			"*_ss_125C_3v00": [
 				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_3v00.lib",
-				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib",
+				"pdk_dir::libs.ref/gf180mcu_ocd_io/lib/gf180mcu_ocd_io__ss_125C_2v97.lib",
 			],
 			"*_ff_n40C_3v60": [
 				"pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_n40C_3v60.lib",
-				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_n40C_3v63.lib",
+				"pdk_dir::libs.ref/gf180mcu_ocd_io/lib/gf180mcu_ocd_io__ff_n40C_3v63.lib",
 			],
 		},
 		"KLAYOUT_FILLER_OPTIONS": {

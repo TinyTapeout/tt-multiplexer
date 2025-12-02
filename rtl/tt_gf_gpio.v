@@ -98,7 +98,7 @@ module tt_gf_gpio #(
 		(MODE == 4'b0000): /* NC */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__asig_5p0 pad_I (
+			gf180mcu_ocd_io__asig_5p0 pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
@@ -112,7 +112,7 @@ module tt_gf_gpio #(
 		(MODE == 4'b1111): /* Analog */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__asig_5p0 pad_I (
+			gf180mcu_ocd_io__asig_5p0 pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
@@ -129,7 +129,7 @@ module tt_gf_gpio #(
 		(MODE == 4'b1101): /* VDD Analog */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__dvdd pad_I (
+			gf180mcu_ocd_io__dvdd pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
@@ -141,11 +141,12 @@ module tt_gf_gpio #(
 		(MODE == 4'b1100): /* GND Analog */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__dvss pad_I (
+			gf180mcu_ocd_io__vss pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
-				.VDD    (VDPWR)
+				.VDD    (VDPWR),
+				.VSS    (VGND)
 `endif
 			);
 		end
@@ -153,10 +154,11 @@ module tt_gf_gpio #(
 		(MODE == 4'b1011): /* VDD IO */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__dvdd pad_I (
+			gf180mcu_ocd_io__dvdd pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
+				.VDD    (VDPWR),
 				.VSS    (VGND)
 `endif
 			);
@@ -165,11 +167,12 @@ module tt_gf_gpio #(
 		(MODE == 4'b1010): /* GND IO */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__dvss pad_I (
+			gf180mcu_ocd_io__dvss pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
-				.VDD    (VDPWR)
+				.VDD    (VDPWR),
+				.VSS    (VGND)
 `endif
 			);
 		end
@@ -177,10 +180,11 @@ module tt_gf_gpio #(
 		(MODE == 4'b1001): /* VDD Core */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__dvdd pad_I (
+			gf180mcu_ocd_io__vdd pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
+				.VDD    (VDPWR),
 				.VSS    (VGND)
 `endif
 			);
@@ -189,11 +193,12 @@ module tt_gf_gpio #(
 		(MODE == 4'b1000): /* GND Core */
 		begin
 			(* keep *)
-			gf180mcu_fd_io__dvss pad_I (
+			gf180mcu_ocd_io__vss pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
-				.VDD    (VDPWR)
+				.VDD    (VDPWR),
+				.VSS    (VGND)
 `endif
 			);
 		end
@@ -209,7 +214,7 @@ module tt_gf_gpio #(
 			wire l_pdrv0 = DRIVE_STRENGTH[0] ? k_one : k_zero;
 
 			(* keep *)
-			gf180mcu_fd_io__bi_t pad_I (
+			gf180mcu_ocd_io__bi_t pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
@@ -239,7 +244,7 @@ module tt_gf_gpio #(
 			wire l_ie = MODE[0]   ? k_one : k_zero;
 
 			(* keep *)
-			gf180mcu_fd_io__bi_24t pad_I (
+			gf180mcu_ocd_io__bi_24t pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
@@ -263,7 +268,7 @@ module tt_gf_gpio #(
 		begin
 
 			(* keep *)
-			gf180mcu_fd_io__in_c pad_I (
+			gf180mcu_ocd_io__in_c pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
@@ -282,7 +287,7 @@ module tt_gf_gpio #(
 		begin
 
 			(* keep *)
-			gf180mcu_fd_io__in_s pad_I (
+			gf180mcu_ocd_io__in_s pad_I (
 `ifdef USE_POWER_PINS
 				.DVDD   (DVDD),
 				.DVSS   (DVSS),
