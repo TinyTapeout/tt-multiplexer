@@ -1,0 +1,50 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_pg_3v3_hp_2
+  CLASS BLOCK ;
+  FOREIGN tt_pg_3v3_hp_2 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 11.200 BY 325.360 ;
+  PIN VGND
+    ANTENNADIFFAREA 15.902900 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 5.200 0.000 6.000 324.760 ;
+    END
+  END VGND
+  PIN VPWR
+    ANTENNADIFFAREA 1119.761597 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 0.000 4.900 324.760 ;
+    END
+  END VPWR
+  PIN GPWR
+    ANTENNADIFFAREA 875.499695 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 6.300 0.000 11.200 324.760 ;
+    END
+  END GPWR
+  PIN ctrl
+    ANTENNAGATEAREA 4.435200 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 325.060 11.200 325.360 ;
+    END
+  END ctrl
+  OBS
+      LAYER Nwell ;
+        RECT 0.350 0.000 10.850 325.010 ;
+      LAYER Metal1 ;
+        RECT 0.520 0.185 10.680 324.820 ;
+      LAYER Metal2 ;
+        RECT 0.000 0.185 11.200 325.360 ;
+      LAYER Metal3 ;
+        RECT 0.000 0.000 11.200 325.360 ;
+  END
+END tt_pg_3v3_hp_2
+END LIBRARY
+
