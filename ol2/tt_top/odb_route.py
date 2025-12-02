@@ -872,11 +872,11 @@ class ModulePowerStrapper:
 		# Find useful data
 		tech = reader.db.getTech()
 
-		self.vg = ViaGenerator(self.reader, 'M4M5_PR')
-		self.layer = tech.findLayer('met5')
+		self.vg = ViaGenerator(self.reader, 'Via4_GEN_VH')
+		self.layer = tech.findLayer('Metal5')
 
 		self.stripe_space, self.stripe_width = self._find_stripe_space_width()
-		self.space = 2250
+		self.space = 1100
 
 	def _find_stripe_space_width(self):
 		# Get all `met5` stripes for VGND
@@ -885,7 +885,7 @@ class ModulePowerStrapper:
 		stripes = [
 			w for w in sw.getWires() if (
 				not w.isVia() and
-				w.getTechLayer().getName() == 'met5' and
+				w.getTechLayer().getName() == self.layer.getName() and
 				w.getWireShapeType() == 'STRIPE'
 			)
 		]
@@ -1780,8 +1780,8 @@ def route(
 	r.route_um_signals()
 
 	# Create the module power straps
-	#p = ModulePowerStrapper(reader, tti)
-	#p.run()
+	p = ModulePowerStrapper(reader, tti)
+	p.run()
 
 	# Create the ring power straps
 	p = RingPowerStrapper(reader)
