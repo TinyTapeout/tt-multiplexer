@@ -44,6 +44,19 @@ class IOPlacement(OdbpyStep):
 		)
 
 
+@Step.factory.register()
+class DiodesPlacement(OdbpyStep):
+
+	id = "TT.Mux.DiodesPlacement"
+	name = "Custom Diodes placement for TT Mux module"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_diodes.py"
+		)
+
+
 class MuxFlow(SequentialFlow):
 
 	Steps: List[Type[Step]] = [
@@ -56,10 +69,12 @@ class MuxFlow(SequentialFlow):
 		IOPlacement,
 		OpenROAD.GeneratePDN,
 		OpenROAD.GlobalPlacement,
+		DiodesPlacement,
 		OpenROAD.DetailedPlacement,
 		OpenROAD.GlobalRouting,
 		OpenROAD.DetailedRouting,
 		Checker.TrDRC,
+		OpenROAD.CheckAntennas,
 		Odb.ReportDisconnectedPins,
 		Checker.DisconnectedPins,
 		Odb.ReportWireLength,
