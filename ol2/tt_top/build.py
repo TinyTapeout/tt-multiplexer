@@ -134,6 +134,7 @@ class TopFlow(SequentialFlow):
 		OpenROAD.GlobalRouting,
 		OpenROAD.DetailedRouting,
 		Checker.TrDRC,
+		OpenROAD.CheckAntennas,
 		Odb.ReportDisconnectedPins,
 		Checker.DisconnectedPins,
 		Odb.ReportWireLength,

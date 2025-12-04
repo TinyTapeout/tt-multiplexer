@@ -168,11 +168,29 @@ class Router:
 				)
 
 	def route_pad(self):
+		# Core area
+		core = self.reader.block.getCoreArea()
+
 		# Vias
 		tech = self.reader.db.getTech()
 
-		via_m23 = tech.findVia('M2M3_PR')
-		via_m34 = tech.findVia('M3M4_PR')
+		layers = {
+			2: tech.findLayer('Metal2'),
+			3: tech.findLayer('Metal3'),
+			4: tech.findLayer('Metal4'),
+		}
+		ly_name2num = { v.getName(): k  for k,v in layers.items() }
+
+		vias = {
+			(2, 3, 'hh'): tech.findVia('Via2_HH'),
+			(2, 3, 'hv'): tech.findVia('Via2_HV'),
+			(2, 3, 'vh'): tech.findVia('Via2_VH'),
+			(2, 3, 'vv'): tech.findVia('Via2_VV'),
+			(3, 4, 'hh'): tech.findVia('Via3_HH'),
+			(3, 4, 'hv'): tech.findVia('Via3_HV'),
+			(3, 4, 'vh'): tech.findVia('Via3_VH'),
+			(3, 4, 'vv'): tech.findVia('Via3_VV'),
+		}
 
 		# Find controller instance
 		ctrl_inst = self.reader.block.findInst('top_I.ctrl_I')
@@ -182,55 +200,99 @@ class Router:
 
 		# Iterate through data file
 		for port_name, rpts in data.items():
-			# Starting point
-			it = ctrl_inst.findITerm(port_name)
-			sx, sy = it.getAvgXY()[1:]
+			# Beginning point
+			it_begin = ctrl_inst.findITerm(port_name)
+			it_begin_geom = it_begin.getGeometries()[0]
+			sl = ly_name2num[it_begin_geom[0].getName()]
+			sx = it_begin_geom[1].xCenter()
+			sy = it_begin_geom[1].yCenter()
 
 			# Net / Wire
-			net = it.getNet()
+			net = it_begin.getNet()
 			wire = odb.dbWire.create(net)
 
 			# Ending point
-			bt = net.get1stBTerm()
-			ex, ey = bt.getFirstPinLocation()[1:]
-			el = bt.getBPins()[0].getBoxes()[0].getTechLayer()
-
-			# Set via type for intermediate routing points
-			rpts = [(v, via_m34) for v in rpts]
-
-			# Append ending point to intermediate routing points
-			if len(rpts) & 1:
-				rpts.extend([(ex, via_m23), (ey, None)])
-			else:
-				rpts.extend([(ey, via_m34), (ex, None)])
+			it_end = getOtherITermsOnNet(it_begin)[0]
+			it_end_geom = it_end.getGeometries()[0]
+			el = ly_name2num[it_end_geom[0].getName()]
+			ex = it_end_geom[1].xCenter()
+			ey = it_end_geom[1].yCenter()
 
 			# Encoder start
 			encoder = odb.dbWireEncoder()
 			encoder.begin(wire)
 
-			encoder.newPath(self.layer_v, 'FIXED')
+			encoder.newPath(layers[sl], 'FIXED')
 			encoder.addPoint(sx, sy)
 
-			# Scan through routing points
-			px = sx
-			py = sy
-			xy = True
+			# Process each routing point
+			cl, cx, cy = sl, sx, sy
+			pd = 'v'
+			pv = None
 
-			for pt, vt in rpts:
-				# Next point
-				if xy:
-					py = pt
-				else:
-					px = pt
+			for pt in rpts:
+				# Resolve any pending via
+				if pv is not None:
+					d = { 'x': 'h', 'y': 'v' }[pt[0]]
+					encoder.addTechVia(vias[(pv[0], pv[1], (pv[2] or d) + (pv[3] or d))])
+					pv = None
 
-				encoder.addPoint(px, py)
+				# Command
+				if pt[0] == 'x':	# Horizontal route
+					# Target
+					tgt = pt[2:]
+					if tgt[0] == 'd':
+						cx = ex
+					elif tgt[0] == 'c':
+						cx = core.xMin() if tgt[1] == 'l' else core.xMax()
+					elif tgt[0] == 't':
+						track_cfg = self.tti.cfg.pdk.tracks[layers[cl].getName()].x
+						cx = track_cfg.offset.iu + track_cfg.pitch.iu * int(tgt[1:])
+					else:
+						raise RuntimeError('Invalid target point')
 
-				# Toggle routing direction
-				xy ^= True
+					# Add new point
+					encoder.addPoint(cx, cy)
 
-				# Add via
-				if vt is not None:
-					encoder.addTechVia(vt)
+					# Save new direction
+					pd = 'h'
+
+				elif pt[0] == 'y':	# Vertical route
+					# Target
+					tgt = pt[2:]
+					if tgt[0] == 'd':
+						cy = ey
+					elif tgt[0] == 'c':
+						cy = core.yMin() if tgt[1] == 'b' else core.yMax()
+					elif tgt[0] == 't':
+						track_cfg = self.tti.cfg.pdk.tracks[layers[cl].getName()].y
+						cy = track_cfg.offset.iu + track_cfg.pitch.iu * int(tgt[1:])
+					else:
+						raise RuntimeError('Invalid target point')
+
+					# Add new point
+					encoder.addPoint(cx, cy)
+
+					# Save new direction
+					pd = 'v'
+
+				elif pt[0] == 'v':	# Via
+					# Direction
+					if pt[1] == 'u':
+						v_ly = (cl, cl+1)
+						pv = (v_ly[0], v_ly[1], pd, None)
+						cl += 1
+					elif pt[1] == 'd':
+						v_ly = (cl-1, cl)
+						pv = (v_ly[0], v_ly[1], None, pd)
+						cl -= 1
+					else:
+						raise RuntimeError('Invalid via direction')
+
+					# Is it direct orientation ?
+					if pt[3:]:
+						encoder.addTechVia(vias[(v_ly[0], v_ly[1], pt[3:])])
+						pv = None
 
 			# Encoder end
 			encoder.end()
@@ -388,16 +450,16 @@ class Router:
 
 		# Return requested track
 		if side == 'left':
-			t = a(cfg_tv, core.xMin() + cfg_tv.pitch.iu * idx)
+			t = a(cfg_tv, core.xMin() + cfg_tv.pitch.iu * (idx + 7))
 
 		elif side == 'right':
-			t = a(cfg_tv, core.xMax() - cfg_tv.pitch.iu * idx)
+			t = a(cfg_tv, core.xMax() - cfg_tv.pitch.iu * (idx + 7))
 
 		elif side == 'bot':
-			t = a(cfg_th, core.yMin() + cfg_th.pitch.iu * idx)
+			t = a(cfg_th, core.yMin() + cfg_th.pitch.iu * (idx + 13))
 
 		elif side == 'top':
-			t = a(cfg_th, core.yMax() - cfg_th.pitch.iu * idx)
+			t = a(cfg_th, core.yMax() - cfg_th.pitch.iu * (idx + 29))
 
 		else:
 			# ?!!?
@@ -1713,7 +1775,7 @@ def route(
 	r.route_k01_global()
 	#r.route_k01_gpio()
 	#r.create_k01_obs()
-	#r.route_pad()
+	r.route_pad()
 	r.route_um_tieoffs()
 	r.route_um_signals()
 
