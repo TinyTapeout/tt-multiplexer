@@ -618,6 +618,9 @@ class Top(LayoutElement):
 		logo_bottom = Logo(layout, 'bottom')
 		self.add_child(logo_bottom, Point(layout.glb.logo.pos_x, layout.glb.logo.bottom_pos_y), 'N', name='logo_bottom_I')
 
+		logo_corner = Logo(layout, 'corner_tr')
+		self.add_child(logo_corner, Point(LayoutDimension(3932000 - 246000) - layout.glb.top.pos_x, LayoutDimension(5122000 - 246000) - layout.glb.top.pos_y), 'N', name='logo_corner_I')
+
 
 class Die(LayoutElement):
 	"""

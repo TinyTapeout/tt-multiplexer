@@ -223,6 +223,16 @@ if __name__ == '__main__':
 			},
 		},
 	}
+	macros['gf180mcu_ws_ip__logo'] = {
+		'gds': [ f'dir::gds/gf180mcu_ws_ip__logo.gds', ],
+		'lef': [ f'dir::lef/gf180mcu_ws_ip__logo.lef', ],
+		'instances': {
+			'logo_I': {
+				'location': [ 3762.75, 26.0 ],
+				'orientation': 'N',
+			},
+		},
+	}
 
 	# Generate dummy for all user modules
 	mod_tpl = open('tt_um_tpl.v', 'r').read()
@@ -302,7 +312,7 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
-		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom", "gf180mcu_ws_ip__id"],
+		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom", "tt_logo_corner_tr", "gf180mcu_ws_ip__id", "gf180mcu_ws_ip__logo"],
 	}
 
 	flow_cfg.update({

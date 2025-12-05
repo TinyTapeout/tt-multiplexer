@@ -163,8 +163,15 @@ module tt_gf_wrapper (
     (* keep *)
     gf180mcu_ws_ip__id chip_id_I ();
 
+    (* keep *)
+    gf180mcu_ws_ip__logo logo_I ();
+
 endmodule	// tt_gf_wrapper
 
 (* blackbox *)
 module gf180mcu_ws_ip__id;
+endmodule
+
+(* blackbox *)
+module gf180mcu_ws_ip__logo;
 endmodule
