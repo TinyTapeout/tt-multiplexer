@@ -312,7 +312,7 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
-		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom", "tt_logo_corner_tr", "gf180mcu_ws_ip__id", "gf180mcu_ws_ip__logo"],
+		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom", "tt_logo_corner_tl", "tt_logo_corner_tr", "gf180mcu_ws_ip__id", "gf180mcu_ws_ip__logo"],
 	}
 
 	flow_cfg.update({

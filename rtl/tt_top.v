@@ -281,7 +281,10 @@ module tt_top #(
 	tt_logo_bottom logo_bottom_I ();
 
 	(* blackbox, keep *)
-	tt_logo_corner_tr logo_corner_I ();
+	tt_logo_corner_tl logo_corner_tl_I ();
+
+	(* blackbox, keep *)
+	tt_logo_corner_tr logo_corner_tr_I ();
 `endif
 `endif
 
