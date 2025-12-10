@@ -343,6 +343,9 @@ if __name__ == '__main__':
 				"pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_n40C_3v63.lib",
 			],
 		},
+		"KLAYOUT_FILLER_OPTIONS": {
+			"Metal2_ignore_active": True,
+		},
 	})
 
 	# Pad config
