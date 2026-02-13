@@ -2,8 +2,8 @@ pdk:
   name: ihp-sg13g2
   tech: ihp-sg13g2
   die:
-    width:  3600000
-    height: 5000000
+    width:  4470000
+    height: 5700000
     margin:
       left:   445000
       right:  445000
@@ -85,8 +85,8 @@ pdk:
         width:  1600
 tt:
   grid:     # In number of blocks
-    x: 12   # Must be divisible by 4
-    y: 20   # Must be EVEN
+    x: 16   # Must be divisible by 4
+    y: 24   # Must be EVEN
   block:
     w: -1
     h: -1
