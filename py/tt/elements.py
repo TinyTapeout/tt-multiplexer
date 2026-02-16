@@ -431,7 +431,7 @@ class Branch(LayoutElement):
 			name_pfx = f'block[{blk_id:d}].um_I.block_{mux_id:d}_{blk_id:d}.'
 
 			# Analog ?
-			if mp.analog:
+			if mp.analog and False:
 				for k, v in mp.analog.items():
 					# Instance
 					ana_sw = AnalogSwitch(layout)

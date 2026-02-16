@@ -702,6 +702,110 @@ class Router:
 				layer_h, lx_left[0], ly_top[0], lx_right[1], ly_top[1])
 
 
+	def route_hack_analog(self):
+
+		# Find tech and layers
+		tech      = self.reader.db.getTech()
+		layer_tm1 = tech.findLayer('TopMetal1')
+		layer_m5  = tech.findLayer('Metal5')
+
+
+		# Create via for analog signal
+		viagen = ViaGenerator(self.reader, 'viagen56')
+		via = viagen.create(2, 2, 'analog_via')
+
+		# Hardcoded pad data
+		PAD_DATA = {
+			18: ( 0, 3, 7, 'r'),
+			19: ( 1, 2, 6, 'r'),
+			20: ( 2, 1, 5, 'r'),
+			21: ( 3, 0, 4, 'r'),
+			24: ( 4, 0, 3, 'r'),
+			25: ( 5, 1, 2, 'r'),
+			26: ( 6, 2, 1, 'r'),
+			27: ( 7, 3, 0, 'r'),
+			52: ( 8, 3, 0, 'l'),
+			53: ( 9, 2, 1, 'l'),
+			54: (10, 1, 2, 'l'),
+			55: (11, 0, 3, 'l'),
+			58: (12, 0, 4, 'l'),
+			59: (13, 1, 5, 'l'),
+			60: (14, 2, 6, 'l'),
+			61: (15, 3, 7, 'l'),
+		}
+
+		# Scan all the user modules
+		for um_inst in self.reader.instances:
+			# Is this a user module ?
+			if not um_inst.getName().endswith('.tt_um_I'):
+				continue
+
+			# Scan every connection
+			for um_it in um_inst.getITerms():
+				# We only care about analog signals
+				if not um_it.getMTerm().getName().startswith('ua['):
+					continue
+
+				# Get the net and BTerm
+				net = um_it.getNet()
+
+				if len(net.getBTerms()) == 0:
+					continue
+
+				pad_bt = net.getBTerms()[0]
+
+				#sys.path.append('/home/tnt/.local/lib/python3.9/site-packages')
+				#import IPython
+				#IPython.embed()
+
+				# Find pad data
+				pad_num = int(pad_bt.getName()[-3:-1])
+				pad_idx, pad_ofs_x, pad_ofs_y, pad_side = PAD_DATA[pad_num]
+
+				# Coordinates
+				_, x_um, y_um = um_it.getAvgXY()
+				_, x_pad, y_pad = pad_bt.getFirstPinLocation()
+				y_track = y_um - 22380 - 4500 * pad_ofs_y
+
+				if pad_side == 'l':
+					x_end   = 321000
+					x_track = 321000 + 4500 * pad_ofs_x
+					x_tran  = 430000
+					sx = 1
+				elif pad_side == 'r':
+					x_end   = 3279000 + 870000
+					x_track = 3279000 + 870000 - 4500 * pad_ofs_x
+					x_tran  = 3170000 + 870000
+					sx = -1
+
+				wh_pad   =  875
+				wh_track = 1125
+
+				# Route the wire
+				sw = odb.dbSWire.create(net, "ROUTED")
+
+				def wire(sw, layer, x0, x1, xw, y0, y1, yw):
+					xa = min(x0, x1) - xw
+					xb = max(x0, x1) + xw
+					ya = min(y0, y1) - yw
+					yb = max(y0, y1) + yw
+					odb.createSBoxes(sw, layer, [odb.Rect(xa, ya, xb, yb)], "STRIPE")
+
+					# Down
+				wire(sw, layer_tm1, x_um, x_um, wh_pad, y_um - wh_pad, y_track, wh_track)
+				wire(sw, layer_tm1, x_um, x_tran, wh_track, y_track, y_track, wh_track)
+
+				odb.createSBoxes(sw, via, [odb.Point(x_tran, y_track)], "STRIPE")
+
+				wire(sw, layer_m5, x_tran, x_track, wh_track, y_track, y_track, wh_track)
+
+				odb.createSBoxes(sw, via, [odb.Point(x_track, y_track)], "STRIPE")
+
+				wire(sw, layer_tm1, x_track, x_track, wh_track, y_track, y_pad, wh_track)
+
+				if x_track != x_end:
+					wire(sw, layer_tm1, x_track, x_end, wh_track, y_pad, y_pad, wh_track)
+
 
 class ViaGenerator:
 
@@ -1851,6 +1955,7 @@ def route(
 	r.route_pad()
 	r.route_um_tieoffs()
 	r.route_um_signals()
+	r.route_hack_analog()
 
 	# Create the module power straps
 	p = ModulePowerStrapper(reader, tti)

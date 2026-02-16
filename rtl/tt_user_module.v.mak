@@ -82,6 +82,7 @@ module tt_user_module #(
 			);
 %  if mod.analog:
 %   for (pin_int, pin_ext) in mod.analog.items():
+/*
 			${mod.asw_module} tt_asw_${pin_int}_I (
 `ifdef USE_POWER_PINS
 				.VDPWR   (VDPWR),
@@ -92,6 +93,8 @@ module tt_user_module #(
 				.bus     (ana[${pin_ext}]),
 				.ctrl	 (ena)
 			);
+*/
+			assign ana[${pin_ext}] = ua[${pin_int}];
 %   endfor
 %  endif
 %  if mod.pg_vdd_module is not None:
