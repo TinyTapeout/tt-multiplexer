@@ -343,7 +343,7 @@ if __name__ == '__main__':
 		# Routing
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
-		"RT_MAX_LAYER"          : "Metal5",
+		"RT_MAX_LAYER"          : "TopMetal1",
 
 		# Magic stream
 		"MAGIC_ZEROIZE_ORIGIN" : False,

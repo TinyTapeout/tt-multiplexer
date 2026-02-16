@@ -32,6 +32,7 @@ def io_place(
 	# Find die & layers
 	die_area = reader.block.getDieArea()
 	layer_ns = reader.tech.findLayer(tti.cfg.tt.spine.vlayer)
+	layer_ana = reader.tech.findLayer("TopMetal1")
 
 	# Adjust pin position (in case there is a power gate)
 	pin_ofs = die_area.xMax() - die_area.xMin()
@@ -47,7 +48,7 @@ def io_place(
 	for pn, pp in tti.layout.ply_block_analog.items():
 		if pn not in bterm_map:
 			continue
-		tt_odb.place_pin(die_area, layer_ns, bterm_map.pop(pn), pp + pin_ofs, 'S', wide=True)
+		tt_odb.place_pin(die_area, layer_ana, bterm_map.pop(pn), pp + pin_ofs, 'S', wide=True)
 
 
 if __name__ == "__main__":

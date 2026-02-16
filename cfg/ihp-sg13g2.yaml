@@ -19,6 +19,8 @@ pdk:
     vaa:
       name: 'tt_pg_3v3'
       width: 12480
+  analog:
+    switch: 'tt_asw_3v3'
   tracks:
     Metal1:
       x:
@@ -102,8 +104,28 @@ tt:
   spine:
     vlayer: 'Metal4'
     hlayer: 'Metal5'
-  analog: []
+  analog:
+    - mux_id: [ 2 ]
+      pins:
+        0:  2545510
+        1:  2771510
+        2:  2996510
+        3:  3222510
+        4:  3447510
+        5:  3672510
+        6:  1840120
+        7:  1624120
+    - mux_id: [ 4 ]
+      pins:
+        8:  1408120
+        9:  1192120
+        10:  976120
+        11:  760120
+        12:  760120
+        13:  760120
+        14:  760120
+        15:  760120
   huge_modules:
-    mux_id: [ 6, 11, 12 ]
+    mux_id: [ 6 ]
   logo:
     size: 50000
