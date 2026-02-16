@@ -205,7 +205,7 @@ class ModulePlacer:
 			else:
 				# We're crossing over the other side of the controller
 				dmux_id = amux_id ^ 1
-				dblk_id = ablk_id ^ 1
+				dblk_id = ablk_id
 
 		return dmux_id, dblk_id
 
