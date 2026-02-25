@@ -2,13 +2,13 @@ pdk:
   name: ihp-sg13g2
   tech: ihp-sg13g2
   die:
-    width:  4470000
-    height: 5700000
+    width:  5400000
+    height: 6450000
     margin:
-      left:   445000
-      right:  445000
-      top:    460000
-      bottom: 460000
+      left:   475000
+      right:  475000
+      top:    440000
+      bottom: 440000
   site:
     width:  480
     height: 3780
@@ -87,8 +87,8 @@ pdk:
         width:  1600
 tt:
   grid:     # In number of blocks
-    x: 16   # Must be divisible by 4
-    y: 24   # Must be EVEN
+    x: 20   # Must be divisible by 4
+    y: 28   # Must be EVEN
   block:
     w: -1
     h: -1
@@ -107,24 +107,24 @@ tt:
   analog:
     - mux_id: [ 2 ]
       pins:
-        0:  2545510
-        1:  2771510
-        2:  2996510
-        3:  3222510
-        4:  3447510
-        5:  3672510
-        6:  1840120
-        7:  1624120
+        0:  2919730
+        1:  3145730
+        2:  3370730
+        3:  3596730
+        4:  3821730
+        5:  4046730
+        6:  2214340
+        7:  1998340
     - mux_id: [ 4 ]
       pins:
-        8:  1408120
-        9:  1192120
-        10:  976120
-        11:  760120
-        12:  760120
-        13:  760120
-        14:  760120
-        15:  760120
+        8:  1782340
+        9:  1566340
+        10: 1350340
+        11: 1134340
+        12: 1134340
+        13: 1134340
+        14: 1134340
+        15: 1134340
   huge_modules:
     mux_id: [ 6 ]
   logo:
