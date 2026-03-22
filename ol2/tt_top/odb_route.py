@@ -773,9 +773,9 @@ class Router:
 					x_tran  = 430000
 					sx = 1
 				elif pad_side == 'r':
-					x_end   = 3279000 + 870000
-					x_track = 3279000 + 870000 - 4500 * pad_ofs_x
-					x_tran  = 3170000 + 870000
+					x_end   = 3279000 + 1800000
+					x_track = 3279000 + 1800000 - 4500 * pad_ofs_x
+					x_tran  = 3170000 + 1800000
 					sx = -1
 
 				wh_pad   =  875
