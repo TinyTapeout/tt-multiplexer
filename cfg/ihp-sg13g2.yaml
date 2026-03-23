@@ -126,6 +126,6 @@ tt:
         14: 1134340
         15: 1134340
   huge_modules:
-    mux_id: [ 6 ]
+    mux_id: [ 8, 9 ]
   logo:
     size: 50000
