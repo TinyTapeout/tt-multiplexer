@@ -46,7 +46,7 @@ set all_pins_um_ow  [ get_pins "*.tt_um_I/buf_out*/X" ]
 # ------
 
 # xxx
-set_driving_cell -lib_cell sg13g2_buf_4 -pin X [all_inputs]
+set_driving_cell -lib_cell sg13cmos5l_buf_4 -pin X [all_inputs]
 
 
 # Loads

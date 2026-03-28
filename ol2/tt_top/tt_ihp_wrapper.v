@@ -48,8 +48,7 @@ module tt_ihp_wrapper (
 	localparam [15:0] TT_PAD_IN         = 16'b0000000000_00_1010;
 	localparam [15:0] TT_PAD_OUT        = 16'b0000000000_10_1001;
 	localparam [15:0] TT_PAD_INOUT      = 16'b0000000000_10_1011;
-//	localparam [15:0] TT_PAD_ANALOG     = 16'b0000000000_00_1100;
-	localparam [15:0] TT_PAD_ANALOG     = TT_PAD_NC; // FIXME
+	localparam [15:0] TT_PAD_ANALOG     = 16'b0000000000_00_1100;
 	localparam [15:0] TT_PAD_PWR_CORE   = 16'b0000000000_00_0101;
 	localparam [15:0] TT_PAD_GND_CORE   = 16'b0000000000_00_0100;
 	localparam [15:0] TT_PAD_PWR_IO     = 16'b0000000000_00_0111;
