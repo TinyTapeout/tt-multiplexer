@@ -68,11 +68,11 @@ class MuxFlow(SequentialFlow):
 		OpenROAD.RCX,
 		OpenROAD.STAPostPNR,
 		OpenROAD.IRDropReport,
-		OpenROAD.WriteAbstractLEF,
+		OpenROAD.WriteViews,
 		OpenROAD.WriteCDL,
 		Magic.StreamOut,
-		Magic.WriteLEF,
 		KLayout.StreamOut,
+		Magic.WriteLEF,
 		KLayout.XOR,
 		Checker.XOR,
 		Magic.DRC,
@@ -82,8 +82,6 @@ class MuxFlow(SequentialFlow):
 		Magic.SpiceExtraction,
 		Checker.IllegalOverlap,
 		Netgen.LVS,
-		Checker.LVS,
-		KLayout.LVS,
 		Checker.LVS,
 	]
 
@@ -117,7 +115,6 @@ if __name__ == '__main__':
 		"SIGNOFF_SDC_FILE" : "dir::signoff.sdc",
 
 		# Synthesis
-		"SYNTH_READ_BLACKBOX_LIB"     : True,
 		"SYNTH_DIRECT_WIRE_BUFFERING" : False,
 		"SYNTH_ABC_BUFFERING"         : False,
 
@@ -135,7 +132,7 @@ if __name__ == '__main__':
 		# Routing
 		"DIODE_PADDING"        : 0,
 		"GRT_ALLOW_CONGESTION" : True,
-		"RT_MAX_LAYER"         : "Metal5",
+		"RT_MAX_LAYER"         : "Metal4",
 
 		# LEF generation option
 		"MAGIC_LEF_WRITE_USE_GDS" : False,	# Workaround LEF/GDS pin naming issue
