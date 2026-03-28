@@ -19,7 +19,7 @@ sys.path.append(f'{TECH_DIR}/python')
 sys.path.append(f'{TECH_DIR}/python/pycell4klayout-api/source/python')
 
 # Import PCell stuff
-import sg13g2_pycell_lib
+import sg13cmos5l_pycell_lib
 assert 'SG13_dev' in pya.Library.library_names()
 
 

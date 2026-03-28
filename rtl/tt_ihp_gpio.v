@@ -57,25 +57,25 @@ module tt_ihp_gpio #(
 		if (MODE == 4'b0100) begin
 
 			(* keep *)
-			sg13g2_IOPadVss pad_I();
+			sg13cmos5l_IOPadVss pad_I();
 
 		/* IOPadVdd */
 		end else if (MODE == 4'b0101) begin
 
 			(* keep *)
-			sg13g2_IOPadVdd pad_I();
+			sg13cmos5l_IOPadVdd pad_I();
 
 		/* IOPadIOVss */
 		end else if (MODE == 4'b0110) begin
 
 			(* keep *)
-			sg13g2_IOPadIOVss pad_I();
+			sg13cmos5l_IOPadIOVss pad_I();
 
 		/* IOPadIOVdd */
 		end else if (MODE == 4'b0111) begin
 
 			(* keep *)
-			sg13g2_IOPadIOVdd pad_I();
+			sg13cmos5l_IOPadIOVdd pad_I();
 
 		/* Digital Output */
 		end else if (MODE == 4'b1001) begin
@@ -84,7 +84,7 @@ module tt_ihp_gpio #(
 			if (DRIVE_STRENGTH == 0) begin
 
 				(* keep *)
-				sg13g2_IOPadOut4mA pad_I (
+				sg13cmos5l_IOPadOut4mA pad_I (
 					.c2p    (pad_out),
 					.pad    (pad_raw)
 				);
@@ -93,7 +93,7 @@ module tt_ihp_gpio #(
 			end  if (DRIVE_STRENGTH == 1) begin
 
 				(* keep *)
-				sg13g2_IOPadOut16mA pad_I (
+				sg13cmos5l_IOPadOut16mA pad_I (
 					.c2p    (pad_out),
 					.pad    (pad_raw)
 				);
@@ -102,7 +102,7 @@ module tt_ihp_gpio #(
 			end  if (DRIVE_STRENGTH == 2) begin
 
 				(* keep *)
-				sg13g2_IOPadOut30mA pad_I (
+				sg13cmos5l_IOPadOut30mA pad_I (
 					.c2p    (pad_out),
 					.pad    (pad_raw)
 				);
@@ -113,7 +113,7 @@ module tt_ihp_gpio #(
 		end else if (MODE == 4'b1010) begin
 
 			(* keep *)
-			sg13g2_IOPadIn pad_I (
+			sg13cmos5l_IOPadIn pad_I (
 				.p2c  (pad_in),
 				.pad  (pad_raw)
 			);
@@ -125,7 +125,7 @@ module tt_ihp_gpio #(
 			if (DRIVE_STRENGTH == 0) begin
 
 				(* keep *)
-				sg13g2_IOPadInOut4mA pad_I (
+				sg13cmos5l_IOPadInOut4mA pad_I (
 					.c2p    (pad_out),
 					.c2p_en (pad_oe),
 					.p2c    (pad_in),
@@ -136,7 +136,7 @@ module tt_ihp_gpio #(
 			end  if (DRIVE_STRENGTH == 1) begin
 
 				(* keep *)
-				sg13g2_IOPadInOut16mA pad_I (
+				sg13cmos5l_IOPadInOut16mA pad_I (
 					.c2p    (pad_out),
 					.c2p_en (pad_oe),
 					.p2c    (pad_in),
@@ -147,7 +147,7 @@ module tt_ihp_gpio #(
 			end  if (DRIVE_STRENGTH == 2) begin
 
 				(* keep *)
-				sg13g2_IOPadInOut30mA pad_I (
+				sg13cmos5l_IOPadInOut30mA pad_I (
 					.c2p    (pad_out),
 					.c2p_en (pad_oe),
 					.p2c    (pad_in),
@@ -160,7 +160,7 @@ module tt_ihp_gpio #(
 		end else if (MODE == 4'b1100) begin
 
 			(* keep *)
-			sg13g2_IOPadAnalog pad_I (
+			sg13cmos5l_IOPadAnalog pad_I (
 				.pad    (pad_ana),
 				.padres ()
 			);

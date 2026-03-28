@@ -281,9 +281,9 @@ class Block(LayoutElement):
 			(mh - 1) * layout.glb.margin.y
 		)
 
-		# Power gating offset
-		if pg_vdd:
-			width -= layout.glb.pg_vdd.offset
+		# Power gating offset - always subtract to match tile DEF width
+		# (reserves space for power gate even when not present)
+		width -= layout.glb.pg_vdd.offset
 
 		if pg_vaa:
 			width -= layout.glb.pg_vaa.offset
@@ -457,8 +457,9 @@ class Branch(LayoutElement):
 				# Add Power Switch as child
 				self.add_child(vdd_sw, Point(blk_x, blk_y), 'N' if (blk_id & 1) else 'FS', name=name_pfx+'tt_pg_vdd_I')
 
-				# Shift the block
-				blk_x += layout.glb.pg_vdd.offset
+			# Always shift by pg_vdd offset to reserve space for future power gate
+			# (keeps tile position identical whether power gating is on or off)
+			blk_x += layout.glb.pg_vdd.offset
 
 			if mp.pg_vaa_module is not None:
 				# Power Switch instance

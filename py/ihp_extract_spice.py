@@ -23,12 +23,8 @@ LAYER_STACK = [
     30,     # Metal3
     49,     # Via3
     50,     # Metal4
-    66,     # Via4
-    67,     # Metal5
     125,    # TopVia1
     126,    # TopMetal1
-    133,    # TopVia2
-    134,    # TopMetal2
 ]
 
 DWG_DT = 0
@@ -623,9 +619,9 @@ def hack_bondpad(c):
 	# Flatten
 	c.flatten()
 
-	# Copy all TopMetal2 polygon to the PIN layer and add property
+	# Copy all TopMetal1 polygon to the PIN layer and add property
 	# for pin name
-	for p in c.get_polygons(layer=134, datatype=DWG_DT):
+	for p in c.get_polygons(layer=126, datatype=DWG_DT):
 		p.set_gds_property(1, 'pad')
 		p = p.copy()
 		p.datatype=PIN_DT
@@ -646,9 +642,9 @@ def main(argv0, gds_filename, spice_filename, dbg_gds_filename=None):
 	ex.process()
 
 	# Post-fixups : All the IO ring cells have implicitely connected pads
-	ex.implicit_pin_connect("^sg13g2_IO.*")
-	ex.implicit_pin_connect("^sg13g2_Corner.*")
-	ex.implicit_pin_connect("^sg13g2_Filler.*")
+	ex.implicit_pin_connect("^sg13cmos5l_IO.*")
+	ex.implicit_pin_connect("^sg13cmos5l_Corner.*")
+	ex.implicit_pin_connect("^sg13cmos5l_Filler.*")
 
 	# Checks pads
 	if not ex.check_multi_pads():
