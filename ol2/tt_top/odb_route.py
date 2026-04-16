@@ -8,6 +8,7 @@
 import os
 import sys
 import yaml
+from collections import namedtuple
 
 import odb
 
@@ -789,9 +790,24 @@ class ViaGenerator:
 		ncols = min(ncols)
 		nrows = min(nrows)
 
+		# Safety check
+		if (ncols <= 0) or (nrows <= 0):
+			return None
+
 		# Get final via
 		return self.get(ncols, nrows)
 
+
+
+class ModulePowerPadData(namedtuple('ModulePowerPadData', 'xc xw yb yt')):
+
+	__slots__ = []
+
+	@classmethod
+	def from_geometry(kls, g, grid=1):
+		xc = ((g.xMin() + g.xMax()) // (2 * grid)) * grid
+		xw = min(g.xMax() - xc, xc - g.xMin()) * 2
+		return kls(xc, xw, g.yMin(), g.yMax())
 
 
 class ModulePowerStrapper:
@@ -809,6 +825,10 @@ class ModulePowerStrapper:
 
 		self.stripe_space, self.stripe_width = self._find_stripe_space_width()
 		self.space = 2250
+		self.grid = tech.getManufacturingGrid()
+
+	def _grid_align(self, v):
+		return (v // self.grid) * self.grid
 
 	def _find_stripe_space_width(self):
 		# Get all `met5` stripes for VGND
@@ -897,7 +917,7 @@ class ModulePowerStrapper:
 			raise RuntimeError('Unsupported number of Power Gates')
 
 
-	def _get_x_data(self, um_it, pg_it):
+	def _get_pad_data(self, um_it, pg_it):
 		# Find geometry for those terminals
 		geom_um = [ x[1] for x in pg_it.getGeometries() ]
 		geom_pg = [ x[1] for x in um_it.getGeometries() ]
@@ -908,27 +928,42 @@ class ModulePowerStrapper:
 		xr = max([x.xMax() for x in geom])
 
 		# Center positions and width
-		xp = [(x.xMin() + x.xMax()) // 2 for x in geom]
-		xw = [(x.xMax() - x.xMin())      for x in geom]
+		pd = [ModulePowerPadData.from_geometry(g, grid=self.grid) for g in geom]
 
 		# Return result
-		return xl, xr, xp, xw
+		return xl, xr, pd
 
-	def _draw_stripe(self, sw, yp, yw, xl, xr, xp, xw):
+	def _draw_stripe(self, sw, yp, yw, xl, xr, pd):
 		# Stripe
 		odb.createSBoxes(sw, self.layer, [odb.Rect(xl, yp-yw//2, xr, yp+yw//2)], "STRIPE")
 
-		# Dual vias
-		for x, w in zip(xp, xw):
-			# Area of via
-			vw = w
+		# Vias
+		for pad in pd:
+			# Default via param
+			vx = pad.xc
+			vy = yp
+			vw = pad.xw
 			vh = yw
+			bot_fit = 'x'
+
+			# Validate extent of pad (with ample argin for enclosure)
+			if ((yp - yw * 0.55) < pad.yb) or ((yp + yw * 0.55) > pad.yt):
+				# Doesn't fully fit, so be more restrictive
+				bot_fit = 'xy'
+
+				y_bot = max(pad.yb, yp - yw // 2)
+				y_top = min(pad.yt, yp + yw // 2)
+
+				vy = self._grid_align((y_top + y_bot) // 2)
+				vh = min(y_top - vy, vy - y_bot) * 2
 
 			# Get matching via
-			via = self.vg.get4sz_ext(vw, vh, top_fit='y', bot_fit='x')
+			via = self.vg.get4sz_ext(vw, vh, top_fit='y', bot_fit=bot_fit)
+			if via is None:
+				continue
 
 			# Add it
-			odb.createSBoxes(sw, via, [odb.Point(x, yp)], "STRIPE")
+			odb.createSBoxes(sw, via, [odb.Point(vx, vy)], "STRIPE")
 
 	def run(self):
 
@@ -966,7 +1001,7 @@ class ModulePowerStrapper:
 				ypw = self._get_y_pos_width(pg_inst, pg_idx, pg_cnt)
 
 				# Get the X data (extent + via pos)
-				xl, xr, xp, xw = self._get_x_data(um_it, pg_it)
+				xl, xr, pd = self._get_pad_data(um_it, pg_it)
 
 				# Find net and create the matching special wire
 				net = um_it.getNet()
@@ -974,7 +1009,7 @@ class ModulePowerStrapper:
 
 				# Draw for each y position
 				for yp, yw in ypw:
-					self._draw_stripe(sw, yp, yw, xl, xr, xp, xw)
+					self._draw_stripe(sw, yp, yw, xl, xr, pd)
 
 
 class RingPowerStrapper:
