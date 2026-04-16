@@ -115,6 +115,10 @@ if __name__ == '__main__':
 		"SYNTH_DIRECT_WIRE_BUFFERING" : False,
 		"SYNTH_ABC_BUFFERING"         : False,
 
+		# Power
+		"VDD_PIN": "VDPWR",
+		"GND_PIN": "VGND",
+
 		# Floorplanning
 		"DIE_AREA"           : [0, 0, tti.layout.glb.mux.width.um, tti.layout.glb.mux.height.um ],
 		"FP_SIZING"          : "absolute",
