@@ -845,7 +845,7 @@ class ModulePowerStrapper:
 		# Get spacing and width
 		yl = sorted([x.yMin() for x in stripes])
 
-		return (yl[1] - yl[0]), stripes[0].getWidth()
+		return (yl[1] - yl[0]), stripes[0].getDY()
 
 	def _get_y_pos_width(self, pg_inst, pg_idx, pg_cnt):
 		# Is it single or double height ?
@@ -1222,7 +1222,7 @@ class AnalogRouter:
 		# Return result
 		center = (best_sb.yMin() + best_sb.yMax()) // 2
 		farend = best_sb.yMax() if above else best_sb.yMin()
-		width  = best_sb.getWidth()
+		width  = best_sb.getDY()
 
 		return center, farend, width
 
