@@ -220,6 +220,7 @@ if __name__ == '__main__':
 		"GRT_ALLOW_CONGESTION"  : True,
 		"GRT_REPAIR_ANTENNAS"   : False,
 		"GRT_LAYER_ADJUSTMENTS" : [1, 0.95, 0.95, 0, 0, 0],
+		"DRT_ANTENNA_REPAIR_ITERS" : 0,
 		"RT_MAX_LAYER"          : "met4",
 
 		# Magic stream
@@ -231,7 +232,7 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
-		"LVS_FLATTEN_CELLS": ["tt_logo_top", "tt_logo_bottom"],
+		"IGNORE_DISCONNECTED_MODULES": ["tt_logo_top", "tt_logo_bottom"],
 	}
 
 	# Update PDN config
