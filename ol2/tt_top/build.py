@@ -69,6 +69,18 @@ class CustomRoute(OdbpyStep):
 
 
 @Step.factory.register()
+class PlaceCktAna(OdbpyStep):
+
+	id = "TT.Top.PlaceCktAna"
+	name = "Place analog pads contacts to core"
+
+	def get_script_path(self):
+		return os.path.join(
+			os.path.dirname(__file__),
+			"odb_place_ckt_ana.py"
+		)
+
+@Step.factory.register()
 class FixupBTerms(OdbpyStep):
 
 	id = "TT.Top.FixupBTerms"
@@ -127,6 +139,7 @@ class TopFlow(SequentialFlow):
 		OpenROAD.Floorplan,
 		CustomPower,
 		OpenROAD.PadRing,
+		PlaceCktAna,
 		FixupBTerms,
 		Odb.ManualMacroPlacement,
 		OpenROAD.GeneratePDN,
