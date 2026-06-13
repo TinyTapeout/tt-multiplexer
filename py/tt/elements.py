@@ -171,6 +171,11 @@ class LayoutElement:
 				cg.translate(cp.elem.width, 0)
 				cg.scale(-1, 1)
 
+			elif cp.orient == 'E':
+				# 90 deg counter clock wise
+				cg.translate(0, cp.elem.width)
+				cg.rotate(-90)
+
 			else:
 				raise RuntimeError('Unsupported orientation')
 
