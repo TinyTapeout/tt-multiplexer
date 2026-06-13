@@ -77,7 +77,7 @@ class ModuleSlot:
 
 	@property
 	def asw_module(self):
-		return self.placer.cfg.pdk.analog.switch
+		return self.placer.cfg.pdk.analog.switch.name
 
 
 class ModulePlacer:

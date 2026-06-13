@@ -255,18 +255,17 @@ class AnalogSwitch(LayoutElement):
 	color = 'green'
 
 	def __init__(self, layout):
-		# Width / Height
-		width  = 18400
-		height = 21760
+		# Config node
+		sw_cfg = layout.cfg.pdk.analog.switch
 
 		# Set mod_name
-		self.mod_name = layout.cfg.pdk.analog.switch
+		self.mod_name = sw_cfg.name
 
 		# Super
 		super().__init__(
 			layout,
-			width,
-			height,
+			sw_cfg.width,
+			sw_cfg.height,
 		)
 
 

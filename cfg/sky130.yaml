@@ -20,7 +20,10 @@ pdk:
       name: 'tt_pg_3v3'
       width: 13800
   analog:
-    switch: 'tt_asw_3v3'
+    switch:
+      name: 'tt_asw_3v3'
+      width: 18400
+      height: 21760
   tracks:
     li1:
       x:
