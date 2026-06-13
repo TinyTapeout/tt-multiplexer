@@ -11,7 +11,7 @@ import tt
 import odb
 
 
-def place_pin(die_area, layer, bterm, pos, side='N', wide=False):
+def place_pin(die_area, layer, bterm, pos, side='N', width=None, length=None):
 	# Get limits
 	BLOCK_LL_X = die_area.xMin()
 	BLOCK_LL_Y = die_area.yMin()
@@ -23,11 +23,8 @@ def place_pin(die_area, layer, bterm, pos, side='N', wide=False):
 	bpin.setPlacementStatus("PLACED")
 
 	# Rectangle graphic
-	WIDTH  = tt.LayoutDimension(300).iu
-	LENGTH = tt.LayoutDimension(1000).iu
-
-	if wide:
-		WIDTH *= 3
+	WIDTH  = tt.LayoutDimension(width  or  300).iu
+	LENGTH = tt.LayoutDimension(length or 1000).iu
 
 	pos = pos.iu
 

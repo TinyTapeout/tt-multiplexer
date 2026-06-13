@@ -16,6 +16,7 @@ pdk:
     vdd:
       name: 'tt_pg_1v8'
       width: 9200
+      variants: ['ll', 'hp']
     vaa:
       name: 'tt_pg_3v3'
       width: 13800
@@ -24,6 +25,8 @@ pdk:
       name: 'tt_asw_3v3'
       width: 18400
       height: 21760
+    pad:
+      width: 900
   tracks:
     li1:
       x:
