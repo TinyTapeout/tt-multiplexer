@@ -54,6 +54,9 @@ class ConfigNode:
 	def items(self):
 		return self._cfg.items()
 
+	def get(self, *args, **kwargs):
+		return self._cfg.get(*args, **kwargs)
+
 	def update_from_dict(self, upd_dict):
 		for k, nv in upd_dict.items():
 			if k not in self:
