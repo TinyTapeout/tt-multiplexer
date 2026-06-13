@@ -7,6 +7,9 @@ TCL_BASE = $(dir $(lastword $(MAKEFILE_LIST)))
 %.pex.spice: %.mag
 	magic -rcfile $(MAGIC_RC) -noconsole -dnull $(TCL_BASE)/magic_extract_pex.tcl $*
 
+../xschem/simulation/%.spice: ../xschem/%.sch
+	xschem --no_x --script  $(TCL_BASE)/xschem_netlist.tcl $<
+
 lvs.report: $(PROJECT_NAME).lvs.spice ../xschem/simulation/$(PROJECT_NAME).spice
 	netgen -batch eval "set project $(PROJECT_NAME) ; source $(TCL_BASE)/lvs.tcl"
 
@@ -48,5 +51,6 @@ update_gds:
 clean:
 	rm -Rf ext
 	rm -f lvs.report *.nodes *.spice *.sim
+	rm -f ../xschem/simulation/$(PROJECT_NAME).spice
 
 .PHONY: lvs drc update_gds clean
