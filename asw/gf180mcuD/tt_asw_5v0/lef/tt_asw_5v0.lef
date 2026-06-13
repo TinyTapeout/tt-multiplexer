@@ -1,0 +1,79 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_asw_5v0
+  CLASS BLOCK ;
+  FOREIGN tt_asw_5v0 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 40.320 BY 30.250 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal4 ;
+        RECT 2.600 0.000 3.400 30.250 ;
+    END
+  END VGND
+  PIN VDPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 1.500 0.000 2.300 30.250 ;
+    END
+  END VDPWR
+  PIN VAPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 3.700 0.000 4.500 30.250 ;
+    END
+  END VAPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.809200 ;
+    PORT
+      LAYER Metal3 ;
+        RECT 3.615 29.250 3.955 30.250 ;
+    END
+  END ctrl
+  PIN mod
+    DIRECTION INOUT ;
+    USE ANALOG ;
+    ANTENNADIFFAREA 218.399994 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 18.160 27.250 22.160 30.250 ;
+    END
+  END mod
+  PIN bus
+    DIRECTION INOUT ;
+    USE ANALOG ;
+    ANTENNADIFFAREA 229.239990 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 18.160 12.750 22.160 15.750 ;
+    END
+  END bus
+  OBS
+      LAYER Nwell ;
+        RECT 0.300 0.300 40.020 29.850 ;
+      LAYER Metal1 ;
+        RECT 0.400 0.495 39.825 30.150 ;
+      LAYER Metal2 ;
+        RECT 0.485 0.485 39.835 30.150 ;
+      LAYER Metal3 ;
+        RECT 0.485 28.950 3.315 29.215 ;
+        RECT 4.255 28.950 39.030 29.215 ;
+        RECT 0.485 12.750 39.030 28.950 ;
+      LAYER Metal4 ;
+        RECT 4.800 26.950 17.860 27.250 ;
+        RECT 4.800 16.050 22.160 26.950 ;
+        RECT 4.800 15.750 17.860 16.050 ;
+  END
+END tt_asw_5v0
+END LIBRARY
+

@@ -1,0 +1,47 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1779656671
+<< error_s >>
+rect 2090 643 2136 711
+<< metal1 >>
+rect 188 804 483 850
+rect 533 804 901 944
+rect 951 804 1246 850
+rect 1710 769 1944 931
+rect 2090 643 2136 711
+rect 141 380 303 638
+rect 1131 380 1293 638
+rect 1352 280 1550 326
+rect 93 46 139 280
+rect 1710 191 1944 587
+rect 2058 46 2104 191
+rect 93 0 2104 46
+use lv2hv_core  lv2hv_core_0
+timestamp 1779556066
+transform 1 0 80 0 1 53
+box 0 0 1274 980
+use lv2hv_dual_inv  lv2hv_dual_inv_0
+timestamp 1779555933
+transform 1 0 1445 0 1 103
+box 0 0 764 880
+<< labels >>
+flabel metal1 s 141 380 303 638 0 FreeSans 400 0 0 0 VGND
+port 1 nsew
+flabel metal1 s 1131 380 1293 638 0 FreeSans 400 0 0 0 VGND
+port 1 nsew
+flabel metal1 s 1710 769 1944 931 0 FreeSans 400 0 0 0 VGND
+port 1 nsew
+flabel metal1 s 1710 191 1944 587 0 FreeSans 400 0 0 0 VDPWR
+port 2 nsew
+flabel metal1 s 533 804 901 944 0 FreeSans 400 0 0 0 VAPWR
+port 3 nsew
+flabel metal1 s 2090 643 2136 711 0 FreeSans 400 0 0 0 in
+port 4 nsew
+flabel metal1 s 951 804 1246 850 0 FreeSans 400 0 0 0 out_p
+port 5 nsew
+flabel metal1 s 188 804 483 850 0 FreeSans 400 0 0 0 out_n
+port 6 nsew
+<< properties >>
+string FIXED_BBOX 0 0 2209 1033
+<< end >>

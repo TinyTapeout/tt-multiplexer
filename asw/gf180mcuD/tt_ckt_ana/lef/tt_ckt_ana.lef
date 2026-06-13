@@ -1,0 +1,24 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_ckt_ana
+  CLASS BLOCK ;
+  FOREIGN tt_ckt_ana ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 75.000 BY 5.000 ;
+  PIN ASIG5V
+    PORT
+      LAYER Metal2 ;
+        RECT 15.340 0.000 59.660 5.000 ;
+    END
+  END ASIG5V
+  PIN analog
+    PORT
+      LAYER Metal3 ;
+        RECT 15.340 0.000 59.660 5.000 ;
+    END
+  END analog
+END tt_ckt_ana
+END LIBRARY
+

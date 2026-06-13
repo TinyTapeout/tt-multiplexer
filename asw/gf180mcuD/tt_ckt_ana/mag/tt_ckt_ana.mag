@@ -1,0 +1,24 @@
+magic
+tech gf180mcuD
+magscale 1 5
+timestamp 1779966413
+<< metal2 >>
+rect 1534 499 5966 500
+rect 1534 1 1539 499
+rect 5961 1 5966 499
+rect 1534 0 5966 1
+<< via2 >>
+rect 1539 1 5961 499
+<< metal3 >>
+rect 1534 499 5966 500
+rect 1534 1 1539 499
+rect 5961 1 5966 499
+rect 1534 0 5966 1
+<< labels >>
+flabel metal3 s 1534 0 5966 500 0 FreeSans 200 0 0 0 analog
+port 2 nsew
+flabel metal2 s 1534 0 5966 500 0 FreeSans 200 0 0 0 ASIG5V
+port 1 nsew
+<< properties >>
+string FIXED_BBOX 0 0 7500 500
+<< end >>
