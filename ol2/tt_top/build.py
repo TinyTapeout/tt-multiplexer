@@ -12,6 +12,8 @@ import argparse
 import json
 import math
 import os
+import pathlib
+import shutil
 import sys
 
 from typing import List, Type
@@ -99,6 +101,45 @@ class TopFlow(SequentialFlow):
 	]
 
 
+def copy_macros(cfg):
+	# Copy-List
+	CPL = [
+		( 'v',   'src', 'verilog' ),
+		( 'lef', 'lef', 'lef' ),
+		( 'gds', 'gds', 'gds' ),
+	]
+
+	# Source/Destination bases
+	src_base = pathlib.Path.cwd().parents[1]
+	dst_base = pathlib.Path.cwd()
+
+	# Pre-create destinations
+	for ext, src_subdir, dst_subdir in CPL:
+		(dst_base / dst_subdir).mkdir(exist_ok=True)
+
+	# Scan each type
+	for mtype in [ 'logo', 'pg', 'asw' ]:
+		# Build path
+		p = src_base / mtype / cfg.pdk.tech
+
+		# Is there anything ?
+		if not p.is_dir():
+			continue
+
+		# Iterate content
+		for src_path in p.iterdir():
+			# Only parse directory
+			if not src_path.is_dir():
+				continue
+
+			# Process copy list
+			for ext, src_subdir, dst_subdir in CPL:
+				src_file = src_path / src_subdir / f'{src_path.name}.{ext}'
+				dst_path = dst_base / dst_subdir
+				if src_file.is_file():
+					shutil.copy(src_file, dst_path)
+
+
 if __name__ == '__main__':
 	# Argument processing
 	parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -117,6 +158,9 @@ if __name__ == '__main__':
 
 	# Load TinyTapeout
 	tti = tt.TinyTapeout()
+
+	# Copy local macros
+	copy_macros(tti.cfg)
 
 	# Generate macros
 	macros = { }
