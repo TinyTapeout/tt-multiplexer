@@ -140,4 +140,6 @@ if __name__ == '__main__':
 	for h_list, v_list, pg_vdd, pg_vaa, analog in GEN:
 		for v_mult in v_list:
 			for h_mult in h_list:
+				if h_mult > (tti.cfg.tt.grid.x // 2):
+					continue
 				gen_block_template(tti, h_mult, v_mult, pg_vdd, pg_vaa, analog)
