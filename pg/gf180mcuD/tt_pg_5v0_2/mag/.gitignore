@@ -1,0 +1,6 @@
+lvs.report
+*.lvs.spice
+*.pex.spice
+*_pex.nodes
+*_pex.sim
+ext/
