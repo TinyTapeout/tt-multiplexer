@@ -113,4 +113,27 @@ tt:
         10:  976120
         11:  760120
   logo:
-    size: 100000
+    tt_logo_top:
+      width: 100000
+      height: 100000
+      orient: 'N'
+      x:
+        align: 'center'
+        anchor: 'spine.center'
+        offset: 0
+      y:
+        align: 'top'
+        anchor: 'top_level.top'
+        offset: -2720
+    tt_logo_bottom:
+      width: 100000
+      height: 100000
+      orient: 'N'
+      x:
+        align: 'center'
+        anchor: 'spine.center'
+        offset: 0
+      y:
+        align: 'bottom'
+        anchor: 'top_level.bottom'
+        offset: 2720

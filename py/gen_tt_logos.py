@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+#
+# Generate the tt_logos.v file from the template and config
+#
+# Copyright (c) 2026 Sylvain Munaut <tnt@246tNt.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+
+import sys
+
+from mako.template import Template
+
+import tt
+
+
+def main(argv0, tmpl_fn):
+
+	cfg = tt.TinyTapeout.get_config()
+
+	template = Template(filename=tmpl_fn)
+	output = template.render(cfg=cfg)
+
+	print(output)
+
+
+if __name__ == '__main__':
+	main(*sys.argv)

@@ -36,7 +36,7 @@ __all__ = [
 
 LayoutElementPlacement = namedtuple('LayoutElementPlacement', 'elem pos orient name')
 
-MacroInstance = namedtuple('MacroInstance', 'inst_name mod_name pos orient elem')
+MacroInstance = namedtuple('MacroInstance', 'inst_name mod_name pos orient is_logo elem')
 
 
 class LayoutElement:
@@ -58,6 +58,10 @@ class LayoutElement:
 
 		# Add to children
 		self.children[child] = LayoutElementPlacement(child, pos, orient, name)
+
+	@property
+	def is_logo(self):
+		return False
 
 	def get_sub_macros(self):
 		# Scan children and returned named ones
@@ -117,13 +121,14 @@ class LayoutElement:
 					sm.mod_name,
 					pos,
 					orient,
+					sm.is_logo,
 					sm.elem
 				))
 
 			# That child is a leaf, so just return it
 			else:
 				if cp.elem.mod_name is not None:
-					rv.append( MacroInstance(cp.name, cp.elem.mod_name, cp.pos, cp.orient, cp.elem) )
+					rv.append( MacroInstance(cp.name, cp.elem.mod_name, cp.pos, cp.orient, cp.elem.is_logo, cp.elem) )
 
 		return rv
 
@@ -531,16 +536,25 @@ class Controller(LayoutElement):
 
 class Logo(LayoutElement):
 
-	def __init__(self, layout, variant):
+	color = 'lightgreen'
+
+	def __init__(self, layout, mod_name):
 		# Set mod_name
-		self.mod_name = f'tt_logo_{variant:s}'
+		self.mod_name = mod_name
+
+		# Find data for it
+		logo_data = layout.cfg.tt.logo[mod_name]
 
 		# Super
 		super().__init__(
 			layout,
-			layout.glb.logo.width,
-			layout.glb.logo.height,
+			logo_data.width,
+			logo_data.height,
 		)
+
+	@property
+	def is_logo(self):
+		return True
 
 
 class Top(LayoutElement):
@@ -607,12 +621,65 @@ class Top(LayoutElement):
 
 		self.add_child(ctrl, Point(ctrl_x, ctrl_y), 'N', name='ctrl_I')
 
-		# Add Logo & Shuttle ID
-		logo_top = Logo(layout, 'top')
-		self.add_child(logo_top, Point(layout.glb.logo.pos_x, layout.glb.logo.top_pos_y), 'N', name='logo_top_I')
+		# Add Logos
+		self.process_logos(layout)
 
-		logo_bottom = Logo(layout, 'bottom')
-		self.add_child(logo_bottom, Point(layout.glb.logo.pos_x, layout.glb.logo.bottom_pos_y), 'N', name='logo_bottom_I')
+	def process_logos(self, layout):
+
+		if 'logo' not in layout.cfg.tt:
+			return
+
+		anchor_x = {
+			'die.left'        : - layout.glb.top.pos_x,
+			'top_level.left'  : 0,
+			'spine.center'    : layout.glb.top.width // 2,
+			'top_level.right' : layout.glb.top.width,
+			'die.right'       : layout.cfg.pdk.die.width - layout.glb.top.pos_x,
+		}
+
+		anchor_y = {
+			'die.bottom'       : - layout.glb.top.pos_y,
+			'top_level.bottom' : 0,
+			'top_level.top'    : layout.glb.top.height,
+			'die.top'          : layout.cfg.pdk.die.height - layout.glb.top.pos_y,
+		}
+
+		align_x = {
+			'left'   : lambda width: 0,
+			'center' : lambda width: - width // 2,
+			'right'  : lambda width: - width,
+		}
+
+		align_y = {
+			'bottom' : lambda height: 0,
+			'center' : lambda height: - height // 2,
+			'top'    : lambda height: - height,
+		}
+
+		for logo_name, logo_desc in layout.cfg.tt.logo.items():
+			logo_elem = Logo(layout, logo_name)
+
+			width  = logo_desc.width
+			height = logo_desc.height
+			orient = logo_desc.get('orient', 'N')
+
+			if orient in [ 'E', 'W', 'FE', 'FW' ]:
+				width  = logo_desc.height
+				height = logo_desc.width
+
+			pos_x = (
+				anchor_x[logo_desc.x.get('anchor', 'die.left')] +
+				align_x[logo_desc.x.get('align', 'left')](width) +
+				logo_desc.x.get('offset', 0)
+			)
+
+			pos_y = (
+				anchor_y[logo_desc.y.get('anchor', 'die.bottom')] +
+				align_y[logo_desc.y.get('align', 'bottom')](height) +
+				logo_desc.y.get('offset', 0)
+			)
+
+			self.add_child(logo_elem, Point(pos_x, pos_y), orient, name=f'{logo_name}_I')
 
 
 class Die(LayoutElement):

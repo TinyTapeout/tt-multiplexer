@@ -56,13 +56,16 @@ endif
 all: sim
 
 # Generated sources
-gensrc: rtl/tt_defs.vh cfg/modules_placed.yaml rtl/tt_user_module.v
+gensrc: rtl/tt_defs.vh cfg/modules_placed.yaml rtl/tt_user_module.v rtl/tt_logos.v
 
 rtl/tt_defs.vh: rtl/tt_defs.vh.mak
 	./py/gen_tt_defs.py $^ > $@
 
 cfg/modules_placed.yaml: cfg/modules.yaml
 	./py/place_modules.py $^ $@
+
+rtl/tt_logos.v: rtl/tt_logos.v.mak
+	./py/gen_tt_logos.py $^ > $@
 
 rtl/tt_user_module.v: rtl/tt_user_module.v.mak cfg/modules_placed.yaml
 	./py/gen_tt_user_module.py $^ > $@
@@ -97,6 +100,7 @@ clean:
 	rm -f \
 		cfg/modules_placed.yaml \
 		rtl/tt_defs.vh \
+		rtl/tt_logos.v \
 		rtl/tt_user_module.v \
 		sim/tt_top_tb \
 		sim/*.vcd \

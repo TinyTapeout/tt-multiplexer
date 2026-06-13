@@ -121,6 +121,7 @@ if __name__ == '__main__':
 	# Generate macros
 	macros = { }
 	user_modules = []
+	disc_modules = []
 
 	for m in tti.die.get_sub_macros():
 		if m.mod_name not in macros:
@@ -131,19 +132,19 @@ if __name__ == '__main__':
 			}
 			if m.mod_name.startswith('tt_um_'):
 				user_modules.append(m.mod_name)
-			elif m.mod_name.startswith('tt_pg_') or m.mod_name.startswith('tt_asw_') or m.mod_name.startswith('tt_logo_'):
-				macros[m.mod_name].update({
-					'nl': f'dir::verilog/{m.mod_name:s}.v',
-				})
 			else:
-				macros[m.mod_name].update({
-					'nl':   f'dir::verilog/{m.mod_name:s}.v',
-					'spef': {
+				md = {
+					'nl': f'dir::verilog/{m.mod_name:s}.v',
+				}
+				if os.path.isfile(f'spef/{m.mod_name:s}.nom.spef'):
+					md['spef'] = {
 						"min_*": [ f'dir::spef/{m.mod_name:s}.min.spef' ],
 						"nom_*": [ f'dir::spef/{m.mod_name:s}.nom.spef' ],
 						"max_*": [ f'dir::spef/{m.mod_name:s}.max.spef' ],
-					},
-				})
+					}
+				macros[m.mod_name].update(md)
+			if m.is_logo:
+				disc_modules.append(m.mod_name)
 
 		macros[m.mod_name]['instances'][m.inst_name] = {
 			"location": [ m.pos.x.um, m.pos.y.um ],
@@ -232,7 +233,7 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
-		"IGNORE_DISCONNECTED_MODULES": ["tt_logo_top", "tt_logo_bottom"],
+		"IGNORE_DISCONNECTED_MODULES": disc_modules,
 	}
 
 	# Update PDN config

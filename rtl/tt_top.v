@@ -284,16 +284,12 @@ module tt_top #(
 	end
 
 
-	// Logo & Shuttle ID
-	// -----------------
+	// Logos
+	// -----
 
 `ifndef FORMAL
 `ifndef SIM
-	(* blackbox, keep *)
-	tt_logo_top logo_top_I ();
-
-	(* blackbox, keep *)
-	tt_logo_bottom logo_bottom_I ();
+`include "tt_logos.v"
 `endif
 `endif
 
