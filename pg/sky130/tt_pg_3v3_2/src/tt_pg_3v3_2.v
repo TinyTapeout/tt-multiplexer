@@ -11,14 +11,15 @@
 module tt_pg_3v3_2 (
 `ifdef USE_POWER_PINS
 	input  wire VGND,
-	input  wire VPWR,
-	output wire GPWR,
+	input  wire VDPWR,
+	input  wire VAPWR,
+	output wire GAPWR,
 `endif
 	input  wire ctrl
 );
 
 `ifdef USE_POWER_PINS
-	assign GPWR = ctrl ? VPWR : 1'bz;
+	assign GAPWR = ctrl ? VAPWR : 1'bz;
 `endif
 
 endmodule

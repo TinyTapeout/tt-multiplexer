@@ -111,8 +111,9 @@ module tt_user_module #(
 %  if mod.pg_vaa_module is not None:
 			${mod.pg_vaa_module} tt_pg_vaa_I (
 `ifdef USE_POWER_PINS
-				.GPWR    (l_vapwr),
-				.VPWR    (VAPWR),
+				.GAPWR   (l_vapwr),
+				.VAPWR   (VAPWR),
+				.VDPWR   (VDPWR),
 				.VGND    (VGND),
 `endif
 				.ctrl    (pg_ena)
