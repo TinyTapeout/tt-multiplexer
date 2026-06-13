@@ -51,6 +51,7 @@ def power(
 	# Create ground / power nets
 	pin2net = {}
 	pgs = {}
+	insts_conn = {}
 
 	for net_name, net_desc in PDN.items():
 		net = reader.block.findNet(net_name)
@@ -67,8 +68,21 @@ def power(
 		if 'pg' in net_desc:
 			pgs[net_desc['pg'][0]] = net_desc['pg'][1:]
 
+		if 'insts' in net_desc:
+			for inst_name, inst_iterms in net_desc['insts'].items():
+				insts_conn.setdefault(inst_name, {})[net_name] = inst_iterms
+
 	# Scan all blocks
 	for blk_inst in reader.block.getInsts():
+		# If it's a specially cased block, handle connections directly
+		if blk_inst.getName() in insts_conn:
+			for net_name, inst_iterms in insts_conn[blk_inst.getName()].items():
+				net = reader.block.findNet(net_name)
+				for iterm_name in inst_iterms:
+					iterm = blk_inst.findITerm(iterm_name)
+					iterm.connect(net)
+			continue
+
 		# Check if it's a power gate ?
 		is_pg = re.match(r'.*\.tt_pg_[\w_]*_I$', blk_inst.getName()) is not None
 
