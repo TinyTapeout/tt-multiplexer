@@ -2,14 +2,19 @@
 # Updates final GDS/LEF
 #
 
+# Prep
+units microns
+suspendall
+
 # Load cell
 set project [lindex $argv $argc-1]
 load $project
 
 # Flatten
-set bbox [property FIXED_BBOX]
-set psdm [property MASKHINTS_PSDM]
-set nsdm [property MASKHINTS_NSDM]
+foreach prop_data [property] {
+	set prop_name [lindex $prop_data 0]
+	dict set props_save $prop_name [property $prop_name]
+}
 
 select top cell
 flatten -dotoplabels flat_tmp
@@ -17,9 +22,9 @@ load flat_tmp
 cellname delete $project
 cellname rename flat_tmp $project
 
-property FIXED_BBOX $bbox
-property MASKHINTS_PSDM "[property MASKHINTS_PSDM] $psdm"
-property MASKHINTS_NSDM "[property MASKHINTS_NSDM] $nsdm"
+dict for {prop_name prop_val} $props_save {
+	property $prop_name "$prop_val"
+}
 
 # GDS
 gds write ../gds/$project.gds
