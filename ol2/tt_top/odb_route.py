@@ -1685,9 +1685,9 @@ class AnalogRouter:
 
 			encoder.newPath(self.layer_top, 'FIXED')
 			encoder.addPoint(xp0, yl0[1])
-			encoder.addTechVia(self.via_sig)
 			encoder.addPoint(xp1, yl0[1])
 			encoder.addPoint(xp1, yp1)
+			encoder.addTechVia(self.via_sig)
 			encoder.addPoint(xp2, yp1)
 
 			for x in xl2:
