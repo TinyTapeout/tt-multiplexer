@@ -923,9 +923,9 @@ class ModulePowerStrapper:
 		geom_pg = [ x[1] for x in um_it.getGeometries() ]
 		geom = geom_um + geom_pg
 
-		# Extent
-		xl = min([x.xMin() for x in geom])
-		xr = max([x.xMax() for x in geom])
+		# Extent ( + extra for worse case enclosure requirement )
+		xl = min([x.xMin() for x in geom]) - self.vg.top_enc[0]
+		xr = max([x.xMax() for x in geom]) + self.vg.top_enc[0]
 
 		# Center positions and width
 		pd = [ModulePowerPadData.from_geometry(g, grid=self.grid) for g in geom]
