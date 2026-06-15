@@ -930,8 +930,25 @@ class ModulePowerStrapper:
 		# Center positions and width
 		pd = [ModulePowerPadData.from_geometry(g, grid=self.grid) for g in geom]
 
+		# Attempt to merge contiguous pads
+		pd.sort(key=lambda x: (x.xc, x.yb))
+
+		pd_merged = []
+		pad_cur = pd[0]
+
+		for pad_nxt in pd[1:]:
+			if pad_cur.xc == pad_nxt.xc and pad_cur.xw == pad_nxt.xw and pad_cur.yt >= pad_nxt.yb:
+				# Merge
+				pad_cur = ModulePowerPadData(pad_cur.xc, pad_cur.xw, pad_cur.yb, max(pad_cur.yt, pad_nxt.yt))
+			else:
+				# Discontinuous
+				pd_merged.append(pad_cur)
+				pad_cur = pad_nxt
+
+		pd_merged.append(pad_cur)
+
 		# Return result
-		return xl, xr, pd
+		return xl, xr, pd_merged
 
 	def _draw_stripe(self, sw, yp, yw, xl, xr, pd):
 		# Stripe
