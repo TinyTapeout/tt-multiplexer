@@ -277,6 +277,7 @@ if __name__ == '__main__':
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
+		"LVS_IGNORE_CELLS": disc_modules,	# Logos have no connectivity, so magic extracts no instance for them
 		"IGNORE_DISCONNECTED_MODULES": disc_modules,
 	}
 
