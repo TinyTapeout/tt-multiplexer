@@ -228,6 +228,11 @@ if __name__ == '__main__':
 		# DRC
 		"MAGIC_DRC_USE_GDS": True,
 
+		# Flatten Cadence contact subcells (e.g. PYL1CON_C_CDNS_*) when Magic reads the GDS.
+		# Magic < 8.3.554 otherwise reports false licon.1 / overlap / LU.3 errors inside
+		# Virtuoso-exported macros. Magic >= 8.3.554 applies this glob by default.
+		"MAGIC_GDS_FLATGLOB": ["*_CDNS_*"],
+
 		# LVS
 		"MAGIC_DEF_LABELS" : False,
 		"MAGIC_EXT_SHORT_RESISTOR" : True, # Fixes LVS failures when more than two pins are connected to the same net
