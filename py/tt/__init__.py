@@ -49,6 +49,7 @@ class TinyTapeout:
 		DEFAULT_CONFIG = {
 			'sky130A': 'sky130.yaml',
 			'gf180mcuD': 'gf180mcuD.yaml',
+			'ihp-sg13cmos5l': 'ihp-sg13cmos5l-18.yaml',
 		}.get(os.getenv('PDK'))
 		return kls._get_data_files(config, 'TT_CONFIG', DEFAULT_CONFIG)
 
