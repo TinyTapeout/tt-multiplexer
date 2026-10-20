@@ -155,7 +155,7 @@ For all others, inactive designs (including all designs in inactive muxes):
 | EPAD      |             | Ground        |                |
 
 
-### IHP SG13G2 custom pad frame
+### IHP SG13 custom pad frame
 
 | Die Pad | QFN64 pin | Function      | Signal         |
 |---------|-----------|---------------|----------------|
