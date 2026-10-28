@@ -1,0 +1,66 @@
+magic
+tech ihp-sg13cmos5l
+magscale 1 2
+timestamp 1793189347
+<< ndiff >>
+rect 1435 284 1555 314
+rect 1435 224 1465 284
+tri 1597 279 1632 314 se
+rect 1632 279 1659 314
+rect 1597 272 1659 279
+tri 1659 272 1701 314 sw
+tri 1719 272 1761 314 se
+rect 1761 279 1788 314
+tri 1788 279 1823 314 sw
+rect 1865 284 1985 314
+rect 1761 272 1823 279
+rect 1435 194 1555 224
+rect 1525 134 1555 194
+rect 1435 104 1555 134
+rect 1597 217 1823 272
+tri 1597 104 1710 217 ne
+tri 1710 104 1823 217 nw
+rect 1910 134 1940 284
+rect 1865 104 1985 134
+<< metal1 >>
+rect 258 1046 1901 1088
+rect 258 883 300 1046
+rect 1859 948 1901 1046
+rect 1100 883 1519 925
+rect 0 377 42 827
+rect 388 133 430 175
+rect 646 133 754 585
+rect 1358 377 1400 827
+rect 1626 678 1794 948
+rect 1918 566 2000 610
+rect 1626 378 1794 498
+rect 970 133 1012 175
+use lv2hv_core  lv2hv_core_0
+timestamp 1792502873
+transform 0 1 0 -1 0 1014
+box 0 0 1014 1400
+use lv2hv_dual_inv  lv2hv_dual_inv_0
+timestamp 1793109818
+transform 0 1 1448 -1 0 1014
+box 0 0 676 552
+<< labels >>
+flabel metal1 s 1626 378 1794 498 0 FreeSans 400 0 0 0 VGND
+port 1 nsew
+flabel metal1 s 1358 377 1400 827 0 FreeSans 400 0 0 0 VGND
+port 1 nsew
+flabel metal1 s 0 377 42 827 0 FreeSans 400 0 0 0 VGND
+port 1 nsew
+flabel metal1 s 1626 678 1794 948 0 FreeSans 400 0 0 0 VDPWR
+port 2 nsew
+flabel metal1 s 646 133 754 585 0 FreeSans 400 0 0 0 VAPWR
+port 3 nsew
+flabel metal1 s 1918 566 2000 610 0 FreeSans 400 0 0 0 in
+port 4 nsew
+flabel metal1 s 970 133 1012 175 0 FreeSans 400 0 0 0 out_p
+port 5 nsew
+flabel metal1 s 388 133 430 175 0 FreeSans 400 0 0 0 out_n
+port 6 nsew
+<< properties >>
+string FIXED_BBOX 0 0 2000 1100
+string MASKHINTS_PSD 388 194 1012 195
+<< end >>

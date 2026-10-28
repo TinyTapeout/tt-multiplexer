@@ -1,0 +1,63 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_pg_3v3_2
+  CLASS BLOCK ;
+  FOREIGN tt_pg_3v3_2 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 12.480 BY 313.740 ;
+  PIN VGND
+    DIRECTION INPUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal4 ;
+        RECT 4.590 0.000 6.090 312.940 ;
+    END
+  END VGND
+  PIN VDPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 6.390 0.000 7.890 312.940 ;
+    END
+  END VDPWR
+  PIN VAPWR
+    DIRECTION INPUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 0.000 4.290 312.940 ;
+    END
+  END VAPWR
+  PIN GAPWR
+    DIRECTION OUTPUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 8.190 0.000 12.480 312.940 ;
+    END
+  END GAPWR
+  PIN ctrl
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    ANTENNAGATEAREA 0.292500 ;
+    PORT
+      LAYER Metal4 ;
+        RECT 0.000 313.240 12.480 313.740 ;
+    END
+  END ctrl
+  OBS
+      LAYER GatPoly ;
+        RECT 0.990 1.150 11.490 312.160 ;
+      LAYER Metal1 ;
+        RECT 1.010 1.220 11.470 312.660 ;
+      LAYER Metal2 ;
+        RECT 0.000 0.320 12.480 313.740 ;
+      LAYER Metal3 ;
+        RECT 0.000 0.320 12.480 313.740 ;
+  END
+END tt_pg_3v3_2
+END LIBRARY
+
