@@ -1,0 +1,26 @@
+magic
+tech ihp-sg13cmos5l
+magscale 1 2
+timestamp 1793107594
+<< metal2 >>
+rect 5221 60 5230 100
+rect 10166 60 10175 100
+rect 5221 0 10175 60
+<< via2 >>
+rect 5230 60 10166 100
+<< metal3 >>
+rect 5221 60 5230 100
+rect 10166 60 10175 100
+rect 5221 0 10175 60
+<< labels >>
+flabel metal2 s 5221 0 10175 40 0 FreeSans 320 0 0 0 pad
+port 1 nsew
+flabel metal3 s 5221 0 10175 40 0 FreeSans 320 0 0 0 pad
+port 1 nsew
+flabel metal2 s 5221 60 10175 100 0 FreeSans 320 0 0 0 analog
+port 2 nsew
+flabel metal3 s 5221 60 10175 100 0 FreeSans 320 0 0 0 analog
+port 2 nsew
+<< properties >>
+string FIXED_BBOX 0 0 16000 100
+<< end >>

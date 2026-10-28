@@ -1,0 +1,30 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO tt_ckt_ana
+  CLASS BLOCK ;
+  FOREIGN tt_ckt_ana ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 80.000 BY 0.500 ;
+  PIN pad
+    PORT
+      LAYER Metal3 ;
+        RECT 26.105 0.000 50.875 0.200 ;
+    END
+  END pad
+  PIN analog
+    PORT
+      LAYER Metal3 ;
+        RECT 26.105 0.300 50.875 0.500 ;
+    END
+  END analog
+  OBS
+      LAYER Metal2 ;
+        RECT 26.105 0.000 50.875 0.500 ;
+      LAYER Metal3 ;
+        RECT 26.105 0.200 50.875 0.300 ;
+  END
+END tt_ckt_ana
+END LIBRARY
+

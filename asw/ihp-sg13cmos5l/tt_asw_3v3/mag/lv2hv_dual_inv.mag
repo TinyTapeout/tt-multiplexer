@@ -1,0 +1,151 @@
+magic
+tech ihp-sg13cmos5l
+magscale 1 2
+timestamp 1793109818
+<< nwell >>
+rect 0 518 424 524
+rect 0 0 426 518
+<< nmos >>
+rect 490 368 640 394
+rect 490 130 640 156
+<< pmos >>
+rect 62 368 362 394
+rect 62 130 362 156
+<< ndiff >>
+rect 490 448 640 462
+rect 490 416 504 448
+rect 626 416 640 448
+rect 490 394 640 416
+rect 490 346 640 368
+rect 490 314 526 346
+rect 626 314 640 346
+rect 490 296 640 314
+rect 490 210 640 228
+rect 490 178 526 210
+rect 626 178 640 210
+rect 490 156 640 178
+rect 490 108 640 130
+rect 490 76 504 108
+rect 626 76 640 108
+rect 490 62 640 76
+<< pdiff >>
+rect 62 448 362 462
+rect 62 416 76 448
+rect 348 416 362 448
+rect 62 394 362 416
+rect 62 346 362 368
+rect 62 314 76 346
+rect 326 314 362 346
+rect 62 296 362 314
+rect 62 210 362 228
+rect 62 178 76 210
+rect 326 178 362 210
+rect 62 156 362 178
+rect 62 108 362 130
+rect 62 76 76 108
+rect 348 76 362 108
+rect 62 62 362 76
+<< ndiffc >>
+rect 504 416 626 448
+rect 526 314 626 346
+rect 526 178 626 210
+rect 504 76 626 108
+<< pdiffc >>
+rect 76 416 348 448
+rect 76 314 326 346
+rect 76 178 326 210
+rect 76 76 348 108
+<< psubdiff >>
+rect 490 278 640 296
+rect 490 246 526 278
+rect 626 246 640 278
+rect 490 228 640 246
+<< nsubdiff >>
+rect 62 278 362 296
+rect 62 246 76 278
+rect 326 246 362 278
+rect 62 228 362 246
+<< psubdiffcont >>
+rect 526 246 626 278
+<< nsubdiffcont >>
+rect 76 246 326 278
+<< poly >>
+rect 396 512 456 526
+rect 396 480 410 512
+rect 442 480 456 512
+rect 396 394 456 480
+rect 26 368 62 394
+rect 362 368 490 394
+rect 640 368 676 394
+rect 396 197 456 211
+rect 396 165 410 197
+rect 442 165 456 197
+rect 396 156 456 165
+rect 26 130 62 156
+rect 362 130 490 156
+rect 640 130 676 156
+<< polycont >>
+rect 410 480 442 512
+rect 410 165 442 197
+<< metal1 >>
+rect 404 512 448 552
+rect 404 480 410 512
+rect 442 480 448 512
+rect 404 470 448 480
+rect 66 448 358 453
+rect 66 416 76 448
+rect 348 428 358 448
+tri 358 428 383 453 sw
+tri 469 428 494 453 se
+rect 494 448 636 453
+rect 494 428 504 448
+rect 348 416 504 428
+rect 626 416 636 448
+rect 66 411 636 416
+tri 335 346 400 411 ne
+rect 400 346 452 411
+tri 452 346 517 411 nw
+rect 66 314 76 346
+rect 326 314 336 346
+tri 400 341 405 346 ne
+rect 66 278 336 314
+rect 66 246 76 278
+rect 326 246 336 278
+rect 66 210 336 246
+rect 66 178 76 210
+rect 326 178 336 210
+rect 405 197 447 346
+tri 447 341 452 346 nw
+rect 405 165 410 197
+rect 442 165 447 197
+rect 516 314 526 346
+rect 626 314 636 346
+rect 516 278 636 314
+rect 516 246 526 278
+rect 626 246 636 278
+rect 516 210 636 246
+rect 516 178 526 210
+rect 626 178 636 210
+rect 405 155 447 165
+rect 66 108 636 113
+rect 66 76 76 108
+rect 348 76 504 108
+rect 626 76 636 108
+rect 66 71 636 76
+<< labels >>
+flabel metal1 s 516 178 636 346 0 FreeSans 400 0 0 0 VGND
+port 0 nsew ground input
+flabel metal1 s 66 178 336 346 0 FreeSans 400 0 0 0 VPWR
+port 1 nsew power input
+flabel metal1 s 404 470 448 552 0 FreeSans 160 0 0 0 in
+port 2 nsew signal input
+flabel metal1 s 66 411 358 453 0 FreeSans 160 0 0 0 out_n
+port 3 nsew signal output
+flabel metal1 s 494 411 636 453 0 FreeSans 160 0 0 0 out_n
+port 3 nsew signal output
+flabel metal1 s 66 71 636 113 0 FreeSans 160 0 0 0 out_p
+port 4 nsew signal output
+<< properties >>
+string FIXED_BBOX 0 0 702 552
+string MASKHINTS_PSD -6 70 26 454 398 296 430 454 398 228 484 296 398 70 430 228
+<< end >>
