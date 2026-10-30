@@ -860,35 +860,18 @@ class ModulePowerStrapper:
 
 		# If we only have one power gate, allocate all to it
 		if pg_cnt == 1:
-			# Wide strip
+			# Wide stripe and half spacing
 			w = 2 * self.stripe_width + self.space
+			hs = self.stripe_space // 2
 
-			# Select depending on height
-			if h == 1:
-				return [ ( y_mid, w ) ]
+			# Number of rails and starting offset
+			r_cnt = (2 * h) + (h - 1) // 2 - 1
+			r_ofs = r_cnt - 1
 
-			elif h == 2:
-				return [
-					( y_mid + self.stripe_space, w ),
-					( y_mid,                     w ),
-					( y_mid - self.stripe_space, w ),
-				]
-
-			elif h == 4:
-				spc = self.stripe_space // 2
-				return [
-					( y_mid + spc * 7, w ),
-					( y_mid + spc * 5, w ),
-					( y_mid + spc * 3, w ),
-					( y_mid + spc * 1, w ),
-					( y_mid - spc * 1, w ),
-					( y_mid - spc * 3, w ),
-					( y_mid - spc * 5, w ),
-					( y_mid - spc * 7, w ),
-				]
-
-			else:
-				raise RuntimeError('Unsupported heigh Power Gate')
+			return [
+				(y_mid + i * hs, w)
+					for i in range(-r_ofs, r_cnt, 2)
+			]
 
 		# If we have two, then the center one is split
 		elif pg_cnt == 2:
