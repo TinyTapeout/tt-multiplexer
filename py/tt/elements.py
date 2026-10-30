@@ -213,7 +213,7 @@ class PowerSwitch(LayoutElement):
 		# Height
 		height = (
 			mh * layout.glb.block.height +
-			(mh // 4) * (layout.glb.mux.height + layout.glb.margin.y) +
+			((mh - 1) // 2) * (layout.glb.mux.height + layout.glb.margin.y) +
 			(mh - 1) * layout.glb.margin.y
 		)
 
@@ -286,7 +286,7 @@ class Block(LayoutElement):
 
 		height = (
 			mh * layout.glb.block.height +
-			(mh // 4) * (layout.glb.mux.height + layout.glb.margin.y) +
+			((mh - 1) // 2) * (layout.glb.mux.height + layout.glb.margin.y) +
 			(mh - 1) * layout.glb.margin.y
 		)
 

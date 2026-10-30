@@ -65,9 +65,9 @@ def gen_block_template(tti, h_mult, v_mult, pg_vdd=False, pg_vaa=False, analog=F
 	)
 
 	block_height = (
-		 v_mult       *  tti.layout.glb.block.height +
-		(v_mult // 4) * (tti.layout.glb.mux.height + tti.layout.glb.margin.y) +
-		(v_mult - 1)  *  tti.layout.glb.margin.y
+		  v_mult            *  tti.layout.glb.block.height +
+		((v_mult - 1) // 2) * (tti.layout.glb.mux.height + tti.layout.glb.margin.y) +
+		( v_mult - 1      ) *  tti.layout.glb.margin.y
 	)
 
 	# If we're power gated the block width is reduced
