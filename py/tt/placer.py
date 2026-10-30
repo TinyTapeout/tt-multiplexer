@@ -234,7 +234,7 @@ class ModulePlacer:
 			self.modules.append(mod)
 
 			# Size & Position limits
-			if mod.height not in [1,2,4]:
+			if mod.height not in [1,2,4,6,8]:
 				raise RuntimeError(f"Module '{mod.name:s}' has invalid height {mod.height:d}")
 
 			if not 1 <= mod.width <= (self.cfg.tt.grid.x // 2):
