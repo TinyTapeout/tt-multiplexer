@@ -1,0 +1,1 @@
+../../common/xschem/discharge_3v3.sch
