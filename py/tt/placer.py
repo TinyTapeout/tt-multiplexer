@@ -259,6 +259,17 @@ class ModulePlacer:
 		with open(mod_file, 'w') as fh:
 			fh.write(yaml.dump(data))
 
+	def _mux_overlap_for_module(self, mod, pos_x, pos_y):
+		# Only a problem if h > 2
+		if mod.height <= 2:
+			return []
+
+		# Iterate through y offset
+		sy = -1 if ((pos_y & 1) == 0) else 1
+		for oy in range(1, mod.height-1,2):
+			mux_id, blk_id = self.p2l(pos_x, pos_y+sy*oy)
+			yield mux_id
+
 	def _sites_for_module(self, mod, pos_x, pos_y):
 		sx = -1 if pos_x >= (self.cfg.tt.grid.x // 2) else 1
 		sy = -1 if ((pos_y & 1) == 0) else 1
@@ -274,10 +285,14 @@ class ModulePlacer:
 
 		# If in missing fill mode, that slot must be facing a missing mux
 		# (We're using ld2la here since that's the same idea)
-		# Same thing is the module is h=4, must not be a mux in front
 		if self.missing_fill or mod.height > 2:
 			amux_id, ablk_id = self.ld2la(mux_id, blk_id)
 			if not amux_id in self.mux_missing:
+				return False
+
+		# Depending on module, it might overlap muxes
+		for omux_id in self._mux_overlap_for_module(mod, pos_x, pos_y):
+			if not omux_id in self.mux_missing:
 				return False
 
 		# Check all positions exist and are free
